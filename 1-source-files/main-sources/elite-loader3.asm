@@ -213,14 +213,8 @@ ORG CODE%
 
  EQUB 22, 7             \ Switch to screen mode 7
 
- EQUB 23, 0, 10, 32     \ Set 6845 register R10 = 32
- EQUB 0, 0, 0           \
- EQUB 0, 0, 0           \ This is the "cursor start" register, so this sets the
-                        \ cursor start line at 0, effectively disabling the
-                        \ cursor
-
- EQUB 28                \ Define a text window as follows:
- EQUB 2, 17, 15, 16     \
+\EQUB 28                \ Define a text window as follows:
+\EQUB 2, 17, 15, 16     \
                         \   * Left = 2
                         \   * Right = 15
                         \   * Top = 16
@@ -228,48 +222,50 @@ ORG CODE%
                         \
                         \ i.e. 1 row high, 13 columns wide at (2, 16)
 
- EQUB 23, 0, 6, 31      \ Set 6845 register R6 = 31
- EQUB 0, 0, 0           \
- EQUB 0, 0, 0           \ This is the "vertical displayed" register, and sets
+\EQUB 23, 0, 6, 31      \ Set 6845 register R6 = 31
+\EQUB 0, 0, 0           \
+\EQUB 0, 0, 0           \ This is the "vertical displayed" register, and sets
                         \ the number of displayed character rows to 31. For
                         \ comparison, this value is 32 for standard modes 4 and
                         \ 5, but we claw back the last row for storing code just
                         \ above the end of screen memory
 
- EQUB 23, 0, 12, &0C    \ Set 6845 register R12 = &0C and R13 = &00
- EQUB 0, 0, 0           \
- EQUB 0, 0, 0           \ This sets 6845 registers (R12 R13) = &0C00 to point
- EQUB 23, 0, 13, &00    \ to the start of screen memory in terms of character
- EQUB 0, 0, 0           \ rows. There are 8 pixel lines in each character row,
- EQUB 0, 0, 0           \ so to get the actual address of the start of screen
+\EQUB 23, 0, 12, &0C    \ Set 6845 register R12 = &0C and R13 = &00
+\EQUB 0, 0, 0           \
+\EQUB 0, 0, 0           \ This sets 6845 registers (R12 R13) = &0C00 to point
+\EQUB 23, 0, 13, &00    \ to the start of screen memory in terms of character
+\EQUB 0, 0, 0           \ rows. There are 8 pixel lines in each character row,
+\EQUB 0, 0, 0           \ so to get the actual address of the start of screen
                         \ memory, we multiply by 8:
                         \
                         \   &0C00 * 8 = &6000
                         \
                         \ So this sets the start of screen memory to &6000
 
- EQUB 23, 0, 1, 32      \ Set 6845 register R1 = 32
- EQUB 0, 0, 0           \
- EQUB 0, 0, 0           \ This is the "horizontal displayed" register, which
+\EQUB 23, 0, 1, 32      \ Set 6845 register R1 = 32
+\EQUB 0, 0, 0           \
+\EQUB 0, 0, 0           \ This is the "horizontal displayed" register, which
                         \ defines the number of character blocks per horizontal
                         \ character row. For comparison, this value is 40 for
                         \ modes 4 and 5, but our custom screen is not as wide at
                         \ only 32 character blocks across
 
- EQUB 23, 0, 2, 45      \ Set 6845 register R2 = 45
- EQUB 0, 0, 0           \
- EQUB 0, 0, 0           \ This is the "horizontal sync position" register, which
+\EQUB 23, 0, 2, 45      \ Set 6845 register R2 = 45
+\EQUB 0, 0, 0           \
+\EQUB 0, 0, 0           \ This is the "horizontal sync position" register, which
                         \ defines the position of the horizontal sync pulse on
                         \ the horizontal line in terms of character widths from
                         \ the left-hand side of the screen. For comparison this
                         \ is 49 for modes 4 and 5, but needs to be adjusted for
                         \ our custom screen's width
 
-\EQUB 23, 0, 10, 32     \ Set 6845 register R10 = 32
-\EQUB 0, 0, 0           \
-\EQUB 0, 0, 0           \ This is the "cursor start" register, so this sets the
+ EQUB 23, 0, 10, 32     \ Set 6845 register R10 = 32
+ EQUB 0, 0, 0           \
+ EQUB 0, 0, 0           \ This is the "cursor start" register, so this sets the
                         \ cursor start line at 0, effectively disabling the
                         \ cursor
+
+ SKIP 55
 
 \ ******************************************************************************
 \

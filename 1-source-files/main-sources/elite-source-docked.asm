@@ -31958,16 +31958,16 @@ PLOT_PIXEL_RANGE_Y = 3*25
 
 .clear_screen
 {
-    lda #0
-	ldx #0
+    LDA #0
+	LDX #0
 	.clearloop
-	sta &7c00,x		; 5
-	sta &7d00,x		; 5
-	sta &7e00,x		; 5
-	\sta &7f00,x		; 5
-	inx				; 2
-	bne clearloop	; 2
-	rts
+	STA MODE7_VRAM_START,X		; 5
+	STA MODE7_VRAM_START+&100,X		; 5
+	STA MODE7_VRAM_START+&200,X		; 5
+\	STA MODE7_VRAM_START+&300,X		; 5
+	INX				; 2
+	BNE clearloop	; 2
+	RTS
 	\\ clear cycles = (4*5+2+3)*256 = 6400 = 3.2 ms
 }
 
@@ -31978,14 +31978,14 @@ ALIGN 256
 
 FOR i, 0, PLOT_PIXEL_RANGE_Y-1
  y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
- EQUB LO(y-i)           \ adjust for (zp),y style addressing, where Y will be the y coordinate
+ EQUB LO(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
 .plot_pixel_ytable_hi
 
 FOR i, 0, PLOT_PIXEL_RANGE_Y-1
  y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
- EQUB HI(y-i)           \ adjust for (zp),y style addressing, where Y will be the y coordinate
+ EQUB HI(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
 .plot_pixel_ytable_chr
@@ -32031,25 +32031,25 @@ NEXT
 MACRO PLOT_PIXEL
 
  CLC
- LDA plot_pixel_xtable,x  ;[4] get chr offset on row (Xcoord / 2)
- ADC plot_pixel_ytable_lo,y ;[4] C may be set after this addition.
+ LDA plot_pixel_xtable,X  ;[4] get chr offset on row (Xcoord / 2)
+ ADC plot_pixel_ytable_lo,Y ;[4] C may be set after this addition.
  STA SC      ;[3]
- LDA plot_pixel_ytable_hi,y ;[4] C will be clear after this addition
- ADC #&7C   ;[3] for double buffering - add the base screen address
+ LDA plot_pixel_ytable_hi,Y ;[4] C will be clear after this addition
+ ADC #HI(MODE7_VRAM_START)   ;[3] for double buffering - add the base screen address
  STA SCH      ;[3]
 
- LDA plot_pixel_ytable_chr,y ;[4] get 2-pixel wide teletext glyph for Y coord
- AND plot_pixel_xtable_chr,x ;[4] apply odd/even X coord mask
+ LDA plot_pixel_ytable_chr,Y ;[4] get 2-pixel wide teletext glyph for Y coord
+ AND plot_pixel_xtable_chr,X ;[4] apply odd/even X coord mask
 
  \ A contains intersection of horizontal and vertical texels within character block for this pixel:
  \ 33, 34
  \ 36, 40
  \ 48, 63
 
- \ORA (plot_lo),y     ;[5]  
- EOR (SC),y : ORA #%00100000
+ \ORA (plot_lo),Y     ;[5]  
+ EOR (SC),Y : ORA #%00100000
 
- STA (SC),y     ;[5]
+ STA (SC),Y     ;[5]
 
 ENDMACRO
 
