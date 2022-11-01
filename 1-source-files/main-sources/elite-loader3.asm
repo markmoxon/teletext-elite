@@ -41,8 +41,10 @@ Q% = _REMOVE_CHECKSUMS  \ Set Q% to TRUE to max out the default commander, FALSE
                         \ for the standard default commander (this is set to
                         \ TRUE if checksums are disabled, just for convenience)
 
-N% = 67                 \ N% is set to the number of bytes in the VDU table, so
+\N% = 67                 \ N% is set to the number of bytes in the VDU table, so
                         \ we can loop through them below
+
+ N% = 12
 
 VSCAN = 57              \ Defines the split position in the split-screen mode
 
@@ -207,7 +209,15 @@ ORG CODE%
 
 .B%
 
- EQUB 22, 4             \ Switch to screen mode 4
+\EQUB 22, 4             \ Switch to screen mode 4
+
+ EQUB 22, 7             \ Switch to screen mode 7
+
+ EQUB 23, 0, 10, 32     \ Set 6845 register R10 = 32
+ EQUB 0, 0, 0           \
+ EQUB 0, 0, 0           \ This is the "cursor start" register, so this sets the
+                        \ cursor start line at 0, effectively disabling the
+                        \ cursor
 
  EQUB 28                \ Define a text window as follows:
  EQUB 2, 17, 15, 16     \
@@ -255,9 +265,9 @@ ORG CODE%
                         \ is 49 for modes 4 and 5, but needs to be adjusted for
                         \ our custom screen's width
 
- EQUB 23, 0, 10, 32     \ Set 6845 register R10 = 32
- EQUB 0, 0, 0           \
- EQUB 0, 0, 0           \ This is the "cursor start" register, so this sets the
+\EQUB 23, 0, 10, 32     \ Set 6845 register R10 = 32
+\EQUB 0, 0, 0           \
+\EQUB 0, 0, 0           \ This is the "cursor start" register, so this sets the
                         \ cursor start line at 0, effectively disabling the
                         \ cursor
 
@@ -362,7 +372,8 @@ ENDMACRO
  CPY #N%                \ Loop back for the next byte until we have done them
  BNE loop1              \ all (the number of bytes was set in N% above)
 
- JSR PLL1               \ Call PLL1 to draw Saturn
+\ JSR PLL1               \ Call PLL1 to draw Saturn
+NOP:NOP:NOP
 
  LDA #16                \ Call OSBYTE with A = 16 and X = 3 to set the ADC to
  LDX #3                 \ sample 3 channels from the joystick/Bitstik
@@ -442,6 +453,7 @@ ENDMACRO
 
  JSR MVBL               \ Call MVBL to move and decrypt 8 pages of memory from
                         \ DIALS to &7800-&7FFF
+\ NOP:NOP:NOP
 
  SEI                    \ Disable interrupts while we set up our interrupt
                         \ handler to support the split-screen mode
@@ -470,6 +482,7 @@ ENDMACRO
  STA IRQ1V              \ interrupt handler
  LDA #HI(IRQ1)
  STA IRQ1V+1
+\ NOP:NOP:NOP:NOP:NOP:NOP
 
  LDA #VSCAN             \ Set 6522 System VIA T1C-L timer 1 high-order counter
  STA VIA+&45            \ (SHEILA &45) to VSCAN (57) to start the T1 counter
@@ -486,8 +499,9 @@ ENDMACRO
  LDA #HI(ASOFT)
  STA P+1
 
- JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
+\JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
                         \ ASOFT to &6100-&61FF
+ NOP:NOP:NOP
 
  LDA #&63               \ Set the following:
  STA ZP+1               \
@@ -496,8 +510,9 @@ ENDMACRO
  LDA #HI(ELITE)
  STA P+1
 
- JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
+\JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
                         \ ELITE to &6300-&63FF
+ NOP:NOP:NOP
 
  LDA #&76               \ Set the following:
  STA ZP+1               \
@@ -506,8 +521,9 @@ ENDMACRO
  LDA #HI(CpASOFT)
  STA P+1
 
- JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
+\JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
                         \ CpASOFT to &7600-&76FF
+ NOP:NOP:NOP
 
  LDA #&00               \ Set the following:
  STA ZP                 \
@@ -663,6 +679,8 @@ ORG &0B00
  STA WRCHV              \ code's S% workspace, which contains JMP CHPR
  LDA #HI(S%+6)
  STA WRCHV+1
+
+\ NOP:NOP:NOP:NOP:NOP:NOP
 
  SEC                    \ Set the C flag so the checksum we calculate in A
                         \ starts with an initial value of 18 (17 plus carry)
@@ -1878,14 +1896,16 @@ ORG &1100
                         \ triggered by setting HFX to 1 in routine LL164
 
  LDA #%00001000         \ Set the Video ULA control register (SHEILA &20) to
- STA VIA+&20            \ %00001000, which is the same as switching to mode 4
+\STA VIA+&20            \ %00001000, which is the same as switching to mode 4
                         \ (i.e. the top part of the screen) but with no cursor
+ NOP:NOP:NOP
 
 .VNT3
 
  LDA TVT1+16,Y          \ Copy the Y-th palette byte from TVT1+16 to SHEILA &21
- STA VIA+&21            \ to map logical to actual colours for the bottom part
+\STA VIA+&21            \ to map logical to actual colours for the bottom part
                         \ of the screen (i.e. the dashboard)
+ NOP:NOP:NOP
 
  DEY                    \ Decrement the palette byte counter
 
@@ -1935,18 +1955,20 @@ ORG &1100
 
  ASL A                  \ Double the value in A to 4
 
- STA VIA+&20            \ Set the Video ULA control register (SHEILA &20) to
+\STA VIA+&20            \ Set the Video ULA control register (SHEILA &20) to
                         \ %00000100, which is the same as switching to mode 5,
                         \ (i.e. the bottom part of the screen) but with no
                         \ cursor
+ NOP:NOP:NOP
 
  LDA ESCP               \ If an escape pod is fitted, jump to VNT1 to set the
  BNE VNT1               \ mode 5 palette differently (so the dashboard is a
                         \ different colour if we have an escape pod)
 
  LDA TVT1,Y             \ Copy the Y-th palette byte from TVT1 to SHEILA &21
- STA VIA+&21            \ to map logical to actual colours for the bottom part
+\STA VIA+&21            \ to map logical to actual colours for the bottom part
                         \ of the screen (i.e. the dashboard)
+ NOP:NOP:NOP
 
  DEY                    \ Decrement the palette byte counter
 
@@ -1968,8 +1990,9 @@ ORG &1100
  LDY #7                 \ Set Y as a counter for 8 bytes
 
  LDA TVT1+8,Y           \ Copy the Y-th palette byte from TVT1+8 to SHEILA &21
- STA VIA+&21            \ to map logical to actual colours for the bottom part
+\STA VIA+&21            \ to map logical to actual colours for the bottom part
                         \ of the screen (i.e. the dashboard)
+ NOP:NOP:NOP
 
  DEY                    \ Decrement the palette byte counter
 
