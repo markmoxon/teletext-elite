@@ -11266,6 +11266,9 @@ LOAD_C% = LOAD% +P% - CODE%
 \CPX #&78               \ Loop back to BOL1 until we have cleared page &7700,
 \BNE BOL1               \ the last character row in the space view part of the
 \                       \ screen (the top part)
+\
+\LDY #1                 \ Move the text cursor to row 1
+\STY YC
 
                         \ --- And replaced by: -------------------------------->
 
@@ -11289,10 +11292,10 @@ LOAD_C% = LOAD% +P% - CODE%
 
 .BOL1
 
-                        \ --- End of replacement ------------------------------>
-
- LDY #1                 \ Move the text cursor to row 1
+ LDY #0                 \ Move the text cursor to row 0
  STY YC
+
+                        \ --- End of replacement ------------------------------>
 
  LDA QQ11               \ If this is not a space view, jump to tt66 to skip
  BNE tt66               \ displaying the view name
@@ -12910,6 +12913,13 @@ LOAD_D% = LOAD% + P% - CODE%
  JSR TT66               \ and set the current view type in QQ11 to 2
 
  JSR TT163              \ Print the column headers for the prices table
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR ClearTwoLineTitle  \ Clear the second line of the title, so both headers
+                        \ rows of the prices table are styled
+
+                        \ --- End of added code ------------------------------->
 
  LDA #%10000000         \ Set bit 7 of QQ17 to switch to Sentence Case, with the
  STA QQ17               \ next letter in capitals
