@@ -396,7 +396,7 @@ ENDMACRO
 
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
-\ JSR PLL1               \ Call PLL1 to draw Saturn
+\JSR PLL1               \ Call PLL1 to draw Saturn
 
                         \ --- And replaced by: -------------------------------->
 
