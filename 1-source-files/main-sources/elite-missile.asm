@@ -40,7 +40,16 @@ GUARD &6000             \ Guard against assembling over screen memory
 \
 \ ******************************************************************************
 
-CODE% = &7F00
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CODE% = &7F00
+
+                        \ --- And replaced by: -------------------------------->
+
+CODE% = &7B00
+
+                        \ --- End of replacement ------------------------------>
+
 LOAD% = &244B
 
 ORG CODE%

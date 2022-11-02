@@ -29,7 +29,17 @@ INCLUDE "1-source-files/main-sources/elite-header.h.asm"
 _IB_DISC                = (_VARIANT = 1)
 _STH_DISC               = (_VARIANT = 2)
 
-GUARD &6000             \ Guard against assembling over screen memory
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\GUARD &6000            \ Guard against assembling over screen memory
+
+                        \ --- And replaced by: -------------------------------->
+
+GUARD &7B00             \ Guard against assembling over the missile ship data,
+                        \ which we have moved to &7B00, into the page before
+                        \ mode 7 screen memory
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -137,8 +147,19 @@ CHK2 = &11D3            \ The address of the second checksum byte for the saved
 CHK = &11D4             \ The address of the first checksum byte for the saved
                         \ commander data file, as set in elite-loader3.asm
 
-SHIP_MISSILE = &7F00    \ The address of the missile ship blueprint, as set in
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\SHIP_MISSILE = &7F00   \ The address of the missile ship blueprint, as set in
                         \ elite-loader3.asm
+
+                        \ --- And replaced by: -------------------------------->
+
+SHIP_MISSILE = &7B00    \ The address of the missile ship blueprint, as set in
+                        \ elite-loader3.asm, which we have moved to &7B00, into
+                        \ the page before mode 7 screen memory
+
+                        \ --- End of replacement ------------------------------>
+
 
 VIA = &FE00             \ Memory-mapped space for accessing internal hardware,
                         \ such as the video ULA, 6845 CRTC and 6522 VIAs (also
@@ -149,6 +170,17 @@ OSWORD = &FFF1          \ The address for the OSWORD routine
 OSFILE = &FFDD          \ The address for the OSFILE routine
 OSWRCH = &FFEE          \ The address for the OSWRCH routine
 OSCLI = &FFF7           \ The address for the OSCLI routine
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+MODE7_VRAM_START = &7C00
+
+PLOT_PIXEL_RANGE_X = 2*40 - 2   \ -2 to compensate for 1st char being graphics
+                                \  control code
+
+PLOT_PIXEL_RANGE_Y = 3*25
+
+                        \ --- End of added code ------------------------------->
 
 \ ******************************************************************************
 \
@@ -4363,6 +4395,12 @@ LOAD_B% = LOAD% + P% - CODE%
 
 .LOIN
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+                        \ The whole LOIN routine has been removed
+
+                        \ --- And replaced by: -------------------------------->
+
  STY YSAV               \ Store Y into YSAV, so we can preserve it across the
                         \ call to this subroutine
 
@@ -4378,7 +4416,7 @@ LOAD_B% = LOAD% + P% - CODE%
  BCC P%+4
  ADC #0
  TAY
- JSR move_to
+ JSR MoveTo
 
  LDA X2
  LSR A
@@ -4392,13 +4430,15 @@ LOAD_B% = LOAD% + P% - CODE%
  BCC P%+4
  ADC #0
  TAY
- JSR draw_to
+ JSR DrawTo
 
  LDY YSAV               \ Restore Y from YSAV, so that it's preserved
 
 .HL6
 
  RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -4588,6 +4628,13 @@ LOAD_B% = LOAD% + P% - CODE%
  STY YSAV               \ Store Y into YSAV, so we can preserve it across the
                         \ call to this subroutine
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+                        \ The whole HLOIN routine has been removed
+
+                        \ --- And replaced by: -------------------------------->
+
+                        \ --- End of replacement ------------------------------>
 
  LDY YSAV               \ Restore Y from YSAV, so that it's preserved
 
@@ -4680,9 +4727,17 @@ LOAD_B% = LOAD% + P% - CODE%
 
  LDA TWOS,X             \ Fetch a 1-pixel byte from TWOS and EOR it into SC+Y
  EOR (SC),Y
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  LDY T1                 \ Restore Y from T1, so Y is preserved by the routine
 
@@ -4799,6 +4854,93 @@ LOAD_B% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
 \
+\       Name: PLOT_PIXEL
+\       Type: Macro
+\   Category: Teletext Elite
+\    Summary: Draw a mode 7 texel
+\
+\ ------------------------------------------------------------------------------
+\
+\ Arguments:
+\
+\   X                   The x-coordinate (0 to 77)
+\
+\   Y                   The y-coordinate (0 to 74)
+\
+\ Returns:
+\
+\   X                   X is preserved
+\
+\   Y                   Y is preserved
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+MACRO PLOT_PIXEL
+
+ CLC                    \ Set SC(1 0) to screen address of character block
+ LDA plot_pixel_xtable,X
+ ADC plot_pixel_ytable_lo,Y
+ STA SC
+ LDA plot_pixel_ytable_hi,Y
+ ADC #HI(MODE7_VRAM_START)
+ STA SCH
+
+ LDA plot_pixel_ytable_chr,Y    \ Get 2-pixel wide teletext glyph for y-coordinate
+ AND plot_pixel_xtable_chr,X    \ Apply odd/even x-coordinate mask
+
+ EOR (SC),Y             \ EOR the texel into the screen
+ ORA #%00100000
+ STA (SC),Y
+
+ENDMACRO
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: PLOT_PIXEL_CLIPPED
+\       Type: Macro
+\   Category: Teletext Elite
+\    Summary: Draw a mode 7 texel, clipped to the screen boundary
+\
+\ ------------------------------------------------------------------------------
+\
+\ Arguments:
+\
+\   X                   The x-coordinate (clipped to 0 to PLOT_PIXEL_RANGE_X)
+\
+\   Y                   The y-coordinate (clipped to 0 to PLOT_PIXEL_RANGE_Y
+\
+\ Returns:
+\
+\   X                   X is preserved
+\
+\   Y                   Y is preserved
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+MACRO PLOT_PIXEL_CLIPPED
+
+ CPX #PLOT_PIXEL_RANGE_X
+ BCS clip1
+
+ CPY #PLOT_PIXEL_RANGE_Y
+ BCS clip1
+
+ PLOT_PIXEL
+
+.clip1
+
+ENDMACRO
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
 \       Name: PIXEL
 \       Type: Subroutine
 \   Category: Drawing pixels
@@ -4831,9 +4973,28 @@ LOAD_B% = LOAD% + P% - CODE%
 
 .PIXEL
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+                        \ The whole PIXEL routine has been removed
+
+                        \ --- And replaced by: -------------------------------->
+
  STY T1                 \ Store Y in T1
 
+ LSR A                  \ Set Y to the mode 7 y-coordinate by dividing the pixel
+ LSR A                  \ y-coordinate by 4 and rounding up
+ BCC P%+4
+ ADC #0
+ TAY
 
+ TXA                    \ Set X to the mode 7 x-coordinate by dividing the pixel
+ LSR A                  \ x-coordinate by 4 and rounding up
+ LSR A
+ BCC P%+4
+ ADC #0
+ TAX
+
+ PLOT_PIXEL             \ Plot the pixel
 
 .PX13
 
@@ -4842,6 +5003,8 @@ LOAD_B% = LOAD% + P% - CODE%
 .PX4
 
  RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -6536,21 +6699,391 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
  STY YSAV2              \ them at the end (so they don't get changed by this
  STX XSAV2              \ routine)
 
+.RRNEW
+
+ LDY QQ17               \ Load the QQ17 flag, which contains the text printing
+                        \ flags
+
+ INY                    \ If QQ17 = 255 then printing is disabled, so jump to
+ BEQ RR4                \ RR4, which doesn't print anything, it just restores
+                        \ the registers and returns from the subroutine
+
+ TAY                    \ Set Y = the character to be printed
+
+ BEQ RR4                \ If the character is zero, which is typically a string
+                        \ terminator character, jump down to RR4 to restore the
+                        \ registers and return from the subroutine
+
+ BMI RR4                \ If A > 127 then there is nothing to print, so jump to
+                        \ RR4 to restore the registers and return from the
+                        \ subroutine
+
+ CMP #7                 \ If this is a beep character (A = 7), jump to R5,
+ BEQ R5                 \ which will emit the beep, restore the registers and
+                        \ return from the subroutine
+
+ CMP #32                \ If this is an ASCII character (A >= 32), jump to RR1
+ BCS RR1                \ below, which will print the character, restore the
+                        \ registers and return from the subroutine
+
+ CMP #10                \ If this is control code 10 (line feed) then jump to
+ BEQ RRX1               \ RRX1, which will move down a line, restore the
+                        \ registers and return from the subroutine
+
+ LDX #1                 \ If we get here, then this is control code 11-13, of
+ STX XC                 \ which only 13 is used. This code prints a newline,
+                        \ which we can achieve by moving the text cursor
+                        \ to the start of the line (carriage return) and down
+                        \ one line (line feed). These two lines do the first
+                        \ bit by setting XC = 1, and we then fall through into
+                        \ the line feed routine that's used by control code 10
+
+ CMP #13                \ If this is control code 13 (carriage return) then jump
+ BEQ RR4                \ RR4 to restore the registers and return from the
+                        \ subroutine
+
+.RRX1
+
+ INC YC                 \ Print a line feed, simply by incrementing the row
+                        \ number (y-coordinate) of the text cursor, which is
+                        \ stored in YC
+
+ BNE RR4                \ Jump to RR4 to restore the registers and return from
+                        \ the subroutine (this BNE is effectively a JMP as Y
+                        \ will never be zero)
+
+.RR1
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\                       \ If we get here, then the character to print is an
+\                       \ ASCII character in the range 32-95. The quickest way
+\                       \ to display text on-screen is to poke the character
+\                       \ pixel by pixel, directly into screen memory, so
+\                       \ that's what the rest of this routine does
+\                       \
+\                       \ The first step, then, is to get hold of the bitmap
+\                       \ definition for the character we want to draw on the
+\                       \ screen (i.e. we need the pixel shape of this
+\                       \ character). The MOS ROM contains bitmap definitions
+\                       \ of the system's ASCII characters, starting from &C000
+\                       \ for space (ASCII 32) and ending with the £ symbol
+\                       \ (ASCII 126)
+\                       \
+\                       \ There are definitions for 32 characters in each of the
+\                       \ three pages of MOS memory, as each definition takes up
+\                       \ 8 bytes (8 rows of 8 pixels) and 32 * 8 = 256 bytes =
+\                       \ 1 page. So:
+\                       \
+\                       \   ASCII 32-63  are defined in &C000-&C0FF (page 0)
+\                       \   ASCII 64-95  are defined in &C100-&C1FF (page 1)
+\                       \   ASCII 96-126 are defined in &C200-&C2F0 (page 2)
+\                       \
+\                       \ The following code reads the relevant character
+\                       \ bitmap from the above locations in ROM and pokes
+\                       \ those values into the correct position in screen
+\                       \ memory, thus printing the character on-screen
+\                       \
+\                       \ It's a long way from 10 PRINT "Hello world!":GOTO 10
+\
+\                       \ Now we want to set X to point to the relevant page
+\                       \ number for this character - i.e. &C0, &C1 or &C2.
+\
+\                       \ The following logic is easier to follow if we look
+\                       \ at the three character number ranges in binary:
+\                       \
+\                       \   Bit #  76543210
+\                       \
+\                       \   32  = %00100000     Page 0 of bitmap definitions
+\                       \   63  = %00111111
+\                       \
+\                       \   64  = %01000000     Page 1 of bitmap definitions
+\                       \   95  = %01011111
+\                       \
+\                       \   96  = %01100000     Page 2 of bitmap definitions
+\                       \   125 = %01111101
+\                       \
+\                       \ We'll refer to this below
+\
+\LDX #&BF               \ Set X to point to the first font page in ROM minus 1,
+\                       \ which is &C0 - 1, or &BF
+\
+\ASL A                  \ If bit 6 of the character is clear (A is 32-63)
+\ASL A                  \ then skip the following instruction
+\BCC P%+4
+\
+\LDX #&C1               \ A is 64-126, so set X to point to page &C1
+\
+\ASL A                  \ If bit 5 of the character is clear (A is 64-95)
+\BCC P%+3               \ then skip the following instruction
+\
+\INX                    \ Increment X
+\                       \
+\                       \ By this point, we started with X = &BF, and then
+\                       \ we did the following:
+\                       \
+\                       \   If A = 32-63:   skip    then INX  so X = &C0
+\                       \   If A = 64-95:   X = &C1 then skip so X = &C1
+\                       \   If A = 96-126:  X = &C1 then INX  so X = &C2
+\                       \
+\                       \ In other words, X points to the relevant page. But
+\                       \ what about the value of A? That gets shifted to the
+\                       \ left three times during the above code, which
+\                       \ multiplies the number by 8 but also drops bits 7, 6
+\                       \ and 5 in the process. Look at the above binary
+\                       \ figures and you can see that if we cleared bits 5-7,
+\                       \ then that would change 32-53 to 0-31... but it would
+\                       \ do exactly the same to 64-95 and 96-125. And because
+\                       \ we also multiply this figure by 8, A now points to
+\                       \ the start of the character's definition within its
+\                       \ page (because there are 8 bytes per character
+\                       \ definition)
+\                       \
+\                       \ Or, to put it another way, X contains the high byte
+\                       \ (the page) of the address of the definition that we
+\                       \ want, while A contains the low byte (the offset into
+\                       \ the page) of the address
+\
+\STA P+1                \ Store the address of this character's definition in
+\STX P+2                \ P(2 1)
+
+                        \ --- End of removed code ----------------------------->
+
+ LDA XC                 \ Fetch XC, the x-coordinate (column) of the text cursor
+                        \ into A
+
+ LDX CATF               \ If CATF = 0, jump to RR5, otherwise we are printing a
+ BEQ RR5                \ disc catalogue
+
+ CPY #' '               \ If the character we want to print in Y is a space,
+ BNE RR5                \ jump to RR5
+
+                        \ If we get here, then CATF is non-zero, so we are
+                        \ printing a disc catalogue and we are not printing a
+                        \ space, so we drop column 17 from the output so the
+                        \ catalogue will fit on-screen (column 17 is a blank
+                        \ column in the middle of the catalogue, between the
+                        \ two lists of filenames, so it can be dropped without
+                        \ affecting the layout). Without this, the catalogue
+                        \ would be one character too wide for the square screen
+                        \ mode (it's 34 characters wide, while the screen mode
+                        \ is only 33 characters across)
+
+ CMP #17                \ If A = 17, i.e. the text cursor is in column 17, jump
+ BEQ RR4                \ to RR4 to restore the registers and return from the
+                        \ subroutine, thus omitting this column
+
+.RR5
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\ASL A                  \ Multiply A by 8, and store in SC. As each character is
+\ASL A                  \ 8 pixels wide, and the special screen mode Elite uses
+\ASL A                  \ for the top part of the screen is 256 pixels across
+\STA SC                 \ with one bit per pixel, this value is not only the
+\                       \ screen address offset of the text cursor from the left
+\                       \ side of the screen, it's also the least significant
+\                       \ byte of the screen address where we want to print this
+\                       \ character, as each row of on-screen pixels corresponds
+\                       \ to one page. To put this more explicitly, the screen
+\                       \ starts at &6000, so the text rows are stored in screen
+\                       \ memory like this:
+\                       \
+\                       \   Row 1: &6000 - &60FF    YC = 1, XC = 0 to 31
+\                       \   Row 2: &6100 - &61FF    YC = 2, XC = 0 to 31
+\                       \   Row 3: &6200 - &62FF    YC = 3, XC = 0 to 31
+\                       \
+\                       \ and so on
+
+                        \ --- End of removed code ----------------------------->
+
+ LDA YC                 \ Fetch YC, the y-coordinate (row) of the text cursor
+
+ CPY #127               \ If the character number (which is in Y) <> 127, then
+ BNE RR2                \ skip to RR2 to print that character, otherwise this is
+                        \ the delete character, so continue on
+
+ DEC XC                 \ We want to delete the character to the left of the
+                        \ text cursor and move the cursor back one, so let's
+                        \ do that by decrementing YC. Note that this doesn't
+                        \ have anything to do with the actual deletion below,
+                        \ we're just updating the cursor so it's in the right
+                        \ position following the deletion
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\ADC #&5E               \ A contains YC (from above) and the C flag is set (from
+\TAX                    \ the CPY #127 above), so these instructions do this:
+\                       \
+\                       \   X = YC + &5E + 1
+\                       \     = YC + &5F
+\
+\                       \ Because YC starts at 0 for the first text row, this
+\                       \ means that X will be &5F for row 0, &60 for row 1 and
+\                       \ so on. In other words, X is now set to the page number
+\                       \ for the row before the one containing the text cursor,
+\                       \ and given that we set SC above to point to the offset
+\                       \ in memory of the text cursor within the row's page,
+\                       \ this means that (X SC) now points to the character
+\                       \ above the text cursor
+\
+\LDY #&F8               \ Set Y = &F8, so the following call to ZES2 will count
+\                       \ Y upwards from &F8 to &FF
+\
+\JSR ZES2               \ Call ZES2, which zero-fills from address (X SC) + Y to
+\                       \ (X SC) + &FF. (X SC) points to the character above the
+\                       \ text cursor, and adding &FF to this would point to the
+\                       \ cursor, so adding &F8 points to the character before
+\                       \ the cursor, which is the one we want to delete. So
+\                       \ this call zero-fills the character to the left of the
+\                       \ cursor, which erases it from the screen
+\
+\BEQ RR4                \ We are done deleting, so restore the registers and
+\                       \ return from the subroutine (this BNE is effectively
+\                       \ a JMP as ZES2 always returns with the Z flag set)
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA YC
+
+ ASL A                  \ Add the row address for YC (from the plot_row_address
+ TAY                    \ table) to SC to give the screen address of the
+ LDA plot_row_address,Y \ character
+ STA SC
+ LDA plot_row_address+1,Y
+ STA SCH
+
+ LDA #' '               \ Store a space at the XC-th character on the row
+ LDY XC                 \ at SC(1 0)
+ STA (SC), Y
+
+ JMP RR4
+
+                        \ --- End of replacement ------------------------------>
+
+.RR2
+
+                        \ Now to actually print the character
+
+ INC XC                 \ Once we print the character, we want to move the text
+                        \ cursor to the right, so we do this by incrementing
+                        \ XC. Note that this doesn't have anything to do
+                        \ with the actual printing below, we're just updating
+                        \ the cursor so it's in the right position following
+                        \ the print
+
+ CMP #24                \ If the text cursor is on the screen (i.e. YC < 24, so
+ BCC RR3                \ we are on rows 1-23), then jump to RR3 to print the
+                        \ character
+
+ PHA                    \ Store A on the stack so we can retrieve it below
+
+ JSR TTX66              \ Otherwise we are off the bottom of the screen, so
+                        \ clear the screen and draw a white border
+
+ PLA                    \ Retrieve A from the stack... only to overwrite it with
+                        \ the next instruction, so presumably we didn't need to
+                        \ preserve it and this and the PHA above have no effect
+
+ LDA K3                 \ Set A to the character to be printed
+
+ JMP RRNEW              \ Jump back to RRNEW to print the character
+
+.RR3
+
+                        \ A contains the value of YC - the screen row where we
+                        \ want to print this character - so now we need to
+                        \ convert this into a screen address, so we can poke
+                        \ the character data to the right place in screen
+                        \ memory
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\ORA #&60               \ We already stored the least significant byte
+\                       \ of this screen address in SC above (see the STA SC
+\                       \ instruction above), so all we need is the most
+\                       \ significant byte. As mentioned above, in Elite's
+\                       \ square mode 4 screen, each row of text on-screen
+\                       \ takes up exactly one page, so the first row is page
+\                       \ &60xx, the second row is page &61xx, so we can get
+\                       \ the page for character (XC, YC) by OR'ing with &60.
+\                       \ To see this in action, consider that our two values
+\                       \ are, in binary:
+\                       \
+\                       \   YC is between:  %00000000
+\                       \             and:  %00010111
+\                       \          &60 is:  %01100000
+\                       \
+\                       \ so YC OR &60 effectively adds &60 to YC, giving us
+\                       \ the page number that we want
+
+                        \ --- And replaced by: -------------------------------->
+
+
+ ASL A                  \ Add the row address for YC (from the plot_row_address
+ TAY                    \ table) to SC to give the screen address of the
+ LDA plot_row_address,Y \ character
+ STA SC
+ LDA plot_row_address+1,Y
+ STA SCH
+                        \ --- End of replacement ------------------------------>
 
 .RREN
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\STA SC+1               \ Store the page number of the destination screen
+\                       \ location in SC+1, so SC now points to the full screen
+\                       \ location where this character should go
+\
+\LDY #7                 \ We want to print the 8 bytes of character data to the
+\                       \ screen (one byte per row), so set up a counter in Y
+\                       \ to count these bytes
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA K3                 \ Store the character at the XC-th character on the row
+ LDY XC                 \ at SC(1 0)
+ STA (SC), Y
+
+                        \ --- End of replacement ------------------------------>
+
+
+.RRL1
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA (P+1),Y            \ The character definition is at P(2 1) - we set this up
+\                       \ above - so load the Y-th byte from P(2 1), which will
+\                       \ contain the bitmap for the Y-th row of the character
+\
+\ORA (SC),Y             \ OR this value with the current contents of screen
+\                       \ memory, so the pixels we want to draw are set
+\
+\STA (SC),Y             \ Store the Y-th byte at the screen address for this
+\                       \ character location
+\
+\DEY                    \ Decrement the loop counter
+\
+\BPL RRL1               \ Loop back for the next byte to print to the screen
+
+                        \ --- End of removed code ----------------------------->
 
 .RR4
 
  LDY YSAV2              \ We're done printing, so restore the values of the
  LDX XSAV2              \ A, X and Y registers that we saved above and clear
  LDA K3                 \ the C flag, so everything is back to how it was
-
-.RR3
  CLC
 
  RTS                    \ Return from the subroutine
 
 .R5
+
+ JSR BEEP               \ Call the BEEP subroutine to make a short, high beep
+
+ JMP RR4                \ Jump to RR4 to restore the registers and return from
+                        \ the subroutine using a tail call
 
 \ ******************************************************************************
 \
@@ -7027,20 +7560,44 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
                         \ only keep pixels that have their equivalent bits set
                         \ in the mask byte in A
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y             \ Draw the shape of the mask on pixel row Y of the
                         \ character block we are processing
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  INY                    \ Draw the next pixel row, incrementing Y
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
+
 
  INY                    \ And draw the third pixel row, incrementing Y
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  TYA                    \ Add 6 to Y, so Y is now 8 more than when we started
  CLC                    \ this loop iteration, so Y now points to the address
@@ -7210,25 +7767,56 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
                         \ character blocks we display from now on will be blank
 .DLL12
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y             \ Draw the shape of the mask on pixel row Y of the
                         \ character block we are processing
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  INY                    \ Draw the next pixel row, incrementing Y
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  INY                    \ And draw the third pixel row, incrementing Y
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  INY                    \ And draw the fourth pixel row, incrementing Y
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  TYA                    \ Add 5 to Y, so Y is now 8 more than when we started
  CLC                    \ this loop iteration, so Y now points to the address
@@ -7852,9 +8440,16 @@ LOAD_C% = LOAD% +P% - CODE%
  ORA (SC),Y             \ OR the byte with the current contents of screen
                         \ memory, so the pixel we want is set
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y             \ Store the updated pixel in screen memory
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  INY                    \ Increment Y to point to the next row in the character
                         \ block, i.e. the next pixel down
@@ -8086,9 +8681,16 @@ LOAD_C% = LOAD% +P% - CODE%
                         \ memory, so the pixel we want is set to red (because
                         \ we know the bits are already 0 from the above test)
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y             \ Store the updated pixel in screen memory
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  TXA                    \ Retrieve the value of A we stored above, so A now
                         \ contains the pixel mask again
@@ -8149,9 +8751,16 @@ LOAD_C% = LOAD% +P% - CODE%
                         \ memory, so the pixel we want is set to red (because
                         \ we know the bits are already 0 from the above test)
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y             \ Store the updated pixel in screen memory
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  TXA                    \ Retrieve the value of A we stored above, so A now
                         \ contains the pixel mask again
@@ -8205,29 +8814,64 @@ LOAD_C% = LOAD% +P% - CODE%
 
 .UNWISE
 
-\ LDA LIL2+2             \ Flip bit 6 of LIL2+2 to change the EOR (SC),Y in LIL2
- EOR #%01000000         \ to an ORA (SC),Y (or back again)
-\ STA LIL2+2
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- NOP:NOP:NOP:NOP:NOP:NOP
 
-\ LDA LIL3+2             \ Flip bit 6 of LIL3+2 to change the EOR (SC),Y in LIL3
- EOR #%01000000         \ to an ORA (SC),Y (or back again)
-\ STA LIL3+2
+\LDA LIL2+2             \ Flip bit 6 of LIL2+2 to change the EOR (SC),Y in LIL2
+\EOR #%01000000         \ to an ORA (SC),Y (or back again)
+\STA LIL2+2
+\
+\LDA LIL3+2             \ Flip bit 6 of LIL3+2 to change the EOR (SC),Y in LIL3
+\EOR #%01000000         \ to an ORA (SC),Y (or back again)
+\STA LIL3+2
+\
+\LDA LIL5+2             \ Flip bit 6 of LIL2+2 to change the EOR (SC),Y in LIL5
+\EOR #%01000000         \ to an ORA (SC),Y (or back again)
+\STA LIL5+2
+\
+\LDA LIL6+2             \ Flip bit 6 of LIL2+2 to change the EOR (SC),Y in LIL6
+\EOR #%01000000         \ to an ORA (SC),Y (or back again)
+\STA LIL6+2
 
- NOP:NOP:NOP:NOP:NOP:NOP
+                        \ --- And replaced by: -------------------------------->
 
-\ LDA LIL5+2             \ Flip bit 6 of LIL2+2 to change the EOR (SC),Y in LIL5
- EOR #%01000000         \ to an ORA (SC),Y (or back again)
-\ STA LIL5+2
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
 
- NOP:NOP:NOP:NOP:NOP:NOP
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
 
-\ LDA LIL6+2             \ Flip bit 6 of LIL2+2 to change the EOR (SC),Y in LIL6
- EOR #%01000000         \ to an ORA (SC),Y (or back again)
-\ STA LIL6+2
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
 
- NOP:NOP:NOP:NOP:NOP:NOP
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
 .HA1
 
@@ -10681,20 +11325,37 @@ LOAD_C% = LOAD% +P% - CODE%
  STA de                 \ Clear de, the flag that appends " DESTROYED" to the
                         \ end of the next text token, so that it doesn't
 
- LDX #&60               \ Set X to the screen memory page for the top row of the
-                        \ screen (as screen memory starts at &6000)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDX #&7C               \ Set X to the screen memory page for the top row of the
+\                       \ screen (as screen memory starts at &7C00)
+\
+\.BOL1
+\
+\JSR ZES1               \ Call ZES1 to zero-fill the page in X, which clears
+\                       \ that character row on the screen
+\
+\INX                    \ Increment X to point to the next page, i.e. the next
+\                       \ character row
+\
+\CPX #&78               \ Loop back to BOL1 until we have cleared page &7700,
+\BNE BOL1               \ the last character row in the space view part of the
+\                       \ screen (the top part)
+
+                        \ --- And replaced by: -------------------------------->
+
+ JSR ClearMode7Screen
+
+ LDA QQ11               \ Only set the screen to graphics for the space view
+ CMP #2
+ BCS BOL1
+
+ LDA #144+7             \ Set all screen rows to white graphics
+ JSR SetMode7Graphics
 
 .BOL1
 
- JSR ZES1               \ Call ZES1 to zero-fill the page in X, which clears
-                        \ that character row on the screen
-
- INX                    \ Increment X to point to the next page, i.e. the next
-                        \ character row
-
- CPX #&78               \ Loop back to BOL1 until we have cleared page &7700,
- BNE BOL1               \ the last character row in the space view part of the
-                        \ screen (the top part)
+                        \ --- End of replacement ------------------------------>
 
  LDY #1                 \ Move the text cursor to row 1
  STY YC
@@ -10902,10 +11563,17 @@ LOAD_C% = LOAD% +P% - CODE%
 
 .EE2
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA (SC),Y             \ Store A in the Y-th byte after the address pointed to
                         \ by SC
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  DEY                    \ Decrement Y
 
@@ -11014,11 +11682,22 @@ LOAD_C% = LOAD% +P% - CODE%
                         \ on the colour we want to draw (i.e. A is acting as a
                         \ mask on the colour byte)
 
- EOR (SC),Y             \ Draw the pixel on-screen using EOR logic, so we can
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\EOR (SC),Y             \ Draw the pixel on-screen using EOR logic, so we can
 \STA (SC),Y             \ remove it later without ruining the background that's
                         \ already on-screen
 
- NOP:NOP
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
+
 
  LDA CTWOS+1,X          \ Fetch a mode 5 1-pixel byte with the pixel position
                         \ at X+1, so we can draw the right pixel of the dash
@@ -11045,11 +11724,20 @@ LOAD_C% = LOAD% +P% - CODE%
 
  AND COL                \ Apply the colour mask to the pixel byte, as above
 
- EOR (SC),Y             \ Draw the dash's right pixel according to the mask in
-\STA (SC),Y             \ A, with the colour in COL, using EOR logic, just as
-                        \ above
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- NOP:NOP
+\EOR (SC),Y             \ Draw the dash's right pixel according to the mask in
+\STA (SC),Y             \ A, with the colour in COL, using EOR logic, just as
+\                       \ above
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  RTS                    \ Return from the subroutine
 
@@ -17338,11 +18026,18 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .MBL1
 
-\STA (SC),Y             \ Draw the 3-pixel row, and as we do not use EOR logic,
-                        \ this will overwrite anything that is already there
-                        \ (so drawing a black missile will delete what's there)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- NOP:NOP
+\STA (SC),Y             \ Draw the 3-pixel row, and as we do not use EOR logic,
+\                       \ this will overwrite anything that is already there
+\                       \ (so drawing a black missile will delete what's there)
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  DEY                    \ Decrement the counter for the next row
 
@@ -19608,9 +20303,14 @@ LOAD_F% = LOAD% + P% - CODE%
 
  JSR BRKBK              \ Call BRKBK to set BRKV to point to the BRBR routine
 
- JSR clear_screen
- LDA #144+7             \\ Set all screen rows to white graphics
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR ClearMode7Screen
+
+ LDA #144+7             \ Set all screen rows to white graphics
  JSR SetMode7Graphics
+
+                        \ --- End of added code ------------------------------->
 
  LDX #(CATF-COMC)       \ We start by zeroing all the configuration variables
                         \ between COMC and CATF, to set them to their default
@@ -31950,29 +32650,22 @@ ENDMACRO
  FACE        0,        0,     -160,         31    \ Face 8
  FACE        0,      -27,        0,         31    \ Face 9
 
-MODE7_VRAM_START = &7C00
-PLOT_PIXEL_RANGE_X = 2*40 - 2   ; -2 to compensate for 1st char being graphics control code
-PLOT_PIXEL_RANGE_Y = 3*25
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
-.mode7_line_start
+\SKIP 171               \ These bytes appear to be unused
 
-.clear_screen
-{
-    LDA #0
-	LDX #0
-	.clearloop
-	STA MODE7_VRAM_START,X		; 5
-	STA MODE7_VRAM_START+&100,X		; 5
-	STA MODE7_VRAM_START+&200,X		; 5
-\	STA MODE7_VRAM_START+&300,X		; 5
-	INX				; 2
-	BNE clearloop	; 2
-	RTS
-	\\ clear cycles = (4*5+2+3)*256 = 6400 = 3.2 ms
-}
+                        \ --- End of removed code ----------------------------->
 
-ALIGN 256
-\ 3x75 byte tables = 225 bytes
+\ ******************************************************************************
+\
+\       Name: Mode 7 plotting workspace
+\       Type: Workspace
+\   Category: Teletext Elite
+\    Summary: Mode 7 plotting variables and tables
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
 
 .plot_pixel_ytable_lo
 
@@ -32000,10 +32693,6 @@ FOR n, 0, PLOT_PIXEL_RANGE_Y-1
  ENDIF 
 NEXT
 
-ALIGN 256
-; x offset lookup tables 
-; 3x78 bytes = 234 bytes
-
 .plot_pixel_xtable
 
 FOR i, 0, PLOT_PIXEL_RANGE_X-1
@@ -32021,51 +32710,11 @@ FOR n, 0, PLOT_PIXEL_RANGE_X-1
  ENDIF 
 NEXT
 
-; PLOT_PIXEL
-; Draws unclipped pixel where X is Y coord and Y is X coord (for line drawing routine)
-; define MODE7 plot pixel function for line drawing
-; X contains X coord (0-77)
-; Y contains Y coord (0-74)
-; X and Y are preserved
+.plot_row_address
 
-MACRO PLOT_PIXEL
-
- CLC
- LDA plot_pixel_xtable,X  ;[4] get chr offset on row (Xcoord / 2)
- ADC plot_pixel_ytable_lo,Y ;[4] C may be set after this addition.
- STA SC      ;[3]
- LDA plot_pixel_ytable_hi,Y ;[4] C will be clear after this addition
- ADC #HI(MODE7_VRAM_START)   ;[3] for double buffering - add the base screen address
- STA SCH      ;[3]
-
- LDA plot_pixel_ytable_chr,Y ;[4] get 2-pixel wide teletext glyph for Y coord
- AND plot_pixel_xtable_chr,X ;[4] apply odd/even X coord mask
-
- \ A contains intersection of horizontal and vertical texels within character block for this pixel:
- \ 33, 34
- \ 36, 40
- \ 48, 63
-
- \ORA (plot_lo),Y     ;[5]  
- EOR (SC),Y : ORA #%00100000
-
- STA (SC),Y     ;[5]
-
-ENDMACRO
-
-MACRO PLOT_PIXEL_CLIPPED
-{
- CPX #PLOT_PIXEL_RANGE_X
- BCS clipped
- CPY #PLOT_PIXEL_RANGE_Y
- BCS clipped
-
- PLOT_PIXEL
-
-.clipped
-}
-ENDMACRO
-
+FOR n, 0, 25
+ EQUW &7C00 + (n*&28)   \ Screen address of the start of row n in mode 7
+NEXT
 
 .rtw_startx
 
@@ -32099,8 +32748,50 @@ ENDMACRO
 
  SKIP 1
 
+                        \ --- End of added code ------------------------------->
 
-\ Fill mode 7 with graphics characters
+\ ******************************************************************************
+\
+\       Name: ClearMode7Screen
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Clear the mode 7 screen
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.ClearMode7Screen
+
+ LDA #0
+ LDX #0
+
+.clrs1
+
+ STA MODE7_VRAM_START,X
+ STA MODE7_VRAM_START+&100,X
+ STA MODE7_VRAM_START+&200,X
+ STA MODE7_VRAM_START+&300,X
+
+ INX
+
+ BNE clrs1
+
+ RTS
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: SetMode7Graphics
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Insert a graphics control character on each row
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
 .SetMode7Graphics
 
  FOR n, 0, 24
@@ -32109,29 +32800,70 @@ ENDMACRO
 
  RTS
 
-\ Plot line from lastX,lastY to X,Y
-.draw_to 
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: DrawTo
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Plot a mode 7 line from the graphics cursor to this one
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.DrawTo
+
  LDA rtw_startx
  STA rtw_endx
  LDA rtw_starty
  STA rtw_endy
  STX rtw_startx
  STY rtw_starty
- JSR draw_line
+ JSR DrawMode7Line
+
  RTS
 
-\ Move plot cursor from lastX,lastY to X,Y
-.move_to
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: MoveTo
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Set the position of the graphics cursor
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.MoveTo
+
  LDA rtw_startx
  STA rtw_endx
  LDA rtw_starty
  STA rtw_endy
  STX rtw_startx
  STY rtw_starty
+
  RTS
 
-.draw_line
-{
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: DrawMode7Line
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Draw a mode 7 line
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.DrawMode7Line
+
  ; calc dx = ABS(startx - endx)
  SEC
  LDA rtw_startx
@@ -32293,11 +33025,9 @@ ENDMACRO
 
  NOP     ; self-modified to INY (goingdown) or DEY (goingup)
  JMP shallowlineloop
-}
 
-.end
+                        \ --- End of added code ------------------------------->
 
- ORG &6000
 \ ******************************************************************************
 \
 \ Save SHIPS.bin

@@ -41,18 +41,35 @@ Q% = _REMOVE_CHECKSUMS  \ Set Q% to TRUE to max out the default commander, FALSE
                         \ for the standard default commander (this is set to
                         \ TRUE if checksums are disabled, just for convenience)
 
-\N% = 67                 \ N% is set to the number of bytes in the VDU table, so
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\N% = 67                \ N% is set to the number of bytes in the VDU table, so
+\                       \ we can loop through them below
+
+                        \ --- And replaced by: -------------------------------->
+
+ N% = 12                \ N% is set to the number of bytes in the VDU table, so
                         \ we can loop through them below
 
- N% = 12
+                        \ --- End of replacement ------------------------------>
 
 VSCAN = 57              \ Defines the split position in the split-screen mode
 
 POW = 15                \ Pulse laser power
 
-VEC = &7FFE             \ VEC is where we store the original value of the IRQ1
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\VEC = &7FFE            \ VEC is where we store the original value of the IRQ1
+\                       \ vector, matching the address in the elite-missile.asm
+\                       \ source
+
+                        \ --- And replaced by: -------------------------------->
+
+VEC = &7BFE             \ VEC is where we store the original value of the IRQ1
                         \ vector, matching the address in the elite-missile.asm
                         \ source
+
+                        \ --- End of replacement ------------------------------>
 
 BRKV = &0202            \ The break vector that we intercept to enable us to
                         \ handle and display system errors
@@ -209,55 +226,60 @@ ORG CODE%
 
 .B%
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \EQUB 22, 4             \ Switch to screen mode 4
-
- EQUB 22, 7             \ Switch to screen mode 7
-
+\
 \EQUB 28                \ Define a text window as follows:
 \EQUB 2, 17, 15, 16     \
-                        \   * Left = 2
-                        \   * Right = 15
-                        \   * Top = 16
-                        \   * Bottom = 17
-                        \
-                        \ i.e. 1 row high, 13 columns wide at (2, 16)
-
+\                       \   * Left = 2
+\                       \   * Right = 15
+\                       \   * Top = 16
+\                       \   * Bottom = 17
+\                       \
+\                       \ i.e. 1 row high, 13 columns wide at (2, 16)\
 \EQUB 23, 0, 6, 31      \ Set 6845 register R6 = 31
 \EQUB 0, 0, 0           \
 \EQUB 0, 0, 0           \ This is the "vertical displayed" register, and sets
-                        \ the number of displayed character rows to 31. For
-                        \ comparison, this value is 32 for standard modes 4 and
-                        \ 5, but we claw back the last row for storing code just
-                        \ above the end of screen memory
-
+\                       \ the number of displayed character rows to 31. For
+\                       \ comparison, this value is 32 for standard modes 4 and
+\                       \ 5, but we claw back the last row for storing code just
+\                       \ above the end of screen memory
+\
 \EQUB 23, 0, 12, &0C    \ Set 6845 register R12 = &0C and R13 = &00
 \EQUB 0, 0, 0           \
 \EQUB 0, 0, 0           \ This sets 6845 registers (R12 R13) = &0C00 to point
 \EQUB 23, 0, 13, &00    \ to the start of screen memory in terms of character
 \EQUB 0, 0, 0           \ rows. There are 8 pixel lines in each character row,
 \EQUB 0, 0, 0           \ so to get the actual address of the start of screen
-                        \ memory, we multiply by 8:
-                        \
-                        \   &0C00 * 8 = &6000
-                        \
-                        \ So this sets the start of screen memory to &6000
-
+\                       \ memory, we multiply by 8:
+\                       \
+\                       \   &0C00 * 8 = &6000
+\                       \
+\                       \ So this sets the start of screen memory to &6000
+\
 \EQUB 23, 0, 1, 32      \ Set 6845 register R1 = 32
 \EQUB 0, 0, 0           \
 \EQUB 0, 0, 0           \ This is the "horizontal displayed" register, which
-                        \ defines the number of character blocks per horizontal
-                        \ character row. For comparison, this value is 40 for
-                        \ modes 4 and 5, but our custom screen is not as wide at
-                        \ only 32 character blocks across
-
+\                       \ defines the number of character blocks per horizontal
+\                       \ character row. For comparison, this value is 40 for
+\                       \ modes 4 and 5, but our custom screen is not as wide at
+\                       \ only 32 character blocks across
+\
 \EQUB 23, 0, 2, 45      \ Set 6845 register R2 = 45
 \EQUB 0, 0, 0           \
 \EQUB 0, 0, 0           \ This is the "horizontal sync position" register, which
-                        \ defines the position of the horizontal sync pulse on
-                        \ the horizontal line in terms of character widths from
-                        \ the left-hand side of the screen. For comparison this
-                        \ is 49 for modes 4 and 5, but needs to be adjusted for
-                        \ our custom screen's width
+\                       \ defines the position of the horizontal sync pulse on
+\                       \ the horizontal line in terms of character widths from
+\                       \ the left-hand side of the screen. For comparison this
+\                       \ is 49 for modes 4 and 5, but needs to be adjusted for
+\                       \ our custom screen's width
+
+                        \ --- And replaced by: -------------------------------->
+
+ EQUB 22, 7             \ Switch to screen mode 7
+
+                        \ --- End of replacement ------------------------------>
 
  EQUB 23, 0, 10, 32     \ Set 6845 register R10 = 32
  EQUB 0, 0, 0           \
@@ -265,7 +287,11 @@ ORG CODE%
                         \ cursor start line at 0, effectively disabling the
                         \ cursor
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
  SKIP 55
+
+                        \ --- End of added code ------------------------------->
 
 \ ******************************************************************************
 \
@@ -368,8 +394,15 @@ ENDMACRO
  CPY #N%                \ Loop back for the next byte until we have done them
  BNE loop1              \ all (the number of bytes was set in N% above)
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \ JSR PLL1               \ Call PLL1 to draw Saturn
-NOP:NOP:NOP
+
+                        \ --- And replaced by: -------------------------------->
+
+ JSR OSBmod             \ Call the protection code that's buried within PLL1
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #16                \ Call OSBYTE with A = 16 and X = 3 to set the ADC to
  LDX #3                 \ sample 3 channels from the joystick/Bitstik
@@ -437,19 +470,39 @@ NOP:NOP:NOP
  JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
                         \ TVT1code to &1100-&11FF
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #&00               \ Set the following:
+\STA ZP                 \
+\LDA #&78               \   ZP(1 0) = &7800
+\STA ZP+1               \   P(1 0) = DIALS
+\LDA #LO(DIALS)         \   X = 8
+\STA P
+\LDA #HI(DIALS)
+\STA P+1
+\LDX #8
+\
+\JSR MVBL               \ Call MVBL to move and decrypt 8 pages of memory from
+\                       \ SHIP_MISSILE to &7B00-&7BFF
+
+                        \ --- And replaced by: -------------------------------->
+
  LDA #&00               \ Set the following:
  STA ZP                 \
- LDA #&78               \   ZP(1 0) = &7800
- STA ZP+1               \   P(1 0) = DIALS
- LDA #LO(DIALS)         \   X = 8
+ LDA #&7B               \   ZP(1 0) = &7800
+ STA ZP+1               \   P(1 0) = SHIP_MISSILE
+ LDA #LO(SHIP_MISSILE)  \   X = 1
  STA P
- LDA #HI(DIALS)
+ LDA #HI(SHIP_MISSILE)
  STA P+1
- LDX #8
 
- JSR MVBL               \ Call MVBL to move and decrypt 8 pages of memory from
-                        \ DIALS to &7800-&7FFF
-\ NOP:NOP:NOP
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+
+ JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
+                        \ SHIP_MISSILE to &7B00-&7BFF
+
+                        \ --- End of replacement ------------------------------>
 
  SEI                    \ Disable interrupts while we set up our interrupt
                         \ handler to support the split-screen mode
@@ -478,7 +531,6 @@ NOP:NOP:NOP
  STA IRQ1V              \ interrupt handler
  LDA #HI(IRQ1)
  STA IRQ1V+1
-\ NOP:NOP:NOP:NOP:NOP:NOP
 
  LDA #VSCAN             \ Set 6522 System VIA T1C-L timer 1 high-order counter
  STA VIA+&45            \ (SHEILA &45) to VSCAN (57) to start the T1 counter
@@ -495,9 +547,18 @@ NOP:NOP:NOP
  LDA #HI(ASOFT)
  STA P+1
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
-                        \ ASOFT to &6100-&61FF
- NOP:NOP:NOP
+\                       \ ASOFT to &6100-&61FF
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #&63               \ Set the following:
  STA ZP+1               \
@@ -506,9 +567,18 @@ NOP:NOP:NOP
  LDA #HI(ELITE)
  STA P+1
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
-                        \ ELITE to &6300-&63FF
- NOP:NOP:NOP
+\                       \ ELITE to &6300-&63FF
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #&76               \ Set the following:
  STA ZP+1               \
@@ -517,9 +587,18 @@ NOP:NOP:NOP
  LDA #HI(CpASOFT)
  STA P+1
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
-                        \ CpASOFT to &7600-&76FF
- NOP:NOP:NOP
+\                       \ CpASOFT to &7600-&76FF
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #&00               \ Set the following:
  STA ZP                 \
@@ -675,8 +754,6 @@ ORG &0B00
  STA WRCHV              \ code's S% workspace, which contains JMP CHPR
  LDA #HI(S%+6)
  STA WRCHV+1
-
-\ NOP:NOP:NOP:NOP:NOP:NOP
 
  SEC                    \ Set the C flag so the checksum we calculate in A
                         \ starts with an initial value of 18 (17 plus carry)
@@ -1891,17 +1968,41 @@ ORG &1100
                         \ to colour when we do a hyperspace jump, and is
                         \ triggered by setting HFX to 1 in routine LL164
 
- LDA #%00001000         \ Set the Video ULA control register (SHEILA &20) to
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #%00001000         \ Set the Video ULA control register (SHEILA &20) to
 \STA VIA+&20            \ %00001000, which is the same as switching to mode 4
-                        \ (i.e. the top part of the screen) but with no cursor
- NOP:NOP:NOP
+\                       \ (i.e. the top part of the screen) but with no cursor
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
 .VNT3
 
- LDA TVT1+16,Y          \ Copy the Y-th palette byte from TVT1+16 to SHEILA &21
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA TVT1+16,Y          \ Copy the Y-th palette byte from TVT1+16 to SHEILA &21
 \STA VIA+&21            \ to map logical to actual colours for the bottom part
-                        \ of the screen (i.e. the dashboard)
- NOP:NOP:NOP
+\                       \ of the screen (i.e. the dashboard)
+
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  DEY                    \ Decrement the palette byte counter
 
@@ -1951,20 +2052,41 @@ ORG &1100
 
  ASL A                  \ Double the value in A to 4
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
 \STA VIA+&20            \ Set the Video ULA control register (SHEILA &20) to
-                        \ %00000100, which is the same as switching to mode 5,
-                        \ (i.e. the bottom part of the screen) but with no
-                        \ cursor
- NOP:NOP:NOP
+\                       \ %00000100, which is the same as switching to mode 5,
+\                       \ (i.e. the bottom part of the screen) but with no
+\                       \ cursor
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  LDA ESCP               \ If an escape pod is fitted, jump to VNT1 to set the
  BNE VNT1               \ mode 5 palette differently (so the dashboard is a
                         \ different colour if we have an escape pod)
 
- LDA TVT1,Y             \ Copy the Y-th palette byte from TVT1 to SHEILA &21
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA TVT1,Y             \ Copy the Y-th palette byte from TVT1 to SHEILA &21
 \STA VIA+&21            \ to map logical to actual colours for the bottom part
-                        \ of the screen (i.e. the dashboard)
- NOP:NOP:NOP
+\                       \ of the screen (i.e. the dashboard)
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  DEY                    \ Decrement the palette byte counter
 
@@ -1985,10 +2107,22 @@ ORG &1100
 
  LDY #7                 \ Set Y as a counter for 8 bytes
 
- LDA TVT1+8,Y           \ Copy the Y-th palette byte from TVT1+8 to SHEILA &21
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA TVT1+8,Y           \ Copy the Y-th palette byte from TVT1+8 to SHEILA &21
 \STA VIA+&21            \ to map logical to actual colours for the bottom part
-                        \ of the screen (i.e. the dashboard)
- NOP:NOP:NOP
+\                       \ of the screen (i.e. the dashboard)
+
+                        \ --- And replaced by: -------------------------------->
+
+ NOP                    \ Pad the code out to the same length as in the original
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
  DEY                    \ Decrement the palette byte counter
 
