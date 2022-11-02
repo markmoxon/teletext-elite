@@ -4160,10 +4160,18 @@ NEXT
 
 .NLIN4
 
- LDA #19                \ Jump to NLIN2 to draw a horizontal line at pixel row
- BNE NLIN2              \ 19, returning from the subroutine with using a tail
-                        \ call (this BNE is effectively a JMP as A will never
-                        \ be zero)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #19                \ Jump to NLIN2 to draw a horizontal line at pixel row
+\BNE NLIN2              \ 19, returning from the subroutine with using a tail
+\                       \ call (this BNE is effectively a JMP as A will never
+\                       \ be zero)
+
+                        \ --- And replaced by: -------------------------------->
+
+ RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -4217,9 +4225,17 @@ NEXT
  LDX #254               \ Set X2 = 254, so (X2, Y2) = (254, A)
  STX X2
 
- BNE HLOIN              \ Call HLOIN to draw a horizontal line from (2, A) to
-                        \ (254, A) and return from the subroutine (this BNE is
-                        \ effectively a JMP as A will never be zero)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\BNE HLOIN              \ Call HLOIN to draw a horizontal line from (2, A) to
+\                       \ (254, A) and return from the subroutine (this BNE is
+\                       \ effectively a JMP as A will never be zero)
+
+                        \ --- And replaced by: -------------------------------->
+
+ RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -4301,11 +4317,13 @@ NEXT
 
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDA Y1
- STA Y2
- JSR LOIN
+                        \ The whole HLOIN routine has been removed
 
                         \ --- And replaced by: -------------------------------->
+
+ LDA Y1                 \ Draw a line from from (X1, Y1) to (X2, Y1)
+ STA Y2
+ JSR LOIN
 
                         \ --- End of replacement ------------------------------>
 
@@ -31958,9 +31976,17 @@ LOAD_H% = LOAD% + P% - CODE%
  DEX                    \ Set X2 = 255
  STX X2
 
- JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1), so
-                        \ that's (0, 0) to (255, 0), along the very top of the
-                        \ screen
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+
+\JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1), so
+\                       \ that's (0, 0) to (255, 0), along the very top of the
+\                       \ screen
+
+                        \ --- And replaced by: -------------------------------->
+
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #2                 \ Set X1 = X2 = 2
  STA X1
@@ -32001,8 +32027,16 @@ LOAD_H% = LOAD% + P% - CODE%
  DEC X1                 \ Decrement X1 and X2
  DEC X2
 
- JMP LOIN               \ Draw a line from (X1, Y1) to (X2, Y2), and return from
-                        \ the subroutine using a tail call
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\JMP LOIN               \ Draw a line from (X1, Y1) to (X2, Y2), and return from
+\                       \ the subroutine using a tail call
+
+                        \ --- And replaced by: -------------------------------->
+
+ RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
