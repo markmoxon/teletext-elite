@@ -39,6 +39,8 @@ GUARD &7B00             \ Guard against assembling over the missile ship data,
                         \ which we have moved to &7B00, into the page before
                         \ mode 7 screen memory
 
+INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
+
                         \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
@@ -160,7 +162,6 @@ SHIP_MISSILE = &7B00    \ The address of the missile ship blueprint, as set in
 
                         \ --- End of replacement ------------------------------>
 
-
 VIA = &FE00             \ Memory-mapped space for accessing internal hardware,
                         \ such as the video ULA, 6845 CRTC and 6522 VIAs (also
                         \ known as SHEILA)
@@ -170,17 +171,6 @@ OSWORD = &FFF1          \ The address for the OSWORD routine
 OSFILE = &FFDD          \ The address for the OSFILE routine
 OSWRCH = &FFEE          \ The address for the OSWRCH routine
 OSCLI = &FFF7           \ The address for the OSCLI routine
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-MODE7_VRAM_START = &7C00
-
-PLOT_PIXEL_RANGE_X = 2*40 - 2   \ -2 to compensate for 1st char being graphics
-                                \  control code
-
-PLOT_PIXEL_RANGE_Y = 3*25
-
-                        \ --- End of added code ------------------------------->
 
 \ ******************************************************************************
 \
@@ -4404,32 +4394,35 @@ LOAD_B% = LOAD% + P% - CODE%
  STY YSAV               \ Store Y into YSAV, so we can preserve it across the
                         \ call to this subroutine
 
+ LDA #0                 \ Set SWAP to 0 as we don't need to swap coordinates
+ STA SWAP
+
  LDA X1
- LSR A
- LSR A
- BCC P%+4
- ADC #0
+
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+
  TAX
+
  LDA Y1
- LSR A
- LSR A
- BCC P%+4
- ADC #0
+
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+
  TAY
+
  JSR MoveTo
 
  LDA X2
- LSR A
- LSR A
- BCC P%+4
- ADC #0
+
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+
  TAX
+
  LDA Y2
- LSR A
- LSR A
- BCC P%+4
- ADC #0
+
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+
  TAY
+
  JSR DrawTo
 
  LDY YSAV               \ Restore Y from YSAV, so that it's preserved
@@ -4628,9 +4621,16 @@ LOAD_B% = LOAD% + P% - CODE%
  STY YSAV               \ Store Y into YSAV, so we can preserve it across the
                         \ call to this subroutine
 
+ LDX X1                 \ Set X = X1
+
+ CPX X2                 \ If X1 = X2 then the start and end points are the same,
+ BEQ HL6                \ so return from the subroutine (as HL6 contains an RTS)
+
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
-                        \ The whole HLOIN routine has been removed
+ LDA Y1
+ STA Y2
+ JSR LOIN
 
                         \ --- And replaced by: -------------------------------->
 
@@ -4854,93 +4854,6 @@ LOAD_B% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
 \
-\       Name: PLOT_PIXEL
-\       Type: Macro
-\   Category: Teletext Elite
-\    Summary: Draw a mode 7 texel
-\
-\ ------------------------------------------------------------------------------
-\
-\ Arguments:
-\
-\   X                   The x-coordinate (0 to 77)
-\
-\   Y                   The y-coordinate (0 to 74)
-\
-\ Returns:
-\
-\   X                   X is preserved
-\
-\   Y                   Y is preserved
-\
-\ ******************************************************************************
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-MACRO PLOT_PIXEL
-
- CLC                    \ Set SC(1 0) to screen address of character block
- LDA plot_pixel_xtable,X
- ADC plot_pixel_ytable_lo,Y
- STA SC
- LDA plot_pixel_ytable_hi,Y
- ADC #HI(MODE7_VRAM_START)
- STA SCH
-
- LDA plot_pixel_ytable_chr,Y    \ Get 2-pixel wide teletext glyph for y-coordinate
- AND plot_pixel_xtable_chr,X    \ Apply odd/even x-coordinate mask
-
- EOR (SC),Y             \ EOR the texel into the screen
- ORA #%00100000
- STA (SC),Y
-
-ENDMACRO
-
-                        \ --- End of added code ------------------------------->
-
-\ ******************************************************************************
-\
-\       Name: PLOT_PIXEL_CLIPPED
-\       Type: Macro
-\   Category: Teletext Elite
-\    Summary: Draw a mode 7 texel, clipped to the screen boundary
-\
-\ ------------------------------------------------------------------------------
-\
-\ Arguments:
-\
-\   X                   The x-coordinate (clipped to 0 to PLOT_PIXEL_RANGE_X)
-\
-\   Y                   The y-coordinate (clipped to 0 to PLOT_PIXEL_RANGE_Y
-\
-\ Returns:
-\
-\   X                   X is preserved
-\
-\   Y                   Y is preserved
-\
-\ ******************************************************************************
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-MACRO PLOT_PIXEL_CLIPPED
-
- CPX #PLOT_PIXEL_RANGE_X
- BCS clip1
-
- CPY #PLOT_PIXEL_RANGE_Y
- BCS clip1
-
- PLOT_PIXEL
-
-.clip1
-
-ENDMACRO
-
-                        \ --- End of added code ------------------------------->
-
-\ ******************************************************************************
-\
 \       Name: PIXEL
 \       Type: Subroutine
 \   Category: Drawing pixels
@@ -4981,20 +4894,17 @@ ENDMACRO
 
  STY T1                 \ Store Y in T1
 
- LSR A                  \ Set Y to the mode 7 y-coordinate by dividing the pixel
- LSR A                  \ y-coordinate by 4 and rounding up
- BCC P%+4
- ADC #0
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+
  TAY
 
- TXA                    \ Set X to the mode 7 x-coordinate by dividing the pixel
- LSR A                  \ x-coordinate by 4 and rounding up
- LSR A
- BCC P%+4
- ADC #0
+ TXA
+
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+
  TAX
 
- PLOT_PIXEL             \ Plot the pixel
+ PLOT_PIXEL_CLIPPED     \ Plot the pixel
 
 .PX13
 
@@ -6944,7 +6854,7 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
                         \ --- And replaced by: -------------------------------->
 
- LDA YC
+ LDA YC                 \ Fetch YC, the y-coordinate (row) of the text cursor
 
  ASL A                  \ Add the row address for YC (from the plot_row_address
  TAY                    \ table) to SC to give the screen address of the
@@ -7019,7 +6929,6 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
                         \ --- And replaced by: -------------------------------->
 
-
  ASL A                  \ Add the row address for YC (from the plot_row_address
  TAY                    \ table) to SC to give the screen address of the
  LDA plot_row_address,Y \ character
@@ -7047,7 +6956,6 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
  STA (SC), Y
 
                         \ --- End of replacement ------------------------------>
-
 
 .RRL1
 
@@ -11327,8 +11235,8 @@ LOAD_C% = LOAD% +P% - CODE%
 
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
-\LDX #&7C               \ Set X to the screen memory page for the top row of the
-\                       \ screen (as screen memory starts at &7C00)
+\LDX #&60               \ Set X to the screen memory page for the top row of the
+\                       \ screen (as screen memory starts at &6000)
 \
 \.BOL1
 \
@@ -11344,14 +11252,23 @@ LOAD_C% = LOAD% +P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- JSR ClearMode7Screen
+ JSR ClearMode7Screen   \ Clear the screen
 
- LDA QQ11               \ Only set the screen to graphics for the space view
- CMP #2
- BCS BOL1
+ LDA QQ11               \ If this is the space view, set the graphics screen
+ BEQ gfx1
 
- LDA #144+7             \ Set all screen rows to white graphics
- JSR SetMode7Graphics
+ CMP #6                 \ If this is the death screen, set the graphics screen
+ BEQ gfx1
+
+ AND #%11000000         \ If this is not a chart, skip the following
+ BEQ BOL1
+
+.gfx1
+
+                        \ If we get here then this is a space view, death screen
+                        \ or chart, so we want a graphics view
+
+ JSR SetMode7Graphics   \ Set all screen rows to white graphics
 
 .BOL1
 
@@ -11682,7 +11599,6 @@ LOAD_C% = LOAD% +P% - CODE%
                         \ on the colour we want to draw (i.e. A is acting as a
                         \ mask on the colour byte)
 
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
 \EOR (SC),Y             \ Draw the pixel on-screen using EOR logic, so we can
@@ -11697,7 +11613,6 @@ LOAD_C% = LOAD% +P% - CODE%
  NOP
 
                         \ --- End of replacement ------------------------------>
-
 
  LDA CTWOS+1,X          \ Fetch a mode 5 1-pixel byte with the pixel position
                         \ at X+1, so we can draw the right pixel of the dash
@@ -13985,9 +13900,21 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #%10000000         \ Set bit 7 of QQ17 to switch to Sentence Case
  STA QQ17
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR SetText            \ Set mode 7 text
+
+                        \ --- End of added code ------------------------------->
+
  JSR cpl                \ Call cpl to print out the system name for the seeds
                         \ in QQ15 (which now contains the seeds for the current
                         \ system)
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR SetGraphics        \ Set mode 7 graphics
+
+                        \ --- End of added code ------------------------------->
 
 .ee1
 
@@ -20580,6 +20507,8 @@ ENDIF
 
  LDA #1                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 1
+
+ JSR SetMode7Graphics   \ Set all screen rows to white graphics
 
  DEC QQ11               \ Decrement QQ11 to 0, so from here on we are using a
                         \ space view
@@ -32654,379 +32583,11 @@ ENDMACRO
 
 \SKIP 171               \ These bytes appear to be unused
 
-                        \ --- End of removed code ----------------------------->
+                        \ --- And replaced by: -------------------------------->
 
-\ ******************************************************************************
-\
-\       Name: Mode 7 plotting workspace
-\       Type: Workspace
-\   Category: Teletext Elite
-\    Summary: Mode 7 plotting variables and tables
-\
-\ ******************************************************************************
+INCLUDE "1-source-files/main-sources/elite-teletext-routines.asm"
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-.plot_pixel_ytable_lo
-
-FOR i, 0, PLOT_PIXEL_RANGE_Y-1
- y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
- EQUB LO(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
-NEXT
-
-.plot_pixel_ytable_hi
-
-FOR i, 0, PLOT_PIXEL_RANGE_Y-1
- y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
- EQUB HI(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
-NEXT
-
-.plot_pixel_ytable_chr
-
-FOR n, 0, PLOT_PIXEL_RANGE_Y-1
- IF (n MOD 3) == 0
-  EQUB 32+1+2           \ Top row mask
- ELIF (n MOD 3) == 1
-  EQUB 32+4+8           \ Middle row mask
- ELSE
-  EQUB 32+16+64         \ Bottom row mask
- ENDIF 
-NEXT
-
-.plot_pixel_xtable
-
-FOR i, 0, PLOT_PIXEL_RANGE_X-1
- y = i>>1
- EQUB LO(y)
-NEXT 
-
-.plot_pixel_xtable_chr
-
-FOR n, 0, PLOT_PIXEL_RANGE_X-1
- IF (n AND 1) == 0
-  EQUB 32+1+4+16        \ Left hand column mask (even pixels)
- ELSE
-  EQUB 32+2+8+64        \ Right hand column mask (odd pixels)
- ENDIF 
-NEXT
-
-.plot_row_address
-
-FOR n, 0, 25
- EQUW &7C00 + (n*&28)   \ Screen address of the start of row n in mode 7
-NEXT
-
-.rtw_startx
-
- SKIP 1
-
-.rtw_starty
-
- SKIP 1
-
-.rtw_endx
-
- SKIP 1
-
-.rtw_endy
-
- SKIP 1
-
-.rtw_dx
-
- SKIP 1
-
-.rtw_dy
-
- SKIP 1
-
-.rtw_accum
-
- SKIP 1
-
-.rtw_count
-
- SKIP 1
-
-                        \ --- End of added code ------------------------------->
-
-\ ******************************************************************************
-\
-\       Name: ClearMode7Screen
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Clear the mode 7 screen
-\
-\ ******************************************************************************
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-.ClearMode7Screen
-
- LDA #0
- LDX #0
-
-.clrs1
-
- STA MODE7_VRAM_START,X
- STA MODE7_VRAM_START+&100,X
- STA MODE7_VRAM_START+&200,X
- STA MODE7_VRAM_START+&300,X
-
- INX
-
- BNE clrs1
-
- RTS
-
-                        \ --- End of added code ------------------------------->
-
-\ ******************************************************************************
-\
-\       Name: SetMode7Graphics
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Insert a graphics control character on each row
-\
-\ ******************************************************************************
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-.SetMode7Graphics
-
- FOR n, 0, 24
-  STA MODE7_VRAM_START + n*40
- NEXT
-
- RTS
-
-                        \ --- End of added code ------------------------------->
-
-\ ******************************************************************************
-\
-\       Name: DrawTo
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Plot a mode 7 line from the graphics cursor to this one
-\
-\ ******************************************************************************
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-.DrawTo
-
- LDA rtw_startx
- STA rtw_endx
- LDA rtw_starty
- STA rtw_endy
- STX rtw_startx
- STY rtw_starty
- JSR DrawMode7Line
-
- RTS
-
-                        \ --- End of added code ------------------------------->
-
-\ ******************************************************************************
-\
-\       Name: MoveTo
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Set the position of the graphics cursor
-\
-\ ******************************************************************************
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-.MoveTo
-
- LDA rtw_startx
- STA rtw_endx
- LDA rtw_starty
- STA rtw_endy
- STX rtw_startx
- STY rtw_starty
-
- RTS
-
-                        \ --- End of added code ------------------------------->
-
-\ ******************************************************************************
-\
-\       Name: DrawMode7Line
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Draw a mode 7 line
-\
-\ ******************************************************************************
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
-.DrawMode7Line
-
- ; calc dx = ABS(startx - endx)
- SEC
- LDA rtw_startx
- TAX
- SBC rtw_endx
- BCS posdx
- EOR #255
- ADC #1
-
-.posdx
-
- STA rtw_dx
- 
- ; C=0 if dir of startx -> endx is positive, otherwise C=1
- PHP
- 
- ; calc dy = ABS(starty - endy)
- SEC
- LDA rtw_starty
- TAY
- SBC rtw_endy
- BCS posdy
- EOR #255
- ADC #1
-
-.posdy
-
- STA rtw_dy
- 
- ; C=0 if dir of starty -> endy is positive, otherwise C=1
- PHP
- 
- ; Coincident start and end points exit early
- ORA rtw_dx
- BNE nonzero
-
- ; safe exit for coincident points
- PLP
- PLP
- RTS
-
-.nonzero
- 
- ; determine which type of line it is
- LDA rtw_dy
- CMP rtw_dx
- BCC shallowline
-  
-.steepline
-
- ; self-modify code so that line progresses according to direction remembered earlier
- PLP     ; C=sign of dy
- LDA #&C8   ; INY (goingdown)
- BCC P%+4
- LDA #&88   ; DEY (goingup)
- STA goingupdown
- 
- PLP     ; C=sign of dx
- LDA #&E8   ; INX (goingright)
- BCC P%+4
- LDA #&CA   ; DEX (goingleft)
- STA goingleftright
-
- ; initialise accumulator for 'steep' line
- LDA rtw_dy
- STA rtw_count
- LSR A
-
-.steeplineloop
-
- STA rtw_accum
- 
- ; plot pixel
- PLOT_PIXEL_CLIPPED
-
- ; check if done
- DEC rtw_count
- BNE goingupdown
-
- .exitline
- RTS
- 
- ; move up to next line
-
-.goingupdown
-
- NOP     ; self-modified to INY (goingdown) or DEY (goingup)
- 
- ; check move to next pixel column
-
-.movetonextcolumn
-
- SEC
- LDA rtw_accum
- SBC rtw_dx
- BCS steeplineloop
- ADC rtw_dy
- 
- ; move left or right to next pixel column
-
-.goingleftright
-
- NOP     ; self-modifed to INX (goingright) or DEX (goingleft)
- JMP steeplineloop
- 
-.shallowline
-
- ; self-modify code so that line progresses according to direction remembered earlier
- PLP     ; C=sign of dy
- LDA #&C8   ; INY (goingdown)
- BCC P%+4
- LDA #&88   ; DEY (goingup)
- STA goingupdown2
- 
- PLP     ; C=sign of dx
- LDA #&E8   ; INX (goingright)
- BCC P%+4
- LDA #&CA   ; DEX (goingleft)
- STA goingleftright2
-
- ; initialise accumulator for 'steep' line
- LDA rtw_dx
- STA rtw_count
- LSR A
-
-.shallowlineloop
-
- STA rtw_accum
- 
- ; plot pixel in cached byte
- PLOT_PIXEL_CLIPPED
- 
- ; check if done
- DEC rtw_count
- BNE goingleftright2
-
- .exitline2
- RTS
- 
- ; move left or right to next pixel column
-
-.goingleftright2
-
- NOP     ; self-modifed to INX (goingright) or DEX (goingleft)
- 
- ; check whether we move to the next line
-
-.movetonextline
-
- SEC
- LDA rtw_accum
- SBC rtw_dy
- BCS shallowlineloop
- ADC rtw_dx
-
- ; move down or up to next line
-
-.goingupdown2
-
- NOP     ; self-modified to INY (goingdown) or DEY (goingup)
- JMP shallowlineloop
-
-                        \ --- End of added code ------------------------------->
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
