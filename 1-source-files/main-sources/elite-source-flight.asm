@@ -42,6 +42,8 @@ GUARD &7B00             \ Guard against assembling over the missile ship data,
                         \ which we have moved to &7B00, into the page before
                         \ mode 7 screen memory
 
+_DOCKED = FALSE         \ Set compilation flag for docked vs flight code
+
 INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- End of replacement ------------------------------>
@@ -25824,10 +25826,18 @@ ENDIF
 
  PHA                    \ Store the new message token we want to print
 
- LDA MCH                \ Set A to the token number of the message that is
- JSR mes9               \ currently on-screen, and call mes9 to print it (which
-                        \ will remove it from the screen, as printing is done
-                        \ using EOR logic)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA MCH                \ Set A to the token number of the message that is
+\JSR mes9               \ currently on-screen, and call mes9 to print it (which
+\                       \ will remove it from the screen, as printing is done
+\                       \ using EOR logic)
+
+                        \ --- And replaced by: -------------------------------->
+
+ JSR ClearMessage       \ Clear the in-flight message bar
+
+                        \ --- End of replacement ------------------------------>
 
  PLA                    \ Restore the new message token
 
@@ -25890,10 +25900,23 @@ ENDIF
  LDX #0                 \ Set QQ17 = 0 to switch to ALL CAPS
  STX QQ17
 
- LDY #9                 \ Move the text cursor to column 9, row 22, at the
- STY XC                 \ bottom middle of the screen, and set Y = 22
- LDY #22
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDY #9                 \ Move the text cursor to column 9, row 22, at the
+\STY XC                 \ bottom middle of the screen, and set Y = 22
+\LDY #22
+\STY YC
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDY #9                 \ Move the text cursor to column 9, row 17, at the
+ STY XC                 \ bottom middle of the screen
+ LDY #MESSAGE_ROW
  STY YC
+
+ LDY #22                \ Set Y = 22
+
+                        \ --- End of replacement ------------------------------>
 
  CPX DLY                \ If the message delay in DLY is not zero, jump up to
  BNE me1                \ me1 to erase the current message first (whose token
@@ -31947,6 +31970,8 @@ LOAD_H% = LOAD% + P% - CODE%
                         \ or chart, so we want a graphics view
 
  JSR SetMode7Graphics   \ Set all screen rows to white graphics
+
+ JSR StyleMessages      \ Style the messages row
 
 .BOL1
 

@@ -1,15 +1,17 @@
 MODE7_VRAM_START = &7C00
 
-TEXEL_LOW_X = 2         \ First texel x-coordinate we can draw texels in
+MODE7_LOW_X = 2         \ First sixel x-coordinate we can draw sixels in
 
-TEXEL_HIGH_X = 2*40 - 2 \ Last texel x-coordinate we can draw texels in + 1
+MODE7_HIGH_X = 2*40 - 2 \ Last sixel x-coordinate we can draw sixels in + 1
                         \ -2 to compensate for 1st char being graphics control
                         \ code
 
-TEXEL_LOW_Y = 3         \ First texel y-coordinate we can draw texels on (so do
+MODE7_LOW_Y = 3         \ First sixel y-coordinate we can draw sixels on (so do
                         \ not draw on the first character row)
 
-TEXEL_HIGH_Y = 3*25     \ Last texel y-coordinate we can draw texels on + 1
+MODE7_HIGH_Y = 3*25     \ Last sixel y-coordinate we can draw sixels on + 1
+
+MESSAGE_ROW = 17        \ Configure the row for the message bar
 
 \ ******************************************************************************
 \
@@ -22,21 +24,21 @@ TEXEL_HIGH_Y = 3*25     \ Last texel y-coordinate we can draw texels on + 1
 
 .plot_pixel_ytable_lo
 
-FOR i, 0, TEXEL_HIGH_Y-1
+FOR i, 0, MODE7_HIGH_Y-1
  y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
  EQUB LO(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
 .plot_pixel_ytable_hi
 
-FOR i, 0, TEXEL_HIGH_Y-1
+FOR i, 0, MODE7_HIGH_Y-1
  y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
  EQUB HI(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
 .plot_pixel_ytable_chr
 
-FOR n, 0, TEXEL_HIGH_Y-1
+FOR n, 0, MODE7_HIGH_Y-1
  IF (n MOD 3) == 0
   EQUB 32+1+2           \ Top row mask
  ELIF (n MOD 3) == 1
@@ -48,14 +50,14 @@ NEXT
 
 .plot_pixel_xtable
 
-FOR i, 0, TEXEL_HIGH_X-1
+FOR i, 0, MODE7_HIGH_X-1
  y = i>>1
  EQUB LO(y)
 NEXT 
 
 .plot_pixel_xtable_chr
 
-FOR n, 0, TEXEL_HIGH_X-1
+FOR n, 0, MODE7_HIGH_X-1
  IF (n AND 1) == 0
   EQUB 32+1+4+16        \ Left hand column mask (even pixels)
  ELSE
@@ -100,96 +102,6 @@ NEXT
 .rtw_count
 
  SKIP 1
-
-\ ******************************************************************************
-\
-\       Name: ClearMode7Screen
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Clear the mode 7 screen
-\
-\ ******************************************************************************
-
-.ClearMode7Screen
-
- LDA #0                 \ Set A = 0 so we can zero screen memory
-
- LDX #0                 \ Set a byte counter in X
-
-.clrs1
-
- STA MODE7_VRAM_START,X         \ Zero the X-th byte of each of the four pages
- STA MODE7_VRAM_START+&100,X    \ in a mode 7 screen
- STA MODE7_VRAM_START+&200,X
- STA MODE7_VRAM_START+&300,X
-
- INX                    \ Increment the byte counter
-
- BNE clrs1              \ Loop back until we have counted a whole page
-
-                        \ Fall into ClearOneLineTitle to style the title line
-
-\ ******************************************************************************
-\
-\       Name: ClearOneLineTitle
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Print the control codes for the first line of a two-line title
-\
-\ ******************************************************************************
-
-.ClearOneLineTitle
-
- LDA #132               \ Row 0: Yellow text on blue background
- STA MODE7_VRAM_START
- LDA #157
- STA MODE7_VRAM_START+1
- LDA #131
- STA MODE7_VRAM_START+2
-
- LDA #151               \ Row 1: White graphics
- STA MODE7_VRAM_START+&28
-
- RTS                    \ Return from the subroutine
-
-\ ******************************************************************************
-\
-\       Name: ClearTwoLineTitle
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Print the control codes for the second line of a two-line title
-\
-\ ******************************************************************************
-
-.ClearTwoLineTitle
-
- LDA #132               \ Row 0: Yellow text on blue background
- STA MODE7_VRAM_START+&28
- LDA #157
- STA MODE7_VRAM_START+&29
- LDA #131
- STA MODE7_VRAM_START+&2A
-
- RTS                    \ Return from the subroutine
-
-\ ******************************************************************************
-\
-\       Name: SetMode7Graphics
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Insert a graphics control character on rows 2 onwards
-\
-\ ******************************************************************************
-
-.SetMode7Graphics
-
- LDA #151               \ White graphics
-
- FOR n, 2, 24
-  STA MODE7_VRAM_START + n*40   \ Set row 2 onwards to white graphics
- NEXT
-
- RTS                    \ Return from the subroutine
 
 \ ******************************************************************************
 \
@@ -480,5 +392,151 @@ NEXT
  STA (SC),Y
 
  INC XC                 \ Move the text cursor to the right
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: ClearMode7Screen
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Clear the mode 7 screen
+\
+\ ******************************************************************************
+
+.ClearMode7Screen
+
+ LDA #0                 \ Set A = 0 so we can zero screen memory
+
+ LDX #0                 \ Set a byte counter in X
+
+.clrs1
+
+ STA MODE7_VRAM_START,X         \ Zero the X-th byte of each of the four pages
+ STA MODE7_VRAM_START+&100,X    \ in a mode 7 screen
+ STA MODE7_VRAM_START+&200,X
+ STA MODE7_VRAM_START+&300,X
+
+ INX                    \ Increment the byte counter
+
+ BNE clrs1              \ Loop back until we have counted a whole page
+
+                        \ Fall into StyleOneLineTitle to style the title line
+
+\ ******************************************************************************
+\
+\       Name: StyleOneLineTitle
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes for the first line of a two-line title
+\
+\ ******************************************************************************
+
+.StyleOneLineTitle
+
+ LDA #132               \ Row 0: Yellow text on blue background
+ STA MODE7_VRAM_START
+ LDA #157
+ STA MODE7_VRAM_START+1
+ LDA #131
+ STA MODE7_VRAM_START+2
+
+ LDA #151               \ Row 1: White graphics
+ STA MODE7_VRAM_START+(1*&28)
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: StyleTwoLineTitle
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes for the second line of a two-line title
+\
+\ ******************************************************************************
+
+.StyleTwoLineTitle
+
+ LDA #132               \ Row 1: Yellow text on blue background
+ STA MODE7_VRAM_START+(1*&28)
+ LDA #157
+ STA MODE7_VRAM_START+(1*&28)+1
+ LDA #131
+ STA MODE7_VRAM_START+(1*&28)+2
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: StyleMessages
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes for the in-flight messages line
+\
+\ ******************************************************************************
+
+.StyleMessages
+
+ LDA #132               \ Message row: Yellow text on blue background
+ STA MODE7_VRAM_START+(MESSAGE_ROW*&28)
+ LDA #157
+ STA MODE7_VRAM_START+(MESSAGE_ROW*&28)+1
+ LDA #131
+ STA MODE7_VRAM_START+(MESSAGE_ROW*&28)+2
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: ClearMessage
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Remove an in-flight message line from the messages bar
+\
+\ ******************************************************************************
+
+.ClearMessage
+
+ LDA #0                 \ Set A = 0 so we can zero screen memory
+
+ LDX #3                 \ Set a byte counter in X
+
+.mess1
+
+ STA MODE7_VRAM_START+(MESSAGE_ROW*&28),X    \ Zero the X-th byte of the messages row
+
+ INX                    \ Increment the byte counter
+
+ CMP #&28
+ BCC mess1              \ Loop back until we have counted a whole page
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: SetMode7Graphics
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Insert a graphics control character on rows 2 onwards
+\
+\ ******************************************************************************
+
+.SetMode7Graphics
+
+ LDA #151               \ White graphics
+
+IF _DOCKED
+
+ FOR n, 2, 20
+  STA MODE7_VRAM_START + n*40   \ Set rows 2 to 20 to white graphics
+ NEXT
+
+ELSE
+
+ FOR n, 2, 24
+  STA MODE7_VRAM_START + n*40   \ Set row 2 to 24 to white graphics
+ NEXT
+
+ENDIF
 
  RTS                    \ Return from the subroutine

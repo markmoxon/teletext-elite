@@ -4,7 +4,7 @@
 \       Name: PLOT_PIXEL
 \       Type: Macro
 \   Category: Teletext Elite
-\    Summary: Draw a mode 7 texel
+\    Summary: Draw a mode 7 sixel
 \
 \ ------------------------------------------------------------------------------
 \
@@ -35,7 +35,7 @@ MACRO PLOT_PIXEL
  LDA plot_pixel_ytable_chr,Y    \ Get 2-pixel wide teletext glyph for y-coordinate
  AND plot_pixel_xtable_chr,X    \ Apply odd/even x-coordinate mask
 
- EOR (SC),Y             \ EOR the texel into the screen
+ EOR (SC),Y             \ EOR the sixel into the screen
  ORA #%00100000
  STA (SC),Y
 
@@ -46,15 +46,15 @@ ENDMACRO
 \       Name: PLOT_PIXEL_CLIPPED
 \       Type: Macro
 \   Category: Teletext Elite
-\    Summary: Draw a mode 7 texel, clipped to the screen boundary
+\    Summary: Draw a mode 7 sixel, clipped to the screen boundary
 \
 \ ------------------------------------------------------------------------------
 \
 \ Arguments:
 \
-\   X                   The x-coordinate (clipped to 0 to TEXEL_HIGH_X)
+\   X                   The x-coordinate
 \
-\   Y                   The y-coordinate (clipped to 0 to TEXEL_HIGH_Y
+\   Y                   The y-coordinate
 \
 \ Returns:
 \
@@ -65,23 +65,36 @@ ENDMACRO
 \ ******************************************************************************
 
 MACRO PLOT_PIXEL_CLIPPED
+{
 
- CPX #TEXEL_LOW_X
+IF NOT(_DOCKED)
+
+ CPY #MESSAGE_ROW*3     \ In flight, do not draw on the message row
+ BEQ clip1
+ CPY #MESSAGE_ROW*3+1
+ BEQ clip1
+ CPY #MESSAGE_ROW*3+2
+ BEQ clip1
+
+ENDIF
+
+ CPX #MODE7_LOW_X
  BCC clip1
 
- CPY #TEXEL_LOW_Y
+ CPY #MODE7_LOW_Y
  BCC clip1
 
- CPX #TEXEL_HIGH_X
+ CPX #MODE7_HIGH_X
  BCS clip1
 
- CPY #TEXEL_HIGH_Y
+ CPY #MODE7_HIGH_Y
  BCS clip1
 
  PLOT_PIXEL
 
 .clip1
 
+}
 ENDMACRO
 
 \ ******************************************************************************
@@ -89,7 +102,7 @@ ENDMACRO
 \       Name: PLOT_SCALE_X
 \       Type: Macro
 \   Category: Teletext Elite
-\    Summary: Scale a pixel x-coordinate to a texel coordinate
+\    Summary: Scale a pixel x-coordinate to a sixel coordinate
 \
 \ ------------------------------------------------------------------------------
 \
@@ -99,7 +112,7 @@ ENDMACRO
 \
 \ Returns:
 \
-\   A                   The texel x-coordinate
+\   A                   The sixel x-coordinate
 \
 \ ******************************************************************************
 
@@ -117,7 +130,7 @@ ENDMACRO
 \       Name: PLOT_SCALE_Y
 \       Type: Macro
 \   Category: Teletext Elite
-\    Summary: Scale a pixel y-coordinate to a texel coordinate, moving it down
+\    Summary: Scale a pixel y-coordinate to a sixel coordinate, moving it down
 \             a row to skip the border row along the top of the screen
 \
 \ ------------------------------------------------------------------------------
@@ -128,7 +141,7 @@ ENDMACRO
 \
 \ Returns:
 \
-\   A                   The texel y-coordinate
+\   A                   The sixel y-coordinate
 \
 \ ******************************************************************************
 
@@ -139,6 +152,6 @@ MACRO PLOT_SCALE_Y
  BCC P%+4
  ADC #0
 
-\ ADC #3
+ ADC #3
 
 ENDMACRO

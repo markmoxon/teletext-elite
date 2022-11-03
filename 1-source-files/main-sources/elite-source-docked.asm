@@ -39,6 +39,8 @@ GUARD &7B00             \ Guard against assembling over the missile ship data,
                         \ which we have moved to &7B00, into the page before
                         \ mode 7 screen memory
 
+_DOCKED = TRUE          \ Set compilation flag for docked vs flight code
+
 INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- End of replacement ------------------------------>
@@ -12916,8 +12918,8 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
- JSR ClearTwoLineTitle  \ Clear the second line of the title, so both headers
-                        \ rows of the prices table are styled
+ JSR StyleTwoLineTitle  \ Style the second line of the title, so both headers
+                        \ rows of the prices table are in title style
 
                         \ --- End of added code ------------------------------->
 
