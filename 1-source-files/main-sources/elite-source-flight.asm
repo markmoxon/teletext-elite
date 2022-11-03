@@ -14667,9 +14667,21 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #%10000000         \ Set bit 7 of QQ17 to switch to Sentence Case
  STA QQ17
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR SetTextYellow      \ Set mode 7 yellow text
+
+                        \ --- End of added code ------------------------------->
+
  JSR cpl                \ Call cpl to print out the system name for the seeds
                         \ in QQ15 (which now contains the seeds for the current
                         \ system)
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR SetGraphicsWhite   \ Set mode 7 white graphics
+
+                        \ --- End of added code ------------------------------->
 
 .ee1
 
@@ -31939,8 +31951,17 @@ LOAD_H% = LOAD% + P% - CODE%
 
 .BOX
 
- LDY #1                 \ Move the text cursor to row 1
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDY #1                 \ Move the text cursor to row 1
+\STY YC
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDY #0                 \ Move the text cursor to row 0
  STY YC
+
+                        \ --- End of replacement ------------------------------>
 
  LDA QQ11               \ If this is not a space view, jump to tt66 to skip
  BNE tt66               \ displaying the view name

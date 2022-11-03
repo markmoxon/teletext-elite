@@ -1,9 +1,15 @@
 MODE7_VRAM_START = &7C00
 
-PLOT_PIXEL_RANGE_X = 2*40 - 2   \ -2 to compensate for 1st char being graphics
-                                \  control code
+TEXEL_LOW_X = 2         \ First texel x-coordinate we can draw texels in
 
-PLOT_PIXEL_RANGE_Y = 3*25
+TEXEL_HIGH_X = 2*40 - 2 \ Last texel x-coordinate we can draw texels in + 1
+                        \ -2 to compensate for 1st char being graphics control
+                        \ code
+
+TEXEL_LOW_Y = 3         \ First texel y-coordinate we can draw texels on (so do
+                        \ not draw on the first character row)
+
+TEXEL_HIGH_Y = 3*25     \ Last texel y-coordinate we can draw texels on + 1
 
 \ ******************************************************************************
 \
@@ -16,21 +22,21 @@ PLOT_PIXEL_RANGE_Y = 3*25
 
 .plot_pixel_ytable_lo
 
-FOR i, 0, PLOT_PIXEL_RANGE_Y-1
+FOR i, 0, TEXEL_HIGH_Y-1
  y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
  EQUB LO(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
 .plot_pixel_ytable_hi
 
-FOR i, 0, PLOT_PIXEL_RANGE_Y-1
+FOR i, 0, TEXEL_HIGH_Y-1
  y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
  EQUB HI(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
 .plot_pixel_ytable_chr
 
-FOR n, 0, PLOT_PIXEL_RANGE_Y-1
+FOR n, 0, TEXEL_HIGH_Y-1
  IF (n MOD 3) == 0
   EQUB 32+1+2           \ Top row mask
  ELIF (n MOD 3) == 1
@@ -42,14 +48,14 @@ NEXT
 
 .plot_pixel_xtable
 
-FOR i, 0, PLOT_PIXEL_RANGE_X-1
+FOR i, 0, TEXEL_HIGH_X-1
  y = i>>1
  EQUB LO(y)
 NEXT 
 
 .plot_pixel_xtable_chr
 
-FOR n, 0, PLOT_PIXEL_RANGE_X-1
+FOR n, 0, TEXEL_HIGH_X-1
  IF (n AND 1) == 0
   EQUB 32+1+4+16        \ Left hand column mask (even pixels)
  ELSE
@@ -402,10 +408,25 @@ NEXT
 
 \ ******************************************************************************
 \
+\       Name: SetTextYellow
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Set yellow text
+\
+\ ******************************************************************************
+
+.SetTextYellow
+
+ LDX #131               \ Set X to the "white text" control code
+
+ BNE PrintCharacter     \ Jump to PrintCharacter to set the colour
+
+\ ******************************************************************************
+\
 \       Name: SetText
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Print the text control code at the current cursor
+\    Summary: Set white text
 \
 \ ******************************************************************************
 
@@ -417,16 +438,33 @@ NEXT
 
 \ ******************************************************************************
 \
-\       Name: SetGraphics
+\       Name: SetGraphicsWhite
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Print the graphics control code at the current cursor
+\    Summary: Set white graphics
 \
 \ ******************************************************************************
 
-.SetGraphics
+.SetGraphicsWhite
 
  LDX #151               \ Set X to the "white graphics" control code
+
+\ ******************************************************************************
+\
+\       Name: PrintCharacter
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print a teletext character at the current cursor
+\
+\ ------------------------------------------------------------------------------
+\
+\ Arguments:
+\
+\   X                   The teletext character to print
+\
+\ ******************************************************************************
+
+.PrintCharacter
 
  LDA YC                 \ Fetch YC, the y-coordinate (row) of the text cursor
 

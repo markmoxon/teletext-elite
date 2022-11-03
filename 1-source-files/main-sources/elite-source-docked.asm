@@ -13945,7 +13945,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
- JSR SetText            \ Set mode 7 text
+ JSR SetTextYellow      \ Set mode 7 yellow text
 
                         \ --- End of added code ------------------------------->
 
@@ -13955,7 +13955,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
- JSR SetGraphics        \ Set mode 7 graphics
+ JSR SetGraphicsWhite   \ Set mode 7 white graphics
 
                         \ --- End of added code ------------------------------->
 

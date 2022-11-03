@@ -52,9 +52,9 @@ ENDMACRO
 \
 \ Arguments:
 \
-\   X                   The x-coordinate (clipped to 0 to PLOT_PIXEL_RANGE_X)
+\   X                   The x-coordinate (clipped to 0 to TEXEL_HIGH_X)
 \
-\   Y                   The y-coordinate (clipped to 0 to PLOT_PIXEL_RANGE_Y
+\   Y                   The y-coordinate (clipped to 0 to TEXEL_HIGH_Y
 \
 \ Returns:
 \
@@ -66,10 +66,16 @@ ENDMACRO
 
 MACRO PLOT_PIXEL_CLIPPED
 
- CPX #PLOT_PIXEL_RANGE_X
+ CPX #TEXEL_LOW_X
+ BCC clip1
+
+ CPY #TEXEL_LOW_Y
+ BCC clip1
+
+ CPX #TEXEL_HIGH_X
  BCS clip1
 
- CPY #PLOT_PIXEL_RANGE_Y
+ CPY #TEXEL_HIGH_Y
  BCS clip1
 
  PLOT_PIXEL
