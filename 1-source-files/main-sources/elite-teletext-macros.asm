@@ -24,16 +24,18 @@
 
 MACRO PLOT_PIXEL
 
- CLC                    \ Set SC(1 0) to screen address of character block
- LDA plot_pixel_xtable,X
- ADC plot_pixel_ytable_lo,Y
+ CLC                    \ Set SC(1 0) to the screen address of the character
+ LDA pixel_xtable,X     \ block, including any indent, starting with the low
+ ADC pixel_ytable_lo,Y  \ byte
+ ADC #MODE7_INDENT
  STA SC
- LDA plot_pixel_ytable_hi,Y
- ADC #HI(MODE7_VRAM_START)
+
+ LDA pixel_ytable_hi,Y  \ And then the high byte
+ ADC #HI(MODE7_VRAM)
  STA SCH
 
- LDA plot_pixel_ytable_chr,Y    \ Get 2-pixel wide teletext glyph for y-coordinate
- AND plot_pixel_xtable_chr,X    \ Apply odd/even x-coordinate mask
+ LDA pixel_ytable_chr,Y \ Get 2-pixel wide teletext glyph for y-coordinate
+ AND pixel_xtable_chr,X \ Apply odd/even x-coordinate mask
 
  EOR (SC),Y             \ EOR the sixel into the screen
  ORA #%00100000
@@ -78,7 +80,7 @@ IF NOT(_DOCKED)
 
 ENDIF
 
- CPX #MODE7_LOW_X
+ CPX #MODE7_LOW_X       \ If pixel is off-screen, do not plot it
  BCC clip1
 
  CPY #MODE7_LOW_Y
@@ -118,7 +120,7 @@ ENDMACRO
 
 MACRO PLOT_SCALE_X
 
- LSR A
+ LSR A                  \ Set A = A / 4, rounded to the nearest integer
  LSR A
  BCC P%+4
  ADC #0
@@ -147,11 +149,12 @@ ENDMACRO
 
 MACRO PLOT_SCALE_Y
 
- LSR A
+ LSR A                  \ Set A = A / 4, rounded to the nearest integer
  LSR A
  BCC P%+4
  ADC #0
 
- ADC #3
+ ADC #3                 \ Move everything down one character row, so we don't
+                        \ draw pixels on the title row
 
 ENDMACRO

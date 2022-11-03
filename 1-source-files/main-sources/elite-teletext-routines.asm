@@ -1,4 +1,6 @@
-MODE7_VRAM_START = &7C00
+MODE7_VRAM = &7C00
+
+MODE7_INDENT = 3        \ Width of left indent in characters
 
 MODE7_LOW_X = 2         \ First sixel x-coordinate we can draw sixels in
 
@@ -22,21 +24,21 @@ MESSAGE_ROW = 17        \ Configure the row for the message bar
 \
 \ ******************************************************************************
 
-.plot_pixel_ytable_lo
+.pixel_ytable_lo
 
 FOR i, 0, MODE7_HIGH_Y-1
  y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
  EQUB LO(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
-.plot_pixel_ytable_hi
+.pixel_ytable_hi
 
 FOR i, 0, MODE7_HIGH_Y-1
  y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
  EQUB HI(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
-.plot_pixel_ytable_chr
+.pixel_ytable_chr
 
 FOR n, 0, MODE7_HIGH_Y-1
  IF (n MOD 3) == 0
@@ -48,14 +50,14 @@ FOR n, 0, MODE7_HIGH_Y-1
  ENDIF 
 NEXT
 
-.plot_pixel_xtable
+.pixel_xtable
 
 FOR i, 0, MODE7_HIGH_X-1
  y = i>>1
  EQUB LO(y)
 NEXT 
 
-.plot_pixel_xtable_chr
+.pixel_xtable_chr
 
 FOR n, 0, MODE7_HIGH_X-1
  IF (n AND 1) == 0
@@ -67,8 +69,10 @@ NEXT
 
 .plot_row_address
 
+\ Screen address of the start of row n in mode 7, for plotting text
+
 FOR n, 0, 25
- EQUW &7C00 + (n*&28)   \ Screen address of the start of row n in mode 7
+ EQUW MODE7_VRAM + MODE7_INDENT + (n*&28)
 NEXT
 
 .rtw_startx
@@ -412,10 +416,10 @@ NEXT
 
 .clrs1
 
- STA MODE7_VRAM_START,X         \ Zero the X-th byte of each of the four pages
- STA MODE7_VRAM_START+&100,X    \ in a mode 7 screen
- STA MODE7_VRAM_START+&200,X
- STA MODE7_VRAM_START+&300,X
+ STA MODE7_VRAM,X       \ Zero the X-th byte of each of the four pages in a
+ STA MODE7_VRAM+&100,X  \ mode 7 screen
+ STA MODE7_VRAM+&200,X
+ STA MODE7_VRAM+&300,X
 
  INX                    \ Increment the byte counter
 
@@ -435,14 +439,14 @@ NEXT
 .StyleOneLineTitle
 
  LDA #132               \ Row 0: Yellow text on blue background
- STA MODE7_VRAM_START
+ STA MODE7_VRAM
  LDA #157
- STA MODE7_VRAM_START+1
+ STA MODE7_VRAM+1
  LDA #131
- STA MODE7_VRAM_START+2
+ STA MODE7_VRAM+2
 
  LDA #151               \ Row 1: White graphics
- STA MODE7_VRAM_START+(1*&28)
+ STA MODE7_VRAM+(1*&28)
 
  RTS                    \ Return from the subroutine
 
@@ -458,11 +462,11 @@ NEXT
 .StyleTwoLineTitle
 
  LDA #132               \ Row 1: Yellow text on blue background
- STA MODE7_VRAM_START+(1*&28)
+ STA MODE7_VRAM+(1*&28)
  LDA #157
- STA MODE7_VRAM_START+(1*&28)+1
+ STA MODE7_VRAM+(1*&28)+1
  LDA #131
- STA MODE7_VRAM_START+(1*&28)+2
+ STA MODE7_VRAM+(1*&28)+2
 
  RTS                    \ Return from the subroutine
 
@@ -478,11 +482,11 @@ NEXT
 .StyleMessages
 
  LDA #132               \ Message row: Yellow text on blue background
- STA MODE7_VRAM_START+(MESSAGE_ROW*&28)
+ STA MODE7_VRAM+(MESSAGE_ROW*&28)
  LDA #157
- STA MODE7_VRAM_START+(MESSAGE_ROW*&28)+1
+ STA MODE7_VRAM+(MESSAGE_ROW*&28)+1
  LDA #131
- STA MODE7_VRAM_START+(MESSAGE_ROW*&28)+2
+ STA MODE7_VRAM+(MESSAGE_ROW*&28)+2
 
  RTS                    \ Return from the subroutine
 
@@ -503,7 +507,7 @@ NEXT
 
 .mess1
 
- STA MODE7_VRAM_START+(MESSAGE_ROW*&28),X    \ Zero the X-th byte of the messages row
+ STA MODE7_VRAM+(MESSAGE_ROW*&28),X    \ Zero the X-th byte of the messages row
 
  INX                    \ Increment the byte counter
 
@@ -528,13 +532,13 @@ NEXT
 IF _DOCKED
 
  FOR n, 2, 20
-  STA MODE7_VRAM_START + n*40   \ Set rows 2 to 20 to white graphics
+  STA MODE7_VRAM + n*40   \ Set rows 2 to 20 to white graphics
  NEXT
 
 ELSE
 
  FOR n, 2, 24
-  STA MODE7_VRAM_START + n*40   \ Set row 2 to 24 to white graphics
+  STA MODE7_VRAM + n*40   \ Set row 2 to 24 to white graphics
  NEXT
 
 ENDIF
