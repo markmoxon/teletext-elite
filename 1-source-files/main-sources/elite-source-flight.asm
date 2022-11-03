@@ -15330,12 +15330,26 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .ee3
 
- LDY #1                 \ Move the text cursor to column 1
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDY #1                 \ Move the text cursor to column 1
+\STY XC
+\
+\STY YC                 \ Move the text cursor to row 1
+\
+\DEY                    \ Decrement Y to 0 for the high byte in pr6
+
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDY #2                 \ Move the text cursor to column 2
  STY XC
 
- STY YC                 \ Move the text cursor to row 1
+ LDY #0                 \ Move the text cursor to row 0
+ STY YC
 
- DEY                    \ Decrement Y to 0 for the high byte in pr6
+                        \ --- End of replacement ------------------------------>
 
                         \ Fall through into pr6 to print X to 5 digits, as the
                         \ high byte in Y is 0
