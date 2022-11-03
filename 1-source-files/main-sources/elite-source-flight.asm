@@ -7134,11 +7134,11 @@ NEXT
 
                         \ --- And replaced by: -------------------------------->
 
- ASL A                  \ Add the row address for YC (from the plot_row_address
+ ASL A                  \ Add the row address for YC (from the char_row_address
  TAY                    \ table) to SC to give the screen address of the
- LDA plot_row_address,Y \ character
+ LDA char_row_address,Y \ character
  STA SC
- LDA plot_row_address+1,Y
+ LDA char_row_address+1,Y
  STA SCH
                         \ --- End of replacement ------------------------------>
 

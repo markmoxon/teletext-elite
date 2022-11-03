@@ -67,7 +67,7 @@ FOR n, 0, MODE7_HIGH_X-1
  ENDIF 
 NEXT
 
-.plot_row_address
+.char_row_address
 
 \ Screen address of the start of row n in mode 7, for plotting text
 
@@ -333,7 +333,7 @@ NEXT
 
 .SetTextYellow
 
- LDX #131               \ Set X to the "white text" control code
+ LDX #131               \ Set X to the "yellow text" control code
 
  BNE PrintCharacter     \ Jump to PrintCharacter to set the colour
 
@@ -384,18 +384,27 @@ NEXT
 
  LDA YC                 \ Fetch YC, the y-coordinate (row) of the text cursor
 
- ASL A                  \ Add the row address for YC (from the plot_row_address
- TAY                    \ table) to SC to give the screen address of the
- LDA plot_row_address,Y \ character
- STA SC
- LDA plot_row_address+1,Y
- STA SCH
+ CMP #25                \ If character is off-screen, do not print it
+ BCS prin1
 
- LDY XC                 \ Store the character in X at the XC-th character on the
- TXA                    \ row at SC(1 0)
- STA (SC),Y
+ ASL A                  \ Add the row address for YC (from the char_row_address
+ TAY                    \ table) to SC to give the screen address of the
+ LDA char_row_address,Y \ character
+ STA P
+ LDA char_row_address+1,Y
+ STA P+1
+
+ LDY XC                 \ Fetch XC, x-coordinate (column) of the text cursor
+
+ CPY #40                \ If character is off-screen, do not print it
+ BCS prin1
+
+ TXA                    \ Store the character in X at the XC-th character on the
+ STA (P),Y              \ row at SC(1 0)
 
  INC XC                 \ Move the text cursor to the right
+
+.prin1
 
  RTS                    \ Return from the subroutine
 
@@ -544,3 +553,27 @@ ELSE
 ENDIF
 
  RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: DrawSystem
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Draw a system character on the Short-Range Chart
+\
+\ ******************************************************************************
+
+.DrawSystem
+
+ LDA XX12
+ PLOT_SCALE_X
+ STA XC
+
+ LDA K4
+ PLOT_SCALE_Y
+ STA YC
+
+ LDX #'O'
+\JSR PrintCharacter
+
+ RTS

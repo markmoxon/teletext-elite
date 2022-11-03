@@ -6875,18 +6875,19 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
  LDA YC                 \ Fetch YC, the y-coordinate (row) of the text cursor
 
- ASL A                  \ Add the row address for YC (from the plot_row_address
+ ASL A                  \ Add the row address for YC (from the char_row_address
  TAY                    \ table) to SC to give the screen address of the
- LDA plot_row_address,Y \ character
+ LDA char_row_address,Y \ character
  STA SC
- LDA plot_row_address+1,Y
+ LDA char_row_address+1,Y
  STA SCH
 
  LDA #' '               \ Store a space at the XC-th character on the row
  LDY XC                 \ at SC(1 0)
  STA (SC), Y
 
- JMP RR4
+ JMP RR4                \ We are done deleting, so restore the registers and
+                        \ return from the subroutine
 
                         \ --- End of replacement ------------------------------>
 
@@ -6948,11 +6949,11 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
                         \ --- And replaced by: -------------------------------->
 
- ASL A                  \ Add the row address for YC (from the plot_row_address
+ ASL A                  \ Add the row address for YC (from the char_row_address
  TAY                    \ table) to SC to give the screen address of the
- LDA plot_row_address,Y \ character
+ LDA char_row_address,Y \ character
  STA SC
- LDA plot_row_address+1,Y
+ LDA char_row_address+1,Y
  STA SCH
                         \ --- End of replacement ------------------------------>
 
@@ -13949,6 +13950,9 @@ LOAD_D% = LOAD% + P% - CODE%
 
  JSR SetTextYellow      \ Set mode 7 yellow text
 
+ DEC XC                 \ Move back one character so we don't insert any extra
+                        \ space
+
                         \ --- End of added code ------------------------------->
 
  JSR cpl                \ Call cpl to print out the system name for the seeds
@@ -13957,46 +13961,56 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
+ INC XC                 \ Move forward one character to compensate for the above
+
  JSR SetGraphicsWhite   \ Set mode 7 white graphics
 
                         \ --- End of added code ------------------------------->
 
 .ee1
 
- LDA #0                 \ Now to plot the star, so set the high bytes of K, K3
- STA K3+1               \ and K4 to 0
- STA K4+1
- STA K+1
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDA XX12               \ Set the low byte of K3 to XX12, the pixel x-coordinate
- STA K3                 \ of this system
+\LDA #0                 \ Now to plot the star, so set the high bytes of K, K3
+\STA K3+1               \ and K4 to 0
+\STA K4+1
+\STA K+1
+\
+\LDA XX12               \ Set the low byte of K3 to XX12, the pixel x-coordinate
+\STA K3                 \ of this system
+\
+\LDA QQ15+5             \ Fetch s2_hi for this system from QQ15+5, extract bit 0
+\AND #1                 \ and add 2 to get the size of the star, which we store
+\ADC #2                 \ in K. This will be either 2, 3 or 4, depending on the
+\STA K                  \ value of bit 0, and whether the C flag is set (which
+\                       \ will vary depending on what happens in the above call
+\                       \ to cpl). Incidentally, the planet's average radius
+\                       \ also uses s2_hi, bits 0-3 to be precise, but that
+\                       \ doesn't mean the two sizes affect each other
+\
+\                       \ We now have the following:
+\                       \
+\                       \   K(1 0)  = radius of star (2, 3 or 4)
+\                       \
+\                       \   K3(1 0) = pixel x-coordinate of system
+\                       \
+\                       \   K4(1 0) = pixel y-coordinate of system
+\                       \
+\                       \ which we can now pass to the SUN routine to draw a
+\                       \ small "sun" on the Short-range Chart for this system
 
- LDA QQ15+5             \ Fetch s2_hi for this system from QQ15+5, extract bit 0
- AND #1                 \ and add 2 to get the size of the star, which we store
- ADC #2                 \ in K. This will be either 2, 3 or 4, depending on the
- STA K                  \ value of bit 0, and whether the C flag is set (which
-                        \ will vary depending on what happens in the above call
-                        \ to cpl). Incidentally, the planet's average radius
-                        \ also uses s2_hi, bits 0-3 to be precise, but that
-                        \ doesn't mean the two sizes affect each other
+\JSR FLFLLS             \ Call FLFLLS to reset the LSO block
+\
+\JSR SUN                \ Call SUN to plot a sun with radius K at pixel
+\                       \ coordinate (K3, K4)
+\
+\JSR FLFLLS             \ Call FLFLLS to reset the LSO block
 
-                        \ We now have the following:
-                        \
-                        \   K(1 0)  = radius of star (2, 3 or 4)
-                        \
-                        \   K3(1 0) = pixel x-coordinate of system
-                        \
-                        \   K4(1 0) = pixel y-coordinate of system
-                        \
-                        \ which we can now pass to the SUN routine to draw a
-                        \ small "sun" on the Short-range Chart for this system
+                        \ --- And replaced by: -------------------------------->
 
- JSR FLFLLS             \ Call FLFLLS to reset the LSO block
+ JSR DrawSystem         \ Draw a system character
 
- JSR SUN                \ Call SUN to plot a sun with radius K at pixel
-                        \ coordinate (K3, K4)
-
- JSR FLFLLS             \ Call FLFLLS to reset the LSO block
+                        \ --- End of replacement ------------------------------>
 
 .TT187
 
