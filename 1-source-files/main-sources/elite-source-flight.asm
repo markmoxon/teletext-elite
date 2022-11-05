@@ -7221,10 +7221,21 @@ NEXT
 
 .DIALS
 
- LDA #&D0               \ Set SC(1 0) = &78D0, which is the screen address for
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #&D0               \ Set SC(1 0) = &78D0, which is the screen address for
+\STA SC                 \ the character block containing the left end of the
+\LDA #&78               \ top indicator in the right part of the dashboard, the
+\STA SC+1               \ one showing our speed
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #&F0               \ Set SC(1 0) = &7EF0, which is the screen address for
  STA SC                 \ the character block containing the left end of the
- LDA #&78               \ top indicator in the right part of the dashboard, the
+ LDA #&7E               \ top indicator in the right part of the dashboard, the
  STA SC+1               \ one showing our speed
+
+                        \ --- End of replacement ------------------------------>
 
  JSR PZW                \ Call PZW to set A to the colour for dangerous values
                         \ and X to the colour for safe values
@@ -7811,18 +7822,18 @@ NEXT
 
  TYA                    \ Set X = Y * 2
  ASL A                  \
- TAX                    \ So X is the sixel number in the indicator that we need
-                        \ to draw next
+ TAX                    \ X is the sixel number in the indicator that we need to
+                        \ draw next
 
- CPX Q                  \ If X <= Q, then we need to plot a coloured pixel, so
+ CPX Q                  \ If X < Q, then we need to plot a coloured pixel, so
  BCC dilx2              \ jump to dilx2
- BEQ dilx2
 
  LDA #0                 \ Otherwise, plot a black pixel for both sixels in the
                         \ character
 
- BEQ dilx4              \ Jump to dilx4 (this BEQ is effectively a JMP as A is
-                        \ always zero)
+ BCS dilx4              \ Jump to dilx4 to plot a black pixel for the first sixel
+                        \ in the character (this BCS is effectively a JMP as we
+                        \ just passed through a BCC)
 
 .dilx2
 
@@ -7830,17 +7841,17 @@ NEXT
                         \ first sixel
 
  LDA #164               \ Set A to the character with the middle-left sixel
-                        \ filled
+                        \ filled and the middle-right sixel black
 
  INX                    \ Increment X to check the next value
 
- CPX Q                  \ If X <= Q, then we need to plot a coloured pixel, so
+ CPX Q                  \ If X < Q, then we need to plot a coloured pixel, so
  BCC dilx3              \ jump to dilx3
- BEQ dilx3
 
- BNE dilx4              \ Otherwise, plot a black pixel for the second sixel in
-                        \ the character, which is already what we have in A, so
-                        \ jump to dilx4
+ BCS dilx4              \ Otherwise, jump to dilx4 to plot a black pixel for the
+                        \ second sixel in the character, which is already what
+                        \ we have in A (this BCS is effectively a JMP as we just
+                        \ passed through a BCC)
 
 .dilx3
 
@@ -8025,11 +8036,24 @@ NEXT
  BCC DLL10              \ blocks to draw, so loop back to DLL10 to display the
                         \ next one along
 
- INC SC+1               \ Increment the high byte of SC to point to the next
-                        \ character row on-screen (as each row takes up exactly
-                        \ one page of 256 bytes) - so this sets up SC to point
-                        \ to the next indicator, i.e. the one below the one we
-                        \ just drew
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\INC SC+1               \ Increment the high byte of SC to point to the next
+\                       \ character row on-screen (as each row takes up exactly
+\                       \ one page of 256 bytes) - so this sets up SC to point
+\                       \ to the next indicator, i.e. the one below the one we
+\                       \ just drew
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA SC                 \ Add &28 to SC(1 0) so it points to the next indicator
+ CLC                    \ down
+ ADC #&28
+ STA SC
+ BCC P%+1
+ INC SC+1
+
+                        \ --- End of replacement ------------------------------>
 
  RTS                    \ Return from the subroutine
 
