@@ -4597,7 +4597,7 @@ NEXT
 
  TAX
 
- PLOT_PIXEL_CLIPPED     \ Plot the pixel
+ JSR PlotPixelClipped   \ Plot the pixel
 
 .PX13
 
@@ -18463,14 +18463,25 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ is the x-offset from the centre of the compass of the
                         \ dot we want to draw. Returns with the C flag clear
 
- TXA                    \ Set COMX = 195 + X, as 186 is the pixel x-coordinate
- ADC #195               \ of the leftmost dot possible on the compass, and X can
- STA COMX               \ be -9, which would be 195 - 9 = 186. This also means
-                        \ that the highest value for COMX is 195 + 9 = 204,
-                        \ which is the pixel x-coordinate of the rightmost dot
-                        \ in the compass... but the compass dot is actually two
-                        \ pixels wide, so the compass dot can overlap the right
-                        \ edge of the compass, but not the left edge
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\TXA                    \ Set COMX = 195 + X, as 186 is the pixel x-coordinate
+\ADC #195               \ of the leftmost dot possible on the compass, and X can
+\STA COMX               \ be -9, which would be 195 - 9 = 186. This also means
+\                       \ that the highest value for COMX is 195 + 9 = 204,
+\                       \ which is the pixel x-coordinate of the rightmost dot
+\                       \ in the compass... but the compass dot is actually two
+\                       \ pixels wide, so the compass dot can overlap the right
+\                       \ edge of the compass, but not the left edge
+
+
+                        \ --- And replaced by: -------------------------------->
+
+ TXA                    \ Set COMX = 238 + X, as 238 is the centre of the
+ ADC #195+8               \ compass
+ STA COMX
+
+                        \ --- End of replacement ------------------------------>
 
  LDA XX15+1             \ Set A to the y-coordinate of the planet or station to
                         \ show on the compass, which will be in the range -96 to
@@ -18480,15 +18491,26 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ is the y-offset from the centre of the compass of the
                         \ dot we want to draw. Returns with the C flag clear
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\STX T                  \ Set COMY = 204 - X, as 203 is the pixel y-coordinate
+\LDA #204               \ of the centre of the compass, the C flag is clear,
+\SBC T                  \ and the y-axis needs to be flipped around (because
+\STA COMY               \ when the planet or station is above us, and the
+\                       \ vector is therefore positive, we want to show the dot
+\                       \ higher up on the compass, which has a smaller pixel
+\                       \ y-coordinate). So this calculation does this:
+\                       \
+\                       \   COMY = 204 - X - (1 - 0) = 203 - X
+
+                        \ --- And replaced by: -------------------------------->
+
  STX T                  \ Set COMY = 204 - X, as 203 is the pixel y-coordinate
- LDA #204               \ of the centre of the compass, the C flag is clear,
- SBC T                  \ and the y-axis needs to be flipped around (because
- STA COMY               \ when the planet or station is above us, and the
-                        \ vector is therefore positive, we want to show the dot
-                        \ higher up on the compass, which has a smaller pixel
-                        \ y-coordinate). So this calculation does this:
-                        \
-                        \   COMY = 204 - X - (1 - 0) = 203 - X
+ LDA #204+8               \ of the centre of the compass, the C flag is clear,
+ SBC T                  \ and the y-axis needs to be flipped around
+ STA COMY
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #&F0               \ Set A to a 4-pixel mode 5 byte row in colour 2
                         \ (yellow/white), the colour for when the planet or
@@ -18578,6 +18600,14 @@ LOAD_E% = LOAD% + P% - CODE%
 
  DEC Y1                 \ Decrement Y1
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ DEC Y1                 \ Decrement Y1 again, so we move down 4 pixels, or one
+ DEC Y1                 \ sixel line
+ DEC Y1
+
+                        \ --- End of added code ------------------------------->
+
                         \ Fall through into CPIX2 to draw a second single-height
                         \ dash on the pixel row above the first one, to create a
                         \ double-height dot
@@ -18606,102 +18636,33 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .CPIX2
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+                        \ The whole CPIX2 routine has been removed
+
+                        \ --- And replaced by: -------------------------------->
+
  LDA Y1                 \ Fetch the y-coordinate into A
 
- TAY                    \ Store the y-coordinate in Y
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
 
- LSR A                  \ Set A = A / 8, so A now contains the character row we
- LSR A                  \ need to draw in (as each character row contains 8
- LSR A                  \ pixel rows)
+ TAY
 
- ORA #&60               \ Each character row in Elite's screen mode takes up one
-                        \ page in memory (256 bytes), so we now OR with &60 to
-                        \ get the page containing the dash (see the comments in
-                        \ routine TT26 for more discussion about calculating
-                        \ screen memory addresses)
+ LDA X1                 \ Fetch the x-coordinate into A
 
- STA SCH                \ Store the screen page in the high byte of SC(1 0)
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
 
- LDA X1                 \ Each character block contains 8 pixel rows, so to get
- AND #%11111000         \ the address of the first byte in the character block
-                        \ that we need to draw into, as an offset from the start
-                        \ of the row, we clear bits 0-2
+ TAX
 
- STA SC                 \ Store the address of the character block in the low
-                        \ byte of SC(1 0), so now SC(1 0) points to the
-                        \ character block we need to draw into
+ JSR PlotPixelClipped   \ Plot the pixel
 
- TYA                    \ Set Y to just bits 0-2 of the y-coordinate, which will
- AND #%00000111         \ be the number of the pixel row we need to draw into
- TAY                    \ within the character block
+ INX
 
- LDA X1                 \ Copy bits 0-1 of X1 to bits 1-2 of X, and clear the C
- AND #%00000110         \ flag in the process (using the LSR). X will now be
- LSR A                  \ a value between 0 and 3, and will be the pixel number
- TAX                    \ in the character row for the left pixel in the dash.
-                        \ This is because each character row is one byte that
-                        \ contains 4 pixels, but covers 8 screen coordinates, so
-                        \ this effectively does the division by 2 that we need
-
- LDA CTWOS,X            \ Fetch a mode 5 1-pixel byte with the pixel position
- AND COL                \ at X, and AND with the colour byte so that pixel takes
-                        \ on the colour we want to draw (i.e. A is acting as a
-                        \ mask on the colour byte)
-
-                        \ --- Mod: Original Acornsoft code removed: ----------->
-
-\EOR (SC),Y             \ Draw the pixel on-screen using EOR logic, so we can
-\STA (SC),Y             \ remove it later without ruining the background that's
-                        \ already on-screen
-
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
+ JSR PlotPixelClipped   \ Plot the pixel
 
                         \ --- End of replacement ------------------------------>
-
- LDA CTWOS+1,X          \ Fetch a mode 5 1-pixel byte with the pixel position
-                        \ at X+1, so we can draw the right pixel of the dash
-
- BPL CP1                \ The CTWOS table has an extra row at the end of it that
-                        \ repeats the first value, %10001000, so if we have not
-                        \ fetched that value, then the right pixel of the dash
-                        \ is in the same character block as the left pixel, so
-                        \ jump to CP1 to draw it
-
- LDA SC                 \ Otherwise the left pixel we drew was at the last
- ADC #8                 \ position of four in this character block, so we add
- STA SC                 \ 8 to the screen address to move onto the next block
-                        \ along (as there are 8 bytes in a character block).
-                        \ The C flag was cleared above, so this ADC is correct
-
- LDA CTWOS+1,X          \ Refetch the mode 5 1-pixel byte, as we just overwrote
-                        \ A (the byte will still be the fifth byte from the
-                        \ table, which is correct as we want to draw the
-                        \ leftmost pixel in the next character along as the
-                        \ dash's right pixel)
 
 .CP1
-
- AND COL                \ Apply the colour mask to the pixel byte, as above
-
-                        \ --- Mod: Original Acornsoft code removed: ----------->
-
-\EOR (SC),Y             \ Draw the dash's right pixel according to the mask in
-\STA (SC),Y             \ A, with the colour in COL, using EOR logic, just as
-\                       \ above
-
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
-
-                        \ --- End of replacement ------------------------------>
 
  RTS                    \ Return from the subroutine
 
@@ -32564,7 +32525,7 @@ LOAD_H% = LOAD% + P% - CODE%
 
  PHA                    \ Store the stick height in A on the stack
 
- JSR CPIX4              \ Draw a double-height dot at (X1, Y1). This also leaves
+\JSR CPIX4              \ Draw a double-height dot at (X1, Y1). This also leaves
                         \ the following variables set up for the dot's top-right
                         \ pixel, the last pixel to be drawn (as the dot gets
                         \ drawn from the bottom up):

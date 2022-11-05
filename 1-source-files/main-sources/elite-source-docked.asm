@@ -4925,7 +4925,7 @@ LOAD_B% = LOAD% + P% - CODE%
 
  TAX
 
- PLOT_PIXEL_CLIPPED     \ Plot the pixel
+ JSR PlotPixelClipped   \ Plot the pixel
 
 .PX13
 

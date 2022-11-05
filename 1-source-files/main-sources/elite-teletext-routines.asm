@@ -109,6 +109,61 @@ NEXT
 
 \ ******************************************************************************
 \
+\       Name: PlotPixelClipped
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Plot a mode 7 pixel
+\
+\ ******************************************************************************
+
+.PlotPixelClipped
+
+IF NOT(_DOCKED)
+
+ CPY #MESSAGE_ROW*3     \ In flight, do not draw on the message row
+ BEQ clip1
+ CPY #MESSAGE_ROW*3+1
+ BEQ clip1
+ CPY #MESSAGE_ROW*3+2
+ BEQ clip1
+
+ENDIF
+
+ CPX #MODE7_LOW_X       \ If pixel is off-screen, do not plot it
+ BCC clip1
+
+ CPY #MODE7_LOW_Y
+ BCC clip1
+
+ CPX #MODE7_HIGH_X
+ BCS clip1
+
+ CPY #MODE7_HIGH_Y
+ BCS clip1
+
+ CLC                    \ Set SC(1 0) to the screen address of the character
+ LDA pixel_xtable,X     \ block, including any indent, starting with the low
+ ADC pixel_ytable_lo,Y  \ byte
+ ADC #MODE7_INDENT
+ STA SC
+
+ LDA pixel_ytable_hi,Y  \ And then the high byte
+ ADC #HI(MODE7_VRAM)
+ STA SCH
+
+ LDA pixel_ytable_chr,Y \ Get 2-pixel wide teletext glyph for y-coordinate
+ AND pixel_xtable_chr,X \ Apply odd/even x-coordinate mask
+
+ EOR (SC),Y             \ EOR the sixel into the screen
+ ORA #%00100000
+ STA (SC),Y
+
+.clip1
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
 \       Name: DrawTo
 \       Type: Subroutine
 \   Category: Teletext Elite
@@ -233,7 +288,7 @@ NEXT
  STA rtw_accum
  
  ; plot pixel
- PLOT_PIXEL_CLIPPED
+ JSR PlotPixelClipped
 
  ; check if done
  DEC rtw_count
@@ -290,7 +345,7 @@ NEXT
  STA rtw_accum
  
  ; plot pixel in cached byte
- PLOT_PIXEL_CLIPPED
+ JSR PlotPixelClipped
  
  ; check if done
  DEC rtw_count
