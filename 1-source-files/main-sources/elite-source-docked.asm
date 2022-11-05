@@ -13064,10 +13064,22 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT222
 
- LDA QQ29               \ Move the text cursor to row QQ29 + 5 (where QQ29 is
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA QQ29               \ Move the text cursor to row QQ29 + 5 (where QQ29 is
+\CLC                    \ the item number, starting from 0)
+\ADC #5
+\STA YC
+
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA QQ29               \ Move the text cursor to row QQ29 + 4 (where QQ29 is
  CLC                    \ the item number, starting from 0)
- ADC #5
+ ADC #4
  STA YC
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #0                 \ Move the text cursor to column 0
  STA XC
