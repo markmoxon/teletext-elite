@@ -40,4 +40,6 @@
 
  BPL dash2              \ Loop back until we have counted X bytes
 
+ JSR DIALS              \ Update the contents of the dashboard
+
  RTS

@@ -16367,6 +16367,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
  JSR RES2               \ Reset a number of flight variables and workspaces
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #0                 \ Unset the compass colour so we don't try to remove the
+ STA COMC               \ existing dot (as there isn't one)
+
+                        \ --- End of added code ------------------------------->
+
  JSR TT111              \ Select the system closest to galactic coordinates
                         \ (QQ9, QQ10)
 
@@ -18474,12 +18481,14 @@ LOAD_E% = LOAD% + P% - CODE%
 \                       \ pixels wide, so the compass dot can overlap the right
 \                       \ edge of the compass, but not the left edge
 
-
                         \ --- And replaced by: -------------------------------->
 
- TXA                    \ Set COMX = 238 + X, as 238 is the centre of the
- ADC #195+8               \ compass
- STA COMX
+ TXA                    \ Set COMX = 203 + X, as 194 is the pixel x-coordinate
+ ADC #203               \ of the leftmost dot possible on the compass, and X can
+ STA COMX               \ be -9, which would be 203 - 9 = 194. This also means
+                        \ that the highest value for COMX is 203 + 9 = 212,
+                        \ which is the pixel x-coordinate of the rightmost dot
+                        \ in the compass
 
                         \ --- End of replacement ------------------------------>
 
@@ -18505,10 +18514,16 @@ LOAD_E% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- STX T                  \ Set COMY = 204 - X, as 203 is the pixel y-coordinate
- LDA #204+8               \ of the centre of the compass, the C flag is clear,
- SBC T                  \ and the y-axis needs to be flipped around
- STA COMY
+ STX T                  \ Set COMY = 212 - X, as 211 is the pixel y-coordinate
+ LDA #212               \ of the centre of the compass, the C flag is clear,
+ SBC T                  \ and the y-axis needs to be flipped around (because
+ STA COMY               \ when the planet or station is above us, and the
+                        \ vector is therefore positive, we want to show the dot
+                        \ higher up on the compass, which has a smaller pixel
+                        \ y-coordinate). So this calculation does this:
+                        \
+                        \   COMY = 212 - X - (1 - 0) = 211 - X
+
 
                         \ --- End of replacement ------------------------------>
 
@@ -18641,6 +18656,9 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ The whole CPIX2 routine has been removed
 
                         \ --- And replaced by: -------------------------------->
+
+ LDA COL
+ BEQ CP1
 
  LDA Y1                 \ Fetch the y-coordinate into A
 
@@ -32047,6 +32065,10 @@ LOAD_H% = LOAD% + P% - CODE%
                         \ or chart, so we want a graphics view
 
  JSR SetMode7Graphics   \ Set all screen rows to white graphics
+
+ LDA QQ11               \ Do not show the dashboard or message row for the death
+ CMP #6                 \ screen
+ BEQ BOL1
 
  JSR StyleMessages      \ Style the messages row
 
