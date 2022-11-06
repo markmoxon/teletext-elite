@@ -7230,6 +7230,10 @@ NEXT
 
                         \ --- And replaced by: -------------------------------->
 
+ LDA QQ11               \ If this is not the space view, then there is no
+ BNE rT9                \ dashboard, so return from the subroutine (as rT9
+                        \ contains an RTS)
+
  LDA #&F0               \ Set SC(1 0) = &7EF0, which is the screen address for
  STA SC                 \ the character block containing the left end of the
  LDA #&7E               \ top indicator in the right part of the dashboard, the
@@ -16367,13 +16371,6 @@ LOAD_D% = LOAD% + P% - CODE%
 
  JSR RES2               \ Reset a number of flight variables and workspaces
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
- LDA #0                 \ Unset the compass colour so we don't try to remove the
- STA COMC               \ existing dot (as there isn't one)
-
-                        \ --- End of added code ------------------------------->
-
  JSR TT111              \ Select the system closest to galactic coordinates
                         \ (QQ9, QQ10)
 
@@ -18657,8 +18654,10 @@ LOAD_E% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- LDA COL
- BEQ CP1
+ LDA COL                \ If the colour is zero, jump to CP1 to return from the
+ BEQ CP1                \ subroutine so we do not draw a dot (which will happen
+                        \ the first time we call the DOT routine following a
+                        \ launch)
 
  LDA Y1                 \ Fetch the y-coordinate into A
 
@@ -23933,7 +23932,8 @@ ENDIF
 
                         \ --- And replaced by: -------------------------------->
 
- LDA #6                 \ Set A to 6 to set as the view number
+ LDA #6                 \ Set A to 6 to set as the view number for the death
+                        \ screen
 
                         \ --- End of replacement ------------------------------>
 
@@ -23948,9 +23948,21 @@ ENDIF
  JSR nWq                \ Create a cloud of stardust containing the correct
                         \ number of dust particles (i.e. NOSTM of them)
 
- LDA #12                \ Move the text cursor to column 12 on row 12
- STA YC
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #12                \ Move the text cursor to column 12 on row 12
+\STA YC
+\STA XC
+
+                        \ --- And replaced by: -------------------------------->
+
+
+ LDA #12                \ Move the text cursor to column 12 on row 20
  STA XC
+ LDA #20
+ STA YC
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #146               \ Print recursive token 146 ("{all caps}GAME OVER")
  JSR ex
@@ -24065,7 +24077,12 @@ ENDIF
 \LDX #31                \ Set the screen to show all 31 text rows, which shows
 \JSR DET1               \ the dashboard
 
-                        \ --- End of removed code ----------------------------->
+                        \ --- And replaced by: -------------------------------->
+
+ LDX #6                 \ Set the view to the death screen so we don't show the
+ STX QQ11               \ dashboard in DEATH2
+
+                        \ --- End of replacement ------------------------------>
 
  JMP DEATH2             \ Jump to DEATH2 to reset and restart the game
 
@@ -32050,14 +32067,14 @@ LOAD_H% = LOAD% + P% - CODE%
 
  JSR ClearMode7Screen   \ Clear the screen
 
- LDA QQ11               \ If this is the space view, set the graphics screen
+ LDA QQ11               \ If this is the space view, jump to gfx1
  BEQ gfx1
 
  CMP #6                 \ If this is the death screen, set the graphics screen
  BEQ gfx1
 
- AND #%11000000         \ If this is not a chart, skip the following
- BEQ BOL1
+ AND #%11000000         \ If this is a chart, fall through into gfx1, otherwise
+ BEQ BOL1               \ jump to BOL1
 
 .gfx1
 
@@ -32066,9 +32083,8 @@ LOAD_H% = LOAD% + P% - CODE%
 
  JSR SetMode7Graphics   \ Set all screen rows to white graphics
 
- LDA QQ11               \ Do not show the dashboard or message row for the death
- CMP #6                 \ screen
- BEQ BOL1
+ LDA QQ11               \ Show the dashboard and message row for the space view
+ BNE BOL1
 
  JSR StyleMessages      \ Style the messages row
 

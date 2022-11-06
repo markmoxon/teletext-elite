@@ -489,27 +489,42 @@ ENDIF
 
  BNE clrs1              \ Loop back until we have counted a whole page
 
-                        \ Fall into StyleOneLineTitle to style the title line
+                        \ Fall into StyleTitleRow to style the title line
 
 \ ******************************************************************************
 \
-\       Name: StyleOneLineTitle
+\       Name: StyleTitleRow
 \       Type: Subroutine
 \   Category: Teletext Elite
 \    Summary: Print the control codes for the first line of a two-line title
 \
 \ ******************************************************************************
 
-.StyleOneLineTitle
+.StyleTitleRow
 
- LDA #132               \ Row 0: Yellow text on blue background
+ LDA QQ11               \ If this is not the death screen, jump to stit1
+ CMP #6
+ BNE stit1
+
+ LDA #151               \ This is the death screen, so style the top row as
+ STA MODE7_VRAM         \ white graphics
+
+ BNE stit2              \ Jump to stit2 to style the second row as white
+                        \ graphics (this BNE is effectively a JMP as A is never
+                        \ zero)
+
+.stit1
+
+ LDA #132               \ Style the top row as yellow text on blue background
  STA MODE7_VRAM
  LDA #157
  STA MODE7_VRAM+1
  LDA #131
  STA MODE7_VRAM+2
 
- LDA #151               \ Row 1: White graphics
+.stit2
+
+ LDA #151               \ Style the second row as white graphics
  STA MODE7_VRAM+(1*&28)
 
  RTS                    \ Return from the subroutine
@@ -525,7 +540,7 @@ ENDIF
 
 .StyleTwoLineTitle
 
- LDA #132               \ Row 1: Yellow text on blue background
+ LDA #132               \ Style the second row as yellow text on blue background
  STA MODE7_VRAM+(1*&28)
  LDA #157
  STA MODE7_VRAM+(1*&28)+1

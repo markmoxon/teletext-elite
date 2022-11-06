@@ -20303,7 +20303,7 @@ LOAD_F% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
- JSR ClearMode7Screen
+ JSR ClearMode7Screen   \ Clear the screen
 
  LDA #144+7             \ Set all screen rows to white graphics
  JSR SetMode7Graphics

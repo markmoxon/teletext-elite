@@ -40,6 +40,9 @@
 
  BPL dash2              \ Loop back until we have counted X bytes
 
+ LDA #0                 \ Unset the compass colour so we don't try to remove the
+ STA COMC               \ existing dot (as there isn't one)
+
  JSR DIALS              \ Update the contents of the dashboard
 
  RTS
