@@ -21,7 +21,7 @@ ifeq ($(variant), ib-disc)
 else
   variant-disc=2
   folder-disc=/sth
-  suffix-disc=-sth
+  suffix-disc=-teletext
 endif
 
 .PHONY:build
