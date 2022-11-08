@@ -15230,10 +15230,21 @@ LOAD_D% = LOAD% + P% - CODE%
  BEQ zZ+1               \ contains an RTS), as the selected system is the
                         \ current system
 
- LDA #7                 \ Move the text cursor to column 7, row 23 (in the
- STA XC                 \ middle of the bottom text row)
- LDA #23
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #7                 \ Move the text cursor to column 7, row 23 (in the
+\STA XC                 \ middle of the bottom text row)
+\LDA #23
+\STA YC
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #7                 \ Move the text cursor to column 7 in the message row
+ STA XC
+ LDA #MESSAGE_ROW
  STA YC
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #0                 \ Set QQ17 = 0 to switch to ALL CAPS
  STA QQ17
@@ -15257,6 +15268,12 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #'-'               \ Print a hyphen
  JSR TT27
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
 
  JSR cpl                \ Call cpl to print the name of the selected system
 
