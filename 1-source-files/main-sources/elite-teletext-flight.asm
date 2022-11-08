@@ -3,6 +3,15 @@
 
  INCBIN "1-source-files/images/P.DIALST.bin"
 
+\ ******************************************************************************
+\
+\       Name: ShowDashboard
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Show the dashboard
+\
+\ ******************************************************************************
+
 .ShowDashboard
 
  LDA #LO(dashboard)     \ Set P(1 0) to the dashboard source
@@ -45,4 +54,41 @@
 
  JSR DIALS              \ Update the contents of the dashboard
 
- RTS
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: DrawMissiles
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Draw the missiles on the dashboard
+\
+\ ******************************************************************************
+
+.DrawMissiles
+
+ LDA MSAR               \ If MSAR is zero, missile is not looking for a target,
+ BEQ dmis1              \ so jump to dmis1
+
+ LDA #147               \ Set missile colour to yellow
+ BNE dmis3
+
+.dmis1
+
+ LDA MSTG               \ If MSTG is 1-12, we have target lock, so jump to
+ BPL dmis2              \ dmis2
+
+ LDA #146               \ Set missile colour to green
+ BNE dmis3
+
+.dmis2
+
+ LDA #145               \ Set missile colour to red
+
+.dmis3
+
+ STA &7FC3              \ Set the missiles to the colour in A
+
+ JSR msblob             \ Draw the missiles
+
+ RTS                    \ Return from the subroutine

@@ -2414,12 +2414,20 @@ LOAD_A% = LOAD%
                         \ value &FF, as we just loaded it from MSTG and checked
                         \ that it was negative)
 
- LDY #&E0               \ Change the leftmost missile indicator to yellow/white
- JSR MSBAR              \ on the missile bar (this call changes the leftmost
-                        \ indicator because we set X to the number of missiles
-                        \ in NOMSL above, and the indicators are numbered from
-                        \ right to left, so X is the number of the leftmost
-                        \ indicator)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDY #&E0               \ Change the leftmost missile indicator to yellow/white
+\JSR MSBAR              \ on the missile bar (this call changes the leftmost
+\                       \ indicator because we set X to the number of missiles
+\                       \ in NOMSL above, and the indicators are numbered from
+\                       \ right to left, so X is the number of the leftmost
+\                       \ indicator)
+
+                        \ --- And replaced by: -------------------------------->
+
+ JSR DrawMissiles       \ Draw the missiles
+
+                        \ --- End of replacement ------------------------------>
 
 .MA25
 
@@ -7535,6 +7543,8 @@ NEXT
  JSR SPBLB              \ Draw the "S" bulb
 
  JSR ECBLB              \ Draw the "E" bulb
+
+ JSR DrawMissiles       \ Draw the missiles
 
                         \ --- End of replacement ------------------------------>
 
@@ -17942,8 +17952,12 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .SOS1
 
- JSR msblob             \ Reset the dashboard's missile indicators so none of
-                        \ them are targeted
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\JSR msblob             \ Reset the dashboard's missile indicators so none of
+\                       \ them are targeted
+
+                        \ --- End of removed code ----------------------------->
 
  LDA #127               \ Set the pitch and roll counters to 127 (no damping
  STA INWK+29            \ so the planet's rotation doesn't slow down)
@@ -19302,11 +19316,22 @@ LOAD_E% = LOAD% + P% - CODE%
 
  STX MSTG               \ Store the target of our missile lock in MSTG
 
- LDX NOMSL              \ Call MSBAR to update the leftmost indicator in the
- JSR MSBAR              \ dashboard's missile bar, which returns with Y = 0
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- STY MSAR               \ Set MSAR = 0 to indicate that the leftmost missile
-                        \ is no longer seeking a target lock
+\LDX NOMSL              \ Call MSBAR to update the leftmost indicator in the
+\JSR MSBAR              \ dashboard's missile bar, which returns with Y = 0
+\
+\STY MSAR               \ Set MSAR = 0 to indicate that the leftmost missile
+\                       \ is no longer seeking a target lock
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDY #0                 \ Set MSAR = 0 to indicate that the leftmost missile
+ STY MSAR               \ is no longer seeking a target lock
+
+ JSR DrawMissiles       \ Draw the missiles
+
+                        \ --- End of replacement ------------------------------>
 
  RTS                    \ Return from the subroutine
 
@@ -19562,62 +19587,87 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .MSBAR
 
- TXA                    \ Set T = X * 8
- ASL A
- ASL A
- ASL A
- STA T
-
- LDA #49                \ Set SC = 49 - T
- SBC T                  \        = 48 + 1 - (X * 8)
- STA SC
-
-                        \ So the low byte of SC(1 0) contains the row address
-                        \ for the rightmost missile indicator, made up as
-                        \ follows:
-                        \
-                        \   * 48 (character block 7, as byte #7 * 8 = 48), the
-                        \     character block of the rightmost missile
-                        \
-                        \   * 1 (so we start drawing on the second row of the
-                        \     character block)
-                        \
-                        \   * Move left one character (8 bytes) for each count
-                        \     of X, so when X = 0 we are drawing the rightmost
-                        \     missile, for X = 1 we hop to the left by one
-                        \     character, and so on
-
- LDA #&7E               \ Set the high byte of SC(1 0) to &7E, the character row
- STA SCH                \ that contains the missile indicators (i.e. the bottom
-                        \ row of the screen)
-
- TYA                    \ Set A to the correct colour, which is a 3-pixel wide
-                        \ mode 5 character row in the correct colour (for
-                        \ example, a green block has Y = &EE, or %11101110, so
-                        \ the missile blocks are 3 pixels wide, with the
-                        \ fourth pixel on the character row being empty)
-
- LDY #5                 \ We now want to draw this line five times, so set a
-                        \ counter in Y
-
-.MBL1
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\TXA                    \ Set T = X * 8
+\ASL A
+\ASL A
+\ASL A
+\STA T
+\
+\LDA #49                \ Set SC = 49 - T
+\SBC T                  \        = 48 + 1 - (X * 8)
+\STA SC
+\
+\                       \ So the low byte of SC(1 0) contains the row address
+\                       \ for the rightmost missile indicator, made up as
+\                       \ follows:
+\                       \
+\                       \   * 48 (character block 7, as byte #7 * 8 = 48), the
+\                       \     character block of the rightmost missile
+\                       \
+\                       \   * 1 (so we start drawing on the second row of the
+\                       \     character block)
+\                       \
+\                       \   * Move left one character (8 bytes) for each count
+\                       \     of X, so when X = 0 we are drawing the rightmost
+\                       \     missile, for X = 1 we hop to the left by one
+\                       \     character, and so on
+\
+\LDA #&7E               \ Set the high byte of SC(1 0) to &7E, the character row
+\STA SCH                \ that contains the missile indicators (i.e. the bottom
+\                       \ row of the screen)
+\
+\TYA                    \ Set A to the correct colour, which is a 3-pixel wide
+\                       \ mode 5 character row in the correct colour (for
+\                       \ example, a green block has Y = &EE, or %11101110, so
+\                       \ the missile blocks are 3 pixels wide, with the
+\                       \ fourth pixel on the character row being empty)
+\
+\LDY #5                 \ We now want to draw this line five times, so set a
+\                       \ counter in Y
+\
+\.MBL1
+\
 \STA (SC),Y             \ Draw the 3-pixel row, and as we do not use EOR logic,
 \                       \ this will overwrite anything that is already there
 \                       \ (so drawing a black missile will delete what's there)
+\
+\DEY                    \ Decrement the counter for the next row
+\
+\BNE MBL1               \ Loop back to MBL1 if have more rows to draw
 
                         \ --- And replaced by: -------------------------------->
 
- NOP                    \ Pad the code out to the same length as in the original
- NOP
+ STX XSAV               \ Store X so we can retrieve it below
+
+ DEX                    \ Flip the value in X so it counts the missiles from
+ TXA                    \ left to right (0 to 3) instead of right to left
+ EOR #%00000011         \ (1 to 4)
+ TAX
+
+ TYA                    \ If the missile colour is black, jump to spbl1 to
+ BEQ msba1              \ display a space for the missile
+
+ LDA #164               \ Set A to the character with the middle-left sixel
+                        \ filled
+
+ EQUB &2C               \ Skip the next instruction by turning it into
+                        \ &2C &A9 &45, or BIT &45A9, which does nothing apart
+                        \ from affect the flags
+
+.msba1
+
+ LDA #' '               \ Set A to the space character to poke into the screen
+
+ STA &7FC4,X            \ Poke the character in A into the X-th missile
+                        \ character
+
+ LDX XSAV               \ Restore X so it is unchanged
+
+ LDY #0                 \ Set Y = 0, to return from the subroutine
 
                         \ --- End of replacement ------------------------------>
-
- DEY                    \ Decrement the counter for the next row
-
- BNE MBL1               \ Loop back to MBL1 if have more rows to draw
 
  RTS                    \ Return from the subroutine
 
