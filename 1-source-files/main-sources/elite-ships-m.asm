@@ -34,7 +34,15 @@ GUARD &6000             \ Guard against assembling over screen memory
 \
 \ ******************************************************************************
 
-SHIP_MISSILE = &7F00    \ The address of the missile ship blueprint
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\SHIP_MISSILE = &7F00   \ The address of the missile ship blueprint
+
+                        \ --- And replaced by: -------------------------------->
+
+SHIP_MISSILE = &7B00    \ The address of the missile ship blueprint
+
+                        \ --- End of replacement ------------------------------>
 
 CODE% = &5600           \ The flight code loads this file at address &5600, at
 LOAD% = &5600           \ label XX21
