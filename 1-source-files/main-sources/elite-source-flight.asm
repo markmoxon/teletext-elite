@@ -7532,6 +7532,10 @@ NEXT
  STA K+1                \ 147 (yellow), so the altitude indicator always shows
                         \ in this colour
 
+ JSR SPBLB              \ Draw the "S" bulb
+
+ JSR ECBLB              \ Draw the "E" bulb
+
                         \ --- End of replacement ------------------------------>
 
  LDA ALTIT              \ Draw the altitude indicator using a range of 0-255
@@ -19341,17 +19345,41 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .ECBLB
 
- LDA #7*8               \ The E.C.M. bulb is in character block number 7
-                        \ with each character taking 8 bytes, so this sets the
-                        \ low byte of the screen address of the character block
-                        \ we want to draw to
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDX #LO(ECBT)          \ Set (Y X) to point to the character definition in
-                        \ ECBT (we set Y below with the jump to BULB-2, which
-                        \ writes the high byte of SPBT into Y
+\LDA #7*8               \ The E.C.M. bulb is in character block number 7
+\                       \ with each character taking 8 bytes, so this sets the
+\                       \ low byte of the screen address of the character block
+\                       \ we want to draw to
+\
+\LDX #LO(ECBT)          \ Set (Y X) to point to the character definition in
+\                       \ ECBT (we set Y below with the jump to BULB-2, which
+\                       \ writes the high byte of SPBT into Y
+\
+\BNE BULB-2             \ Jump down to BULB-2 (this BNE is effectively a JMP as
+\                       \ A will never be zero)
 
- BNE BULB-2             \ Jump down to BULB-2 (this BNE is effectively a JMP as
-                        \ A will never be zero)
+                        \ --- And replaced by: -------------------------------->
+
+ LDA ECMA               \ Fetch the E.C.M. status flag, and if E.C.M. is off,
+ BEQ ecbl1              \ skip to ecbl1 to display a space for the bulb
+
+ LDA #'E'               \ Set A to the "E" character to poke into the screen
+
+ EQUB &2C               \ Skip the next instruction by turning it into
+                        \ &2C &A9 &45, or BIT &45A9, which does nothing apart
+                        \ from affect the flags
+
+.ecbl1
+
+ LDA #' '               \ Set A to the space character to poke into the screen
+
+ STA &7FCA              \ Poke the character in A into the bottom-left corner of
+                        \ the dashboard
+
+ RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -19364,15 +19392,40 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .SPBLB
 
- LDA #24*8              \ The space station bulb is in character block number 24
-                        \ with each character taking 8 bytes, so this sets the
-                        \ low byte of the screen address of the character block
-                        \ we want to draw to
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDX #LO(SPBT)          \ Set (Y X) to point to the character definition in SPBT
- LDY #HI(SPBT)
+\LDA #24*8              \ The space station bulb is in character block number 24
+\                       \ with each character taking 8 bytes, so this sets the
+\                       \ low byte of the screen address of the character block
+\                       \ we want to draw to
+\
+\LDX #LO(SPBT)          \ Set (Y X) to point to the character definition in SPBT
+\LDY #HI(SPBT)
+\
+\                       \ Fall through into BULB to draw the space station bulb
 
-                        \ Fall through into BULB to draw the space station bulb
+                        \ --- And replaced by: -------------------------------->
+
+ LDA SSPR               \ Fetch the "space station present" flag, and if we are
+ BEQ spbl1              \ not inside the safe zone, skip to spbl1 to display a
+                        \ space for the bulb
+
+ LDA #'S'               \ Set A to the "S" character to poke into the screen
+
+ EQUB &2C               \ Skip the next instruction by turning it into
+                        \ &2C &A9 &45, or BIT &45A9, which does nothing apart
+                        \ from affect the flags
+
+.spbl1
+
+ LDA #' '               \ Set A to the space character to poke into the screen
+
+ STA &7FDE              \ Poke the character in A into the bottom-left corner of
+                        \ the dashboard
+
+ RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -22664,17 +22717,21 @@ LOAD_F% = LOAD% + P% - CODE%
  LDA #3                 \ Reset DELTA (speed) to 3
  STA DELTA
 
- LDA SSPR               \ Fetch the "space station present" flag, and if we are
- BEQ P%+5               \ not inside the safe zone, skip the next instruction
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- JSR SPBLB              \ Light up the space station bulb on the dashboard
+\LDA SSPR               \ Fetch the "space station present" flag, and if we are
+\BEQ P%+5               \ not inside the safe zone, skip the next instruction
+\
+\JSR SPBLB              \ Light up the space station bulb on the dashboard
+\
+\LDA ECMA               \ Fetch the E.C.M. status flag, and if E.C.M. is off,
+\BEQ yu                 \ skip the next instruction
+\
+\JSR ECMOF              \ Turn off the E.C.M. sound
 
- LDA ECMA               \ Fetch the E.C.M. status flag, and if E.C.M. is off,
- BEQ yu                 \ skip the next instruction
+\.yu
 
- JSR ECMOF              \ Turn off the E.C.M. sound
-
-.yu
+                        \ --- End of removed code ----------------------------->
 
  JSR WPSHPS             \ Wipe all ships from the scanner
 
