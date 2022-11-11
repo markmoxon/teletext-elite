@@ -20686,6 +20686,16 @@ LOAD_E% = LOAD% + P% - CODE%
  BEQ PLF13              \ If A = 0, skip the following call to HLOIN2 as there
                         \ is no sun line on this line of the screen
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ TYA                    \ We only draw a sun line once every four pixel rows, so
+ AND #%00000011         \ jump to PLF13 when the row in Y is not a multiple of 4
+ BNE PLF13
+
+ LDA LSO,Y              \ Fetch the Y-th point from the sun line heap
+
+                        \ --- End of added code ------------------------------->
+
  JSR HLOIN2             \ Call HLOIN2 to draw a horizontal line on pixel line Y,
                         \ with centre point YY(1 0) and half-width A, and remove
                         \ the line from the sun line heap once done
@@ -20833,44 +20843,54 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ screen, so jump to PLF23 to just draw the old line
                         \ without drawing the new one
 
-                        \ At this point the old line is from XX to XX+1 and the
-                        \ new line is from X1 to X2, and both fit on-screen. We
-                        \ now want to remove the old line and draw the new one.
-                        \ We could do this by simply drawing the old one then
-                        \ drawing the new one, but instead Elite does this by
-                        \ drawing first from X1 to XX and then from X2 to XX+1,
-                        \ which you can see in action by looking at all the
-                        \ permutations below of the four points on the line and
-                        \ imagining what happens if you draw from X1 to XX and
-                        \ X2 to XX+1 using EOR logic. The six possible
-                        \ permutations are as follows, along with the result of
-                        \ drawing X1 to XX and then X2 to XX+1:
-                        \
-                        \   X1    X2    XX____XX+1      ->      +__+  +  +
-                        \
-                        \   X1    XX____X2____XX+1      ->      +__+__+  +
-                        \
-                        \   X1    XX____XX+1  X2        ->      +__+__+__+
-                        \
-                        \   XX____X1____XX+1  X2        ->      +  +__+__+
-                        \
-                        \   XX____XX+1  X1    X2        ->      +  +  +__+
-                        \
-                        \   XX____X1____X2____XX+1      ->      +  +__+  +
-                        \
-                        \ They all end up with a line between X1 and X2, which
-                        \ is what we want. There's probably a mathematical proof
-                        \ of why this works somewhere, but the above is probably
-                        \ easier to follow.
-                        \
-                        \ We can draw from X1 to XX and X2 to XX+1 by swapping
-                        \ XX and X2 and drawing from X1 to X2, and then drawing
-                        \ from XX to XX+1, so let's do this now
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDA X2                 \ Swap XX and X2
- LDX XX
- STX X2
- STA XX
+\                       \ At this point the old line is from XX to XX+1 and the
+\                       \ new line is from X1 to X2, and both fit on-screen. We
+\                       \ now want to remove the old line and draw the new one.
+\                       \ We could do this by simply drawing the old one then
+\                       \ drawing the new one, but instead Elite does this by
+\                       \ drawing first from X1 to XX and then from X2 to XX+1,
+\                       \ which you can see in action by looking at all the
+\                       \ permutations below of the four points on the line and
+\                       \ imagining what happens if you draw from X1 to XX and
+\                       \ X2 to XX+1 using EOR logic. The six possible
+\                       \ permutations are as follows, along with the result of
+\                       \ drawing X1 to XX and then X2 to XX+1:
+\                       \
+\                       \   X1    X2    XX____XX+1      ->      +__+  +  +
+\                       \
+\                       \   X1    XX____X2____XX+1      ->      +__+__+  +
+\                       \
+\                       \   X1    XX____XX+1  X2        ->      +__+__+__+
+\                       \
+\                       \   XX____X1____XX+1  X2        ->      +  +__+__+
+\                       \
+\                       \   XX____XX+1  X1    X2        ->      +  +  +__+
+\                       \
+\                       \   XX____X1____X2____XX+1      ->      +  +__+  +
+\                       \
+\                       \ They all end up with a line between X1 and X2, which
+\                       \ is what we want. There's probably a mathematical proof
+\                       \ of why this works somewhere, but the above is probably
+\                       \ easier to follow.
+\                       \
+\                       \ We can draw from X1 to XX and X2 to XX+1 by swapping
+\                       \ XX and X2 and drawing from X1 to X2, and then drawing
+\                       \ from XX to XX+1, so let's do this now
+
+\LDA X2                 \ Swap XX and X2
+\LDX XX
+\STX X2
+\STA XX
+
+                        \ --- And replaced by: -------------------------------->
+
+ TYA                    \ We only draw a sun line once every four pixel rows, so
+ AND #%00000011         \ jump to PLF23 when the row in Y is a multiple of 4
+ BNE PLF23
+
+                        \ --- End of added code ------------------------------->
 
  JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1)
 
@@ -20886,6 +20906,14 @@ LOAD_E% = LOAD% + P% - CODE%
  STA X2
 
 .PLF16
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ TYA                    \ We only draw a sun line once every four pixel rows, so
+ AND #%00000011         \ jump to PLF6 when the row in Y is a multiple of 4
+ BNE PLF6
+
+                        \ --- End of added code ------------------------------->
 
  JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1)
 
@@ -20982,6 +21010,16 @@ LOAD_E% = LOAD% + P% - CODE%
 
  BEQ PLF9               \ If A = 0, skip the following call to HLOIN2 as there
                         \ is no sun line on this line of the screen
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ TYA                    \ We only draw a sun line once every four pixel rows, so
+ AND #%00000011         \ jump to PLF9 when the row in Y is not a multiple of 4
+ BNE PLF9
+
+ LDA LSO,Y              \ Fetch the Y-th point from the sun line heap
+
+                        \ --- End of added code ------------------------------->
 
  JSR HLOIN2             \ Call HLOIN2 to draw a horizontal line on pixel line Y,
                         \ with centre point YY(1 0) and half-width A, and remove
@@ -21341,12 +21379,33 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ gives us the half-width of the sun's line on this line
                         \ of the screen
 
- BEQ P%+5               \ If A = 0, skip the following call to HLOIN2 as there
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\BEQ P%+5               \ If A = 0, skip the following call to HLOIN2 as there
+\                       \ is no sun line on this line of the screen
+
+                        \ --- And replaced by: -------------------------------->
+
+ BEQ wpls1              \ If A = 0, skip the following call to HLOIN2 as there
                         \ is no sun line on this line of the screen
+
+ TYA                    \ We only draw a sun line once every four pixel rows, so
+ AND #%00000011         \ jump to wpls2 when the row in Y is not a multiple of 4
+ BNE wpls1
+
+ LDA LSO,Y              \ Fetch the Y-th point from the sun line heap
+
+                        \ --- End of replacement ------------------------------>
 
  JSR HLOIN2             \ Call HLOIN2 to draw a horizontal line on pixel line Y,
                         \ with centre point YY(1 0) and half-width A, and remove
                         \ the line from the sun line heap once done
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.wpls1
+
+                        \ --- End of added code ------------------------------->
 
  DEY                    \ Decrement the loop counter
 
