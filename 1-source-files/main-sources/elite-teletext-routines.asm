@@ -590,8 +590,8 @@ ENDIF
 
  INX                    \ Increment the byte counter
 
- CMP #&28
- BCC mess1              \ Loop back until we have counted a whole page
+ CPX #&28               \ Loop back until we have cleared the whole row
+ BCC mess1
 
  RTS                    \ Return from the subroutine
 
