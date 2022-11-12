@@ -4744,25 +4744,19 @@ LOAD_B% = LOAD% + P% - CODE%
 \
 \ ******************************************************************************
 
-.PX3
-
- LDA TWOS,X             \ Fetch a 1-pixel byte from TWOS and EOR it into SC+Y
- EOR (SC),Y
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\.PX3
+\
+\LDA TWOS,X             \ Fetch a 1-pixel byte from TWOS and EOR it into SC+Y
+\EOR (SC),Y
 \STA (SC),Y
+\
+\LDY T1                 \ Restore Y from T1, so Y is preserved by the routine
+\
+\RTS                    \ Return from the subroutine
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
-
- LDY T1                 \ Restore Y from T1, so Y is preserved by the routine
-
- RTS                    \ Return from the subroutine
+                        \ --- End of removed code ----------------------------->
 
 \ ******************************************************************************
 \
