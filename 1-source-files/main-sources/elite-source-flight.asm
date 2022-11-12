@@ -32139,26 +32139,59 @@ LOAD_H% = LOAD% + P% - CODE%
                         \ view), jump to LO2 to return from the subroutine (as
                         \ LO2 contains an RTS)
 
- LDA #128               \ Set QQ19 to the x-coordinate of the centre of the
- STA QQ19               \ screen
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDA #Y-24              \ Set QQ19+1 to the y-coordinate of the centre of the
- STA QQ19+1             \ screen, minus 24 (because TT15 will add 24 to the
-                        \ coordinate when it draws the crosshairs)
+\LDA #128               \ Set QQ19 to the x-coordinate of the centre of the
+\STA QQ19               \ screen
+\
+\LDA #Y-24              \ Set QQ19+1 to the y-coordinate of the centre of the
+\STA QQ19+1             \ screen, minus 24 (because TT15 will add 24 to the
+\                       \ coordinate when it draws the crosshairs)
+\
+\LDA #20                \ Set QQ19+2 to size 20 for the crosshairs size
+\STA QQ19+2
+\
+\JSR TT15               \ Call TT15 to draw crosshairs of size 20 just to the
+\                       \ left of the middle of the screen
+\
+\LDA #10                \ Set QQ19+2 to size 10 for the crosshairs size
+\STA QQ19+2
+\
+\JMP TT15               \ Call TT15 to draw crosshairs of size 10 at the same
+\                       \ location, which will remove the centre part from the
+\                       \ laser crosshairs, leaving a gap in the middle, and
+\                       \ return from the subroutine using a tail call
 
- LDA #20                \ Set QQ19+2 to size 20 for the crosshairs size
- STA QQ19+2
+                        \ --- And replaced by: -------------------------------->
 
- JSR TT15               \ Call TT15 to draw crosshairs of size 20 just to the
-                        \ left of the middle of the screen
+                        \ The centre of the laser crosshairs is at pixel
+                        \ coordinate (128, 96), which is the equivalent of sixel
+                        \ coordinate (32, 24)
+                        \
+                        \ We add one row to the y-coordinate to skip the title
+                        \ bar, to give (32, 27)
 
- LDA #10                \ Set QQ19+2 to size 10 for the crosshairs size
- STA QQ19+2
+ LDX #32                \ Draw two vertical bars for the laser sights
+ LDY #27-5
+ JSR MoveTo
+ LDY #27-2
+ JSR DrawTo
+ LDY #27+5
+ JSR MoveTo
+ LDY #27+2
+ JSR DrawTo
 
- JMP TT15               \ Call TT15 to draw crosshairs of size 10 at the same
-                        \ location, which will remove the centre part from the
-                        \ laser crosshairs, leaving a gap in the middle, and
-                        \ return from the subroutine using a tail call
+ LDY #27                \ Draw two horizontal bars for the laser sights,
+ LDX #32-5              \ returning from the subroutine using a tail call
+ JSR MoveTo
+ LDX #32-2
+ JSR DrawTo
+ LDX #32+5
+ JSR MoveTo
+ LDX #32+2
+ JMP DrawTo
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
