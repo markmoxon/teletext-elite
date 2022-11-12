@@ -26876,24 +26876,38 @@ LOAD_G% = LOAD% + P% - CODE%
                         \ off the side of the screen. This call sets up the
                         \ first row of the dot (i.e. a four-pixel dash)
 
- LDY #6                 \ Set Y to 6 for the next call to Shpt
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDA K4                 \ Set A = y-coordinate of dot + 1 (so this is the second
- ADC #1                 \ row of the two-pixel-high dot)
+\LDY #6                 \ Set Y to 6 for the next call to Shpt
+\
+\LDA K4                 \ Set A = y-coordinate of dot + 1 (so this is the second
+\ADC #1                 \ row of the two-pixel-high dot)
+\
+\JSR Shpt               \ Call Shpt with Y = 6 to set up bytes 5-8 in the ship
+\                       \ lines space, aborting the call to LL9 if the dot is
+\                       \ off the side of the screen. This call sets up the
+\                       \ second row of the dot (i.e. another four-pixel dash,
+\                       \ on the row below the first one)
 
- JSR Shpt               \ Call Shpt with Y = 6 to set up bytes 5-8 in the ship
-                        \ lines space, aborting the call to LL9 if the dot is
-                        \ off the side of the screen. This call sets up the
-                        \ second row of the dot (i.e. another four-pixel dash,
-                        \ on the row below the first one)
+                        \ --- End of removed code ----------------------------->
 
  LDA #%00001000         \ Set bit 3 of the ship's byte #31 to record that we
  ORA XX1+31             \ have now drawn something on-screen for this ship
  STA XX1+31
 
- LDA #8                 \ Set A = 8 so when we call LL18+2 next, byte #0 of the
-                        \ heap gets set to 8, for the 8 bytes we just stuck on
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #8                 \ Set A = 8 so when we call LL18+2 next, byte #0 of the
+\                       \ heap gets set to 8, for the 8 bytes we just stuck on
+\                       \ the heap
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #4                 \ Set A = 4 so when we call LL18+2 next, byte #0 of the
+                        \ heap gets set to 4, for the 4 bytes we just stuck on
                         \ the heap
+
+                        \ --- End of replacement ------------------------------>
 
  JMP LL81+2             \ Call LL81+2 to draw the ship's dot, returning from the
                         \ subroutine using a tail call
@@ -26930,7 +26944,15 @@ LOAD_G% = LOAD% + P% - CODE%
  DEY                    \ Store A in byte Y+1 of the ship line heap
  STA (XX19),Y
 
- ADC #3                 \ Set A = screen x-coordinate of the ship dot + 3
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\ADC #3                 \ Set A = screen x-coordinate of the ship dot + 3
+
+                        \ --- And replaced by: -------------------------------->
+
+ ADC #8                 \ Set A = screen x-coordinate of the ship dot + 8
+
+                        \ --- End of replacement ------------------------------>
 
  BCS nono-2             \ If the addition pushed the dot off the right side of
                         \ the screen, jump to nono-2 to return from the parent
