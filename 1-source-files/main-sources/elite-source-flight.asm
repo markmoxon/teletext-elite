@@ -32546,24 +32546,42 @@ LOAD_H% = LOAD% + P% - CODE%
  LDA #20                \ Move the text cursor to row 20, near the bottom of
  STA YC                 \ the screen
 
- LDA #&75               \ Set the two-byte value in SC to &7507
- STA SC+1
- LDA #7
- STA SC
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #&75               \ Set the two-byte value in SC to &7507
+\STA SC+1
+\LDA #7
+\STA SC
+\
+\JSR TT67               \ Print a newline, which will move the text cursor down
+\                       \ a line (to row 21) and back to column 1
+\
+\LDA #0                 \ Call LYN to clear the pixels from &7507 to &75F0
+\JSR LYN
+\
+\INC SC+1               \ Increment SC+1 so SC points to &7607
+\
+\INY                    \ Move the text cursor to column 1 (as LYN sets Y to 0)
+\STY XC
+\
+\                       \ Fall through into LYN to clear the pixels from &7707
+\                       \ to &77F0
+
+                        \ --- And replaced by: -------------------------------->
 
  JSR TT67               \ Print a newline, which will move the text cursor down
                         \ a line (to row 21) and back to column 1
 
- LDA #0                 \ Call LYN to clear the pixels from &7507 to &75F0
- JSR LYN
+ JSR ClearLines         \ Clear rows 21-23 of the mode 7 screen
 
- INC SC+1               \ Increment SC+1 so SC points to &7607
+ LDA #0                 \ Set A and Y to 0
+ TAY
 
- INY                    \ Move the text cursor to column 1 (as LYN sets Y to 0)
- STY XC
+.SC5
 
-                        \ Fall through into LYN to clear the pixels from &7707
-                        \ to &77F0
+ RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -32591,31 +32609,26 @@ LOAD_H% = LOAD% + P% - CODE%
 \
 \ ******************************************************************************
 
-.LYN
-
- LDY #233               \ Set up a counter in Y to count down from pixel 233
-
-.EE2
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\.LYN
+\
+\LDY #233               \ Set up a counter in Y to count down from pixel 233
+\
+\.EE2
+\
 \STA (SC),Y             \ Store A in the Y-th byte after the address pointed to
-                        \ by SC
+\                       \ by SC
+\
+\DEY                    \ Decrement Y
+\
+\BNE EE2                \ Loop back until Y is zero
+\
+\.SC5
+\
+\RTS                    \ Return from the subroutine
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
-
- DEY                    \ Decrement Y
-
- BNE EE2                \ Loop back until Y is zero
-
-.SC5
-
- RTS                    \ Return from the subroutine
+                        \ --- End of removed code ----------------------------->
 
 \ ******************************************************************************
 \

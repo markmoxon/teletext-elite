@@ -597,6 +597,36 @@ ENDIF
 
 \ ******************************************************************************
 \
+\       Name: ClearLines
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Clear lines 21-23 in mode 7
+\
+\ ******************************************************************************
+
+.ClearLines
+
+ LDA #0                 \ Set A = 0 so we can zero screen memory
+
+ LDX #1                 \ Set a byte counter in X, starting from 1 so we skip
+                        \ the graphics/text control character
+
+.clyn1
+
+ STA MODE7_VRAM+(21*&28),X    \ Zero the X-th byte of rows 21 to 23
+ STA MODE7_VRAM+(22*&28),X
+ STA MODE7_VRAM+(23*&28),X
+
+ INX                    \ Increment the byte counter
+
+ CPX #&28               \ Loop back until we have cleared the whole row
+ BCC clyn1
+
+ RTS                    \ Return from the subroutine
+
+
+\ ******************************************************************************
+\
 \       Name: SetMode7Graphics
 \       Type: Subroutine
 \   Category: Teletext Elite
