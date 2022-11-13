@@ -20645,6 +20645,16 @@ ENDIF
  BEQ awe                \ print the author credits (PATG can be toggled by
                         \ pausing the game and pressing "X")
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDY #19                \ Move the text cursor to row 19
+ STY YC
+
+ LDA #135               \ Style row 19 as white text
+ STA MODE7_VRAM+(19*&28)
+
+                        \ --- End of added code ------------------------------->
+
  LDA #13                \ Print extended token 13 ("BY D.BRABEN & I.BELL")
  JSR DETOK
 
