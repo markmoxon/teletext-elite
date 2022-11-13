@@ -82,7 +82,7 @@ There are three main folders in this repository, which reflect the order of the 
 
 * [1-source-files](1-source-files) contains all the different source files, such as the main assembler source files, image binaries, fonts, boot files and so on.
 
-* [2-build-files](2-build-files) contains build-related scripts, such as the checksum, encryption and crc32 verification scripts.
+* [2-build-files](2-build-files) contains build-related scripts, such as the checksum and encryption script.
 
 * [3-assembled-output](3-assembled-output) contains the output from the assembly process, when the source files are assembled and the results processed by the build files.
 
