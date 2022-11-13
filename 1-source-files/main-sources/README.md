@@ -1,6 +1,6 @@
-# Annotated source code for the BBC Micro disc version of Elite
+# Annotated source code for Teletext Elite
 
-This folder contains the annotated source code for the BBC Micro disc version of Elite.
+This folder contains the annotated source code for Teletext Elite.
 
 ---
 

@@ -1,12 +1,14 @@
-# Image binaries for the BBC Micro disc version of Elite
+# Image binaries for Teletext Elite
 
-This folder contains the image binaries from the original game disc for the BBC Micro disc version of Elite on Ian Bell's personal website.
+This folder contains the image binaries from the original game disc for the BBC Micro disc version of Elite on Ian Bell's personal website, plus an additional dashboard image for Teletext Elite.
 
 * [P.(C)ASFT.bin](P.(C)ASFT.bin) is the "(c) ACORNSOFT 1984" image for the bottom of the title screen
 
 * [P.A-SOFT.bin](P.A-SOFT.bin) is the "ACORNSOFT" image for the very top of the title screen
 
-* [P.DIALS2P.bin](P.DIALS2P.bin) is the dashboard image
+* [P.DIALS.bin](P.DIALS2P.bin) is the dashboard image in mode 5
+
+* [P.DIALST.bin](P.DIALS2P.bin) is the dashboard image in mode 7
 
 * [P.ELITE.bin](P.ELITE.bin) is the "ELITE" image for the title screen
 
