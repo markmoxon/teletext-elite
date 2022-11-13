@@ -15247,9 +15247,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- LDA #7                 \ Move the text cursor to column 7 in the message row
+ LDA #7                 \ Move the text cursor to column 7
  STA XC
- LDA #MESSAGE_ROW
+
+ LDA #MESSAGE_ROW       \ Move the text cursor to the message row, which is
+ LDX QQ11               \ MESSAGE_ROW for space views (when QQ11 is zero), or
+ BEQ P%+4               \ row 22 for non-space views (when QQ11 is non-zero)
+ LDA #22
  STA YC
 
                         \ --- End of replacement ------------------------------>
@@ -15477,7 +15481,6 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .ee3
 
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
 \LDY #1                 \ Move the text cursor to column 1
@@ -15486,20 +15489,24 @@ LOAD_D% = LOAD% + P% - CODE%
 \STY YC                 \ Move the text cursor to row 1
 \
 \DEY                    \ Decrement Y to 0 for the high byte in pr6
-
+\
+\                       \ Fall through into pr6 to print X to 5 digits, as the
+\                       \ high byte in Y is 0
 
                         \ --- And replaced by: -------------------------------->
 
- LDY #2                 \ Move the text cursor to column 2
- STY XC
-
- LDY #0                 \ Move the text cursor to row 0
+ LDY #0                 \ Move the text cursor to column 0, row 0, while also
+ STY XC                 \ setting the high byte of (Y X) to 0
  STY YC
 
-                        \ --- End of replacement ------------------------------>
+ CLC                    \ Do not display a decimal point when printing
 
-                        \ Fall through into pr6 to print X to 5 digits, as the
-                        \ high byte in Y is 0
+ LDA #2                 \ Set the number of digits to print to 2
+
+ JMP TT11               \ Call TT11 to print (Y X) to 2 digits and return from
+                        \ the subroutine using a tail call
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -15906,8 +15913,17 @@ LOAD_D% = LOAD% + P% - CODE%
  JSR TT66               \ and set the current view type in QQ11 to 16 (Market
                         \ Price screen)
 
- LDA #5                 \ Move the text cursor to column 4
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #5                 \ Move the text cursor to column 5
+\STA XC
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #7                 \ Move the text cursor to column 7
  STA XC
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #167               \ Print recursive token 7 ("{current system name} MARKET
  JSR NLIN3              \ PRICES") and draw a horizontal line at pixel row 19
@@ -26194,11 +26210,11 @@ ENDIF
 
 .MESS
 
- LDX #0                 \ Set QQ17 = 0 to switch to ALL CAPS
- STX QQ17
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\LDX #0                 \ Set QQ17 = 0 to switch to ALL CAPS
+\STX QQ17
+\
 \LDY #9                 \ Move the text cursor to column 9, row 22, at the
 \STY XC                 \ bottom middle of the screen, and set Y = 22
 \LDY #22
@@ -26206,12 +26222,19 @@ ENDIF
 
                         \ --- And replaced by: -------------------------------->
 
- LDY #9                 \ Move the text cursor to column 9, row 17, at the
- STY XC                 \ bottom middle of the screen
- LDY #MESSAGE_ROW
+ LDY #9                 \ Move the text cursor to column 9
+ STY XC
+
+ LDY #MESSAGE_ROW       \ Move the text cursor to the message row, which is
+ LDX QQ11               \ MESSAGE_ROW for space views (when QQ11 is zero), or
+ BEQ P%+4               \ row 22 for non-space views (when QQ11 is non-zero)
+ LDY #22
  STY YC
 
- LDY #22                \ Set Y = 22
+ LDY #22                \ Set Y = 22 to use as the message delay
+
+ LDX #0                 \ Set QQ17 = 0 to switch to ALL CAPS
+ STX QQ17
 
                         \ --- End of replacement ------------------------------>
 

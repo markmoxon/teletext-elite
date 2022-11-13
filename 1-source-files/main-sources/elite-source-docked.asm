@@ -15054,8 +15054,17 @@ LOAD_D% = LOAD% + P% - CODE%
  JSR TT66               \ and set the current view type in QQ11 to 16 (Market
                         \ Price screen)
 
- LDA #5                 \ Move the text cursor to column 4
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #5                 \ Move the text cursor to column 5
+\STA XC
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #7                 \ Move the text cursor to column 7
  STA XC
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #167               \ Print recursive token 7 ("{current system name} MARKET
  JSR NLIN3              \ PRICES") and draw a horizontal line at pixel row 19
