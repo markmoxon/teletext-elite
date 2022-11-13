@@ -11274,16 +11274,19 @@ LOAD_C% = LOAD% +P% - CODE%
 
  JSR ClearMode7Screen   \ Clear the screen
 
- LDA QQ11               \ If this is the space view, set the graphics screen
- BEQ gfx1
+ LDA QQ11               \ If this is the space view, jump to grfx1 to set the
+ BEQ grfx1              \ graphics screen
 
- CMP #6                 \ If this is the death screen, set the graphics screen
- BEQ gfx1
+ CMP #3                 \ If this is witchspace, jump to grfx1 to set the
+ BEQ grfx1              \ graphics screen
 
- AND #%11000000         \ If this is not a chart, skip the following
- BEQ BOL1
+ CMP #6                 \ If this is the death screen, jump to grfx1 to set the
+ BEQ grfx1              \ graphics screen
 
-.gfx1
+ AND #%11000000         \ If this is a chart, fall through into grfx1, otherwise
+ BEQ BOL1               \ jump to BOL1
+
+.grfx1
 
                         \ If we get here then this is a space view, death screen
                         \ or chart, so we want a graphics view
