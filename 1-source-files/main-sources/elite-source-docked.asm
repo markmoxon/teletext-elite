@@ -6826,15 +6826,15 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
  BNE RR2                \ skip to RR2 to print that character, otherwise this is
                         \ the delete character, so continue on
 
- DEC XC                 \ We want to delete the character to the left of the
-                        \ text cursor and move the cursor back one, so let's
-                        \ do that by decrementing YC. Note that this doesn't
-                        \ have anything to do with the actual deletion below,
-                        \ we're just updating the cursor so it's in the right
-                        \ position following the deletion
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\DEC XC                 \ We want to delete the character to the left of the
+\                       \ text cursor and move the cursor back one, so let's
+\                       \ do that by decrementing YC. Note that this doesn't
+\                       \ have anything to do with the actual deletion below,
+\                       \ we're just updating the cursor so it's in the right
+\                       \ position following the deletion
+\
 \ADC #&5E               \ A contains YC (from above) and the C flag is set (from
 \TAX                    \ the CPY #127 above), so these instructions do this:
 \                       \
@@ -6878,7 +6878,10 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
  LDA #' '               \ Store a space at the XC-th character on the row
  LDY XC                 \ at SC(1 0)
- STA (SC), Y
+ STA (SC),Y
+
+ DEC XC                 \ We just deleted the character to the left of the
+                        \ text cursor so we move the cursor back one
 
  JMP RR4                \ We are done deleting, so restore the registers and
                         \ return from the subroutine
