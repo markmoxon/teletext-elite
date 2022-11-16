@@ -606,6 +606,12 @@ ENDIF
 
 .ClearLines
 
+ LDA #135               \ Set A to the "white text" control code
+
+ STA MODE7_VRAM+(21*&28)    \ Set rows 21-23 to text
+ STA MODE7_VRAM+(22*&28)
+ STA MODE7_VRAM+(23*&28)
+
  LDA #0                 \ Set A = 0 so we can zero screen memory
 
  LDX #1                 \ Set a byte counter in X, starting from 1 so we skip
