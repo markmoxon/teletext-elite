@@ -31,6 +31,16 @@ _STH_DISC               = (_VARIANT = 2)
 
 GUARD &6000             \ Guard against assembling over screen memory
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+_DOCKED = TRUE          \ Set compilation flag for docked vs flight code
+
+_LOADER = TRUE          \ Set compilation flag for loader code
+
+INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
+
+                        \ --- End of added code ------------------------------->
+
 \ ******************************************************************************
 \
 \ Configuration variables
@@ -155,6 +165,14 @@ ORG &0070
 
  SKIP 2                 \ Used in the copy protection code
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.R
+
+ SKIP 2                 \ Used in the mode 7 screen routines
+
+                        \ --- End of added code ------------------------------->
+
 ORG &008B
 
 .DL
@@ -237,7 +255,8 @@ ORG CODE%
 \                       \   * Top = 16
 \                       \   * Bottom = 17
 \                       \
-\                       \ i.e. 1 row high, 13 columns wide at (2, 16)\
+\                       \ i.e. 1 row high, 13 columns wide at (2, 16)
+\
 \EQUB 23, 0, 6, 31      \ Set 6845 register R6 = 31
 \EQUB 0, 0, 0           \
 \EQUB 0, 0, 0           \ This is the "vertical displayed" register, and sets
@@ -400,7 +419,7 @@ ENDMACRO
 
                         \ --- And replaced by: -------------------------------->
 
- JSR OSBmod             \ Call the protection code that's buried within PLL1
+ JSR DrawSaturn         \ Call DrawSaturn to draw a mode 7 Saturn
 
                         \ --- End of replacement ------------------------------>
 
@@ -1243,8 +1262,19 @@ ORG CATDcode + P% - CATD
  LDA #&2A
  STA P+1
 
- LDX #8                 \ Call MVPG with X = 8 to copy 8 pages of memory from
- JSR MVPG               \ the address in P(1 0) to the address in ZP(1 0)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDX #8                 \ Call MVPG with X = 8 to copy 8 pages of memory from
+\JSR MVPG               \ the address in P(1 0) to the address in ZP(1 0)
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDX #8                 \ Set X = 8 and pad out the code to disable the memory
+ NOP                    \ copy for the loading screen banner images
+ NOP
+ NOP
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -1393,39 +1423,70 @@ ORG CATDcode + P% - CATD
 
 .PIX
 
- TAY                    \ Copy A into Y, for use later
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\TAY                    \ Copy A into Y, for use later
+\
+\EOR #%10000000         \ Flip the sign of A
+\
+\LSR A                  \ Set A = A >> 3
+\LSR A
+\LSR A
+\
+\LSR CHKSM+1            \ Rotate the high byte of CHKSM+1 to the right, as part
+\                       \ of the copy protection
+\
+\ORA #&60               \ Set ZP+1 = &60 + A >> 3
+\STA ZP+1
+\
+\TXA                    \ Set ZP = (X >> 3) * 8
+\EOR #%10000000
+\AND #%11111000
+\STA ZP
+\
+\TYA                    \ Set Y = Y AND %111
+\AND #%00000111
+\TAY
+\
+\TXA                    \ Set X = X AND %111
+\AND #%00000111
+\TAX
+\
+\LDA TWOS,X             \ Fetch a pixel from TWOS and poke it into ZP+Y
+\STA (ZP),Y
+
+                        \ --- And replaced by: -------------------------------->
 
  EOR #%10000000         \ Flip the sign of A
 
- LSR A                  \ Set A = A >> 3
- LSR A
- LSR A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
 
- LSR CHKSM+1            \ Rotate the high byte of CHKSM+1 to the right, as part
-                        \ of the copy protection
+ TAY                    \ Copy the pixel y-coordinate to Y
 
- ORA #&60               \ Set ZP+1 = &60 + A >> 3
- STA ZP+1
+ TXA                    \ Copy the x-coordinate to A
 
- TXA                    \ Set ZP = (X >> 3) * 8
- EOR #%10000000
- AND #%11111000
- STA ZP
+ CLC                    \ The origin for the x-coordinate is in the centre of
+ ADC #128               \ the screen, so add 128 so the origin is on the left
+                        \ of the screen, ready for the PlotPixelClipped routine
 
- TYA                    \ Set Y = Y AND %111
- AND #%00000111
- TAY
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
 
- TXA                    \ Set X = X AND %111
- AND #%00000111
- TAX
+ TAX                    \ Copy the pixel y-coordinate to X
 
- LDA TWOS,X             \ Fetch a pixel from TWOS and poke it into ZP+Y
- STA (ZP),Y
+ JSR PlotPixelClipped   \ Plot the sixel
+
+                        \ --- End of replacement ------------------------------>
 
 .out
 
  RTS                    \ Return from the subroutine
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ORG &1CC7               \ Pad out the routine to its original length so the rest
+                        \ of the code stays in the same place
+
+                        \ --- End of added code ------------------------------->
 
 \ ******************************************************************************
 \
@@ -2457,31 +2518,164 @@ ORG TVT1code + P% - TVT1
 \
 \ ******************************************************************************
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\.ELITE
+
+\INCBIN "1-source-files/images/P.ELITE.bin"
+
+\.ASOFT
+
+\INCBIN "1-source-files/images/P.A-SOFT.bin"
+
+\.CpASOFT
+
+\INCBIN "1-source-files/images/P.(C)ASFT.bin"
+
+\IF _MATCH_ORIGINAL_BINARIES
+
+\IF _STH_DISC
+\ INCBIN "4-reference-binaries/sth/workspaces/loader3.bin"
+\ELIF _IB_DISC
+\ SKIP 158
+\ENDIF
+\
+\ELSE
+\
+\ SKIP 158              \ These bytes appear to be unused
+\
+\ENDIF
+                        \ --- And replaced by: -------------------------------->
+
 .ELITE
 
- INCBIN "1-source-files/images/P.ELITE.bin"
+\INCBIN "1-source-files/images/P.ELITE.bin"
 
 .ASOFT
 
- INCBIN "1-source-files/images/P.A-SOFT.bin"
+\INCBIN "1-source-files/images/P.A-SOFT.bin"
 
 .CpASOFT
 
- INCBIN "1-source-files/images/P.(C)ASFT.bin"
+\INCBIN "1-source-files/images/P.(C)ASFT.bin"
 
-IF _MATCH_ORIGINAL_BINARIES
+INCLUDE "1-source-files/main-sources/elite-teletext-pixels.asm"
 
- IF _STH_DISC
-  INCBIN "4-reference-binaries/sth/workspaces/loader3.bin"
- ELIF _IB_DISC
-  SKIP 158
- ENDIF
+                        \ --- End of replacement ------------------------------>
 
-ELSE
+\ ******************************************************************************
+\
+\       Name: DrawSaturn
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Insert a graphics control character on rows 2 onwards
+\
+\ ******************************************************************************
 
-  SKIP 158              \ These bytes appear to be unused
+                        \ --- Mod: Code added for Teletext Elite: ------------->
 
-ENDIF
+.DrawSaturn
+
+ LDA #132               \ Style the top and bottom rows as yellow text on blue
+ STA MODE7_VRAM         \ background
+ STA MODE7_VRAM+(23*&28)
+ LDA #157
+ STA MODE7_VRAM+1
+ STA MODE7_VRAM+(23*&28)+1
+ LDA #131
+ STA MODE7_VRAM+2
+ STA MODE7_VRAM+(23*&28)+2
+
+ LDA #151               \ White graphics
+
+ FOR n, 1, 22
+  STA MODE7_VRAM + n*40 \ Set rows 1 to 22 to white graphics
+ NEXT
+
+ LDA #LO(MODE7_VRAM+MODE7_INDENT+7)     \ Print title text
+ STA SC
+ LDA #HI(MODE7_VRAM+MODE7_INDENT+7)
+ STA SCH
+ LDA #LO(text1)
+ STA P
+ LDA #HI(text1)
+ STA P+1
+ LDY #18
+ JSR PrintText
+
+ LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+10)   \ Print subtitle text
+ STA SC
+ LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+10)
+ STA SCH
+ LDA #LO(text2)
+ STA P
+ LDA #HI(text2)
+ STA P+1
+ LDY #15
+ JSR PrintText
+
+ JMP PLL1               \ Draw Saturn, returning from the subroutine using a
+                        \ tail call
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: PrintText
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print a string
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.PrintText
+
+ LDA (P),Y
+ STA (SC),Y
+
+ DEY
+
+ BPL PrintText
+
+ RTS
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: text1
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Loading screen title
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.text1
+
+ EQUS "---- E L I T E ----"
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: text2
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Loading screen sub title
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.text2
+
+ EQUS "Teletext version"
+
+                        \ --- End of added code ------------------------------->
 
 \ ******************************************************************************
 \

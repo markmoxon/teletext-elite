@@ -103,8 +103,11 @@ for n in range(scramble2_from, scramble2_to):
 for n in range(scramble3_from, scramble3_to):
     data_block[n - load_address] = data_block[n - load_address] ^ scramble3_eor
 
-for n in range(scramble4_from, scramble4_to):
-    data_block[n - load_address] = data_block[n - load_address] ^ scramble4_eor
+# Do not scramble the title banner images in the loader, as we are reusing them
+# for the Saturn sixel routines
+#
+# for n in range(scramble4_from, scramble4_to):
+#    data_block[n - load_address] = data_block[n - load_address] ^ scramble4_eor
 
 # Write output file for ELITE4
 

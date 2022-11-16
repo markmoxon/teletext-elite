@@ -41,6 +41,8 @@ GUARD &7B00             \ Guard against assembling over the missile ship data,
 
 _DOCKED = TRUE          \ Set compilation flag for docked vs flight code
 
+_LOADER = FALSE         \ Set compilation flag for loader
+
 INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- End of replacement ------------------------------>
