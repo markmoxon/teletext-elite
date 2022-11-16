@@ -13934,8 +13934,12 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ is 128 pixels high, starting on row 24 and ending on
                         \ row 151
 
- JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
-                        \ current system's galactic coordinates
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
+\                       \ current system's galactic coordinates
+
+                        \ --- End of removed code ----------------------------->
 
  LDX #0                 \ We're now going to plot each of the galaxy's systems,
                         \ so set up a counter in X for each system, starting at
