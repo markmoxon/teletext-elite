@@ -2592,26 +2592,26 @@ INCLUDE "1-source-files/main-sources/elite-teletext-pixels.asm"
   STA MODE7_VRAM + n*40 \ Set rows 1 to 22 to white graphics
  NEXT
 
- LDA #LO(MODE7_VRAM+MODE7_INDENT+7)     \ Print title text
+ LDA #LO(MODE7_VRAM+MODE7_INDENT+10)     \ Print title text
  STA SC
- LDA #HI(MODE7_VRAM+MODE7_INDENT+7)
+ LDA #HI(MODE7_VRAM+MODE7_INDENT+10)
  STA SCH
  LDA #LO(text1)
  STA P
  LDA #HI(text1)
  STA P+1
- LDY #18
+ LDY #14
  JSR PrintText
 
- LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+10)   \ Print subtitle text
+ LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+8)   \ Print subtitle text
  STA SC
- LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+10)
+ LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+8)
  STA SCH
  LDA #LO(text2)
  STA P
  LDA #HI(text2)
  STA P+1
- LDY #15
+ LDY #17
  JSR PrintText
 
  JMP PLL1               \ Draw Saturn, returning from the subroutine using a
@@ -2656,7 +2656,7 @@ INCLUDE "1-source-files/main-sources/elite-teletext-pixels.asm"
 
 .text1
 
- EQUS "---- E L I T E ----"
+ EQUS "ACORNSOFT ELITE"
 
                         \ --- End of added code ------------------------------->
 
@@ -2673,7 +2673,7 @@ INCLUDE "1-source-files/main-sources/elite-teletext-pixels.asm"
 
 .text2
 
- EQUS "Teletext version"
+ EQUS "(C) Acornsoft 1984"
 
                         \ --- End of added code ------------------------------->
 

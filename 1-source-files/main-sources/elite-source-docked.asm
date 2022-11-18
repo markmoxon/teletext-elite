@@ -20658,14 +20658,29 @@ ENDIF
  LDA TYPE               \ Set up a new ship, using the ship type in TYPE
  JSR NWSHP
 
- LDY #6                 \ Move the text cursor to column 6
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDY #6                 \ Move the text cursor to column 6
+\STY XC
+\
+\LDA #30                \ Print recursive token 144 ("---- E L I T E ----")
+\JSR plf                \ followed by a newline
+\
+\LDY #6                 \ Move the text cursor to column 6 again
+\STY XC
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDY #7                 \ Move the text cursor to column 7
  STY XC
 
  LDA #30                \ Print recursive token 144 ("---- E L I T E ----")
  JSR plf                \ followed by a newline
 
- LDY #6                 \ Move the text cursor to column 6 again
+ LDY #7                 \ Move the text cursor to column 7 again
  STY XC
+
+                        \ --- End of replacement ------------------------------>
 
  INC YC                 \ Move the text cursor down a row
 
