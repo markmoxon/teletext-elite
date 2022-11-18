@@ -27,14 +27,14 @@ MESSAGE_ROW = 17        \ Configure the row for the message bar
 .pixel_ytable_lo
 
 FOR i, 0, MODE7_HIGH_Y-1
- y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
- EQUB LO(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
+ y = (i DIV 3) * 40 + 1 + MODE7_INDENT \ +1 due to graphics chr, plus indent
+ EQUB LO(y-i)   \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
 .pixel_ytable_hi
 
 FOR i, 0, MODE7_HIGH_Y-1
- y = (i DIV 3) * 40 + 1 \ +1 due to graphics chr
+ y = (i DIV 3) * 40 + 1 + MODE7_INDENT \ +1 due to graphics chr, plus indent
  EQUB HI(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
 NEXT
 
@@ -104,7 +104,6 @@ ENDIF
  CLC                    \ Set SC(1 0) to the screen address of the character
  LDA pixel_xtable,X     \ block, including any indent, starting with the low
  ADC pixel_ytable_lo,Y  \ byte
- ADC #MODE7_INDENT
  STA SC
 
  LDA pixel_ytable_hi,Y  \ And then the high byte
