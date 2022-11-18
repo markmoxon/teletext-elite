@@ -5397,6 +5397,17 @@ LOAD_B% = LOAD% + P% - CODE%
  JSR plf2               \ token 107 ("LARGE CARGO{sentence case} BAY"), followed
                         \ by a newline and an indent of 6 characters
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA ESCP               \ If we don't have an escape pod fitted (i.e. ESCP is
+ BEQ P%+7               \ zero), skip the following two instructions
+
+ LDA #112               \ We do have an escape pod fitted, so print recursive
+ JSR plf2               \ token 112 ("ESCAPE POD"), followed by a newline and
+                        \ an indent of 6 characters
+
+                        \ --- End of added code ------------------------------->
+
  LDA BST                \ If we don't have fuel scoops fitted, skip the
  BEQ P%+7               \ following two instructions
 
