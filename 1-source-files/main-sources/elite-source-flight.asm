@@ -14907,11 +14907,87 @@ LOAD_D% = LOAD% + P% - CODE%
 
  INC XX20               \ Increment the counter
 
- BEQ TT111-1            \ If X = 0 then we have done all 256 systems, so return
-                        \ from the subroutine (as TT111-1 contains an RTS)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\BEQ TT111-1            \ If X = 0 then we have done all 256 systems, so return
+\                       \ from the subroutine (as TT111-1 contains an RTS)
+
+                        \ --- And replaced by: -------------------------------->
+
+ BEQ RevealMessage      \ If X = 0 then we have done all 256 systems, so jump to
+                        \ RevealMessage to print the "reveal" message
+
+                        \ --- End of replacement ------------------------------>
 
  JMP TT182              \ Otherwise jump back up to TT182 to process the next
                         \ system
+
+\ ******************************************************************************
+\
+\       Name: RevealMessage
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Print a message explaining how to reveal system data on the
+\             Short-range Chart
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.RevealMessage
+
+ LDA #132               \ Style the bottom row as yellow text on blue background
+ STA MODE7_VRAM+(23*&28)
+ LDA #157
+ STA MODE7_VRAM+(23*&28)+1
+ LDA #131
+ STA MODE7_VRAM+(23*&28)+2
+
+ LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+2)   \ Point P and SC to message text
+ STA SC
+ LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+2)
+ STA SCH
+ LDA #LO(text1)
+ STA P
+ LDA #HI(text1)
+ STA P+1
+
+ LDY #30                \ Set Y to a counter to work through the message, so this
+                        \ contains the message length
+
+.rmes1
+
+ LDA (P),Y              \ Copy the Y-th byte of the message from P(1 0) to
+ STA (SC),Y             \ SC(1 0)
+
+ DEY                    \ Decrement the counter
+
+ BPL rmes1              \ Loop back until we have printed the whole message
+
+ RTS                    \ Return from the subroutine
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: text1
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Short-range Chart message
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.text1
+
+ EQUS "Hold "           \ EQUB 34 is the " character
+ EQUB 34
+ EQUS "R"
+ EQUB 34
+ EQUS " to reveal system names"
+
+                        \ --- End of added code ------------------------------->
 
 \ ******************************************************************************
 \

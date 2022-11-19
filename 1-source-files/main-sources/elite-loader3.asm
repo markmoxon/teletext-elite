@@ -2632,14 +2632,14 @@ INCLUDE "1-source-files/main-sources/elite-teletext-pixels.asm"
 
 .PrintText
 
- LDA (P),Y
- STA (SC),Y
+ LDA (P),Y              \ Copy the Y-th byte of the message from P(1 0) to
+ STA (SC),Y             \ SC(1 0)
 
- DEY
+ DEY                    \ Decrement the counter
 
- BPL PrintText
+ BPL PrintText          \ Loop back until we have printed the whole message
 
- RTS
+ RTS                    \ Return from the subroutine
 
                         \ --- End of added code ------------------------------->
 
