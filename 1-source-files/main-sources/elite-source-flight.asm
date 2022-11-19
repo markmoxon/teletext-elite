@@ -14647,6 +14647,15 @@ LOAD_D% = LOAD% + P% - CODE%
  JSR NLIN3              \ draw a horizontal line at pixel row 19 to box in the
                         \ title
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.TT23a
+
+ BIT showChart          \ Only display the fuel circle if bit 7 of showChart is
+ BPL P%+5               \ set, by skipping the following call if bit 7 is clear
+
+                        \ --- End of added code ------------------------------->
+
  JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
                         \ current system's galactic coordinates
 
@@ -14772,6 +14781,18 @@ LOAD_D% = LOAD% + P% - CODE%
  LSR A
  TAY
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ BIT showChart          \ Only draw the system pixel if bit 7 of showChart is
+ BMI P%+5               \ clear, by skipping the following call if bit 7 is set
+
+ JSR DrawSystemPixel    \ Draw the system pixel
+
+ BIT showChart          \ Only display the system label if bit 7 of showChart is
+ BPL ee1                \ set, by jumping to ee1 if bit 7 is clear
+
+                        \ --- End of added code ------------------------------->
+
                         \ Now to see if there is room for this system's label.
                         \ Ideally we would print the system name on the same
                         \ text row as the system, but we only want to print one
@@ -14816,7 +14837,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
+ INC XC                 \ Move forward one character so we don't overwrite the
+                        \ sixel containing the system pixel
+
  JSR SetTextYellow      \ Set mode 7 yellow text
+
+ DEC XC                 \ Move back one character so we don't insert any extra
+                        \ space
 
                         \ --- End of added code ------------------------------->
 
@@ -14826,46 +14853,52 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
+ INC XC                 \ Move forward one character to compensate for the above
+
  JSR SetGraphicsWhite   \ Set mode 7 white graphics
 
                         \ --- End of added code ------------------------------->
 
 .ee1
 
- LDA #0                 \ Now to plot the star, so set the high bytes of K, K3
- STA K3+1               \ and K4 to 0
- STA K4+1
- STA K+1
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDA XX12               \ Set the low byte of K3 to XX12, the pixel x-coordinate
- STA K3                 \ of this system
+\LDA #0                 \ Now to plot the star, so set the high bytes of K, K3
+\STA K3+1               \ and K4 to 0
+\STA K4+1
+\STA K+1
+\
+\LDA XX12               \ Set the low byte of K3 to XX12, the pixel x-coordinate
+\STA K3                 \ of this system
+\
+\LDA QQ15+5             \ Fetch s2_hi for this system from QQ15+5, extract bit 0
+\AND #1                 \ and add 2 to get the size of the star, which we store
+\ADC #2                 \ in K. This will be either 2, 3 or 4, depending on the
+\STA K                  \ value of bit 0, and whether the C flag is set (which
+\                       \ will vary depending on what happens in the above call
+\                       \ to cpl). Incidentally, the planet's average radius
+\                       \ also uses s2_hi, bits 0-3 to be precise, but that
+\                       \ doesn't mean the two sizes affect each other
+\
+\                       \ We now have the following:
+\                       \
+\                       \   K(1 0)  = radius of star (2, 3 or 4)
+\                       \
+\                       \   K3(1 0) = pixel x-coordinate of system
+\                       \
+\                       \   K4(1 0) = pixel y-coordinate of system
+\                       \
+\                       \ which we can now pass to the SUN routine to draw a
+\                       \ small "sun" on the Short-range Chart for this system
+\
+\JSR FLFLLS             \ Call FLFLLS to reset the LSO block
+\
+\JSR SUN                \ Call SUN to plot a sun with radius K at pixel
+\                       \ coordinate (K3, K4)
+\
+\JSR FLFLLS             \ Call FLFLLS to reset the LSO block
 
- LDA QQ15+5             \ Fetch s2_hi for this system from QQ15+5, extract bit 0
- AND #1                 \ and add 2 to get the size of the star, which we store
- ADC #2                 \ in K. This will be either 2, 3 or 4, depending on the
- STA K                  \ value of bit 0, and whether the C flag is set (which
-                        \ will vary depending on what happens in the above call
-                        \ to cpl). Incidentally, the planet's average radius
-                        \ also uses s2_hi, bits 0-3 to be precise, but that
-                        \ doesn't mean the two sizes affect each other
-
-                        \ We now have the following:
-                        \
-                        \   K(1 0)  = radius of star (2, 3 or 4)
-                        \
-                        \   K3(1 0) = pixel x-coordinate of system
-                        \
-                        \   K4(1 0) = pixel y-coordinate of system
-                        \
-                        \ which we can now pass to the SUN routine to draw a
-                        \ small "sun" on the Short-range Chart for this system
-
- JSR FLFLLS             \ Call FLFLLS to reset the LSO block
-
- JSR SUN                \ Call SUN to plot a sun with radius K at pixel
-                        \ coordinate (K3, K4)
-
- JSR FLFLLS             \ Call FLFLLS to reset the LSO block
+                        \ --- End of removed code ----------------------------->
 
 .TT187
 
@@ -23880,6 +23913,13 @@ ENDIF
  CMP #&32               \ If "D" was pressed, jump to T95 to print the distance
  BEQ T95                \ to a system (if we are in one of the chart screens)
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ CMP #&33               \ If "R" was pressed, jump to RevealLabels to reveal the
+ BEQ RevealLabels       \ fuel circle and labels on the Short-range Chart
+
+                        \ --- End of added code ------------------------------->
+
  STA T1                 \ Store A (the key that's been pressed) in T1
 
  LDA QQ11               \ If the current view is a chart (QQ11 = 64 or 128),
@@ -23989,6 +24029,71 @@ ENDIF
 
  JMP TT146              \ Print the distance to the selected system and return
                         \ from the subroutine using a tail call
+
+\ ******************************************************************************
+\
+\       Name: RevealLabels
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Reveal the fuel circle and labels on the Short-range Chart until
+\             the reveal key is released
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.RevealLabels
+
+ LDA QQ11               \ If the current view is the Short-range Chart (128),
+ CMP #128               \ keep going, otherwise return from the subroutine (as
+ BNE t95                \ t95 contains an RTS)
+
+ LDA #%10000000         \ Set bit 7 of showChart so we show labels and the fuel
+ STA showChart          \ circle on the chart in the call to TT23a
+
+ JSR TT23a              \ Draw the Short-Range Chart with the fuel circle and
+                        \ labels, skipping the screen-clearing routine, so this
+                        \ superimposes the fuel circle and labels on top of the
+                        \ system pixels that are already there
+
+.revl1
+
+ JSR RDKEY              \ Scan the keyboard for a key press and return the
+                        \ internal key number in X (or 0 for no key press)
+
+ BNE revl1              \ If a key was already being held down when we entered
+                        \ this routine, keep looping back up to revl1, until the
+                        \ key is released
+
+ LDA #0                 \ Clear bit 7 of showChart so we do not show labels and
+ STA showChart          \ the fuel circle on the chart
+
+ JMP TT23               \ Draw the Short-Range Chart without the fuel circle or
+                        \ labels, returning from the subroutine using a tail
+                        \ call
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: showChart
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Flag to control what is displayed on the Short-range Chart
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.showChart
+
+ EQUB 0                 \ Determines what to draw on the Short-Range Chart:
+                        \
+                        \   * Bit 7 clear = draw system pixels only
+                        \
+                        \   * Bit 7 set = draw fuel circle and 
+
+                        \ --- End of added code ------------------------------->
 
 \ ******************************************************************************
 \

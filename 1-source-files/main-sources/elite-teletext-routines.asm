@@ -540,24 +540,27 @@ ENDIF
 
 \ ******************************************************************************
 \
-\       Name: DrawSystem
+\       Name: DrawSystemPixel
 \       Type: Subroutine
 \   Category: Teletext Elite
 \    Summary: Draw a system character on the Short-Range Chart
 \
 \ ******************************************************************************
 
-.DrawSystem
+.DrawSystemPixel
 
- LDA XX12
+ STY YSAV               \ Store Y somewhere safe
+
+ LDA XX12               \ Scale the system's x-coordinate
  PLOT_SCALE_X
- STA XC
+ TAX
 
- LDA K4
+ LDA K4                 \ Scale the system's y-coordinate
  PLOT_SCALE_Y
- STA YC
+ TAY
 
- LDX #'O'
-\JSR PrintCharacter
+ JSR PlotPixelClipped   \ Plot the system pixel
 
- RTS
+ LDY YSAV               \ Retrieve the value of Y that we stored above
+
+ RTS                    \ Return from the subroutine
