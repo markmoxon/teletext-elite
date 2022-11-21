@@ -14832,12 +14832,25 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ so this sets K4 to the centre 90 +/- 74, the pixel
                         \ y-coordinate of this system
 
- LSR A                  \ Set Y = K4 / 8, so Y contains the number of the text
- LSR A                  \ row that contains this system
- LSR A
- TAY
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
+\LSR A                  \ Set Y = K4 / 8, so Y contains the number of the text
+\LSR A                  \ row that contains this system
+\LSR A
+\TAY
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDY #10                \ Set Q = 12
+ STY Q
+
+ JSR DVID4              \ Calculate the following:
+                        \
+                        \   (P R) = 256 * A / Q
+                        \         = 256 * K4 / 12
+
+ LDY P                  \ Set Y = K4 / 12, so Y contains the number of the text
+                        \ row that contains this system
 
  BIT showChart          \ Only draw the system pixel if bit 7 of showChart is
  BMI P%+5               \ clear, by skipping the following call if bit 7 is set
@@ -14847,7 +14860,7 @@ LOAD_D% = LOAD% + P% - CODE%
  BIT showChart          \ Only display the system label if bit 7 of showChart is
  BPL ee1                \ set, by jumping to ee1 if bit 7 is clear
 
-                        \ --- End of added code ------------------------------->
+                        \ --- End of replacement ------------------------------>
 
                         \ Now to see if there is room for this system's label.
                         \ Ideally we would print the system name on the same
