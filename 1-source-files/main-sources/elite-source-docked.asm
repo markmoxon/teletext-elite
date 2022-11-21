@@ -20861,6 +20861,9 @@ ENDIF
  LDY #19                \ Move the text cursor to row 19
  STY YC
 
+ LDY #6                 \ Move the text cursor to column 6
+ STY XC
+
  LDA #135               \ Style row 19 as white text
  STA MODE7_VRAM+(19*&28)
 
