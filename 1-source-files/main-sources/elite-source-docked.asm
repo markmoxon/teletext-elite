@@ -12423,111 +12423,167 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #0                 \ This is the Short-range Chart, so set A to 0, so the
                         \ crosshairs can go right up against the screen edges
 
- STA QQ19+5             \ Set QQ19+5 to A, which now contains the correct indent
-                        \ for this view
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDA QQ19               \ Set A = crosshairs x-coordinate - crosshairs size
- SEC                    \ to get the x-coordinate of the left edge of the
- SBC QQ19+2             \ crosshairs
+\STA QQ19+5             \ Set QQ19+5 to A, which now contains the correct indent
+\                       \ for this view
+\
+\LDA QQ19               \ Set A = crosshairs x-coordinate - crosshairs size
+\SEC                    \ to get the x-coordinate of the left edge of the
+\SBC QQ19+2             \ crosshairs
+\
+\BCS TT84               \ If the above subtraction didn't underflow, then A is
+\                       \ positive, so skip the next instruction
+\
+\LDA #0                 \ The subtraction underflowed, so set A to 0 so the
+\                       \ crosshairs don't spill out of the left of the screen
+\
+\.TT84
+\
+\                       \ In the following, the authors have used XX15 for
+\                       \ temporary storage. XX15 shares location with X1, Y1,
+\                       \ X2 and Y2, so in the following, you can consider
+\                       \ the variables like this:
+\                       \
+\                       \   XX15   is the same as X1
+\                       \   XX15+1 is the same as Y1
+\                       \   XX15+2 is the same as X2
+\                       \   XX15+3 is the same as Y2
+\                       \
+\                       \ Presumably this routine was written at a different
+\                       \ time to the line-drawing routine, before the two
+\                       \ workspaces were merged to save space
+\
+\STA XX15               \ Set XX15 (X1) = A (the x-coordinate of the left edge
+\                       \ of the crosshairs)
+\
+\LDA QQ19               \ Set A = crosshairs x-coordinate + crosshairs size
+\CLC                    \ to get the x-coordinate of the right edge of the
+\ADC QQ19+2             \ crosshairs
+\
+\BCC P%+4               \ If the above addition didn't overflow, then A is
+\                       \ correct, so skip the next instruction
+\
+\LDA #255               \ The addition overflowed, so set A to 255 so the
+\                       \ crosshairs don't spill out of the right of the screen
+\                       \ (as 255 is the x-coordinate of the rightmost pixel
+\                       \ on-screen)
+\
+\STA XX15+2             \ Set XX15+2 (X2) = A (the x-coordinate of the right
+\                       \ edge of the crosshairs)
+\
+\LDA QQ19+1             \ Set XX15+1 (Y1) = crosshairs y-coordinate + indent
+\CLC                    \ to get the y-coordinate of the centre of the
+\ADC QQ19+5             \ crosshairs
+\STA XX15+1
+\
+\JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1),
+\                       \ which will draw from the left edge of the crosshairs
+\                       \ to the right edge, through the centre of the
+\                       \ crosshairs
+\
+\LDA QQ19+1             \ Set A = crosshairs y-coordinate - crosshairs size
+\SEC                    \ to get the y-coordinate of the top edge of the
+\SBC QQ19+2             \ crosshairs
+\
+\BCS TT86               \ If the above subtraction didn't underflow, then A is
+\                       \ correct, so skip the next instruction
+\
+\LDA #0                 \ The subtraction underflowed, so set A to 0 so the
+\                       \ crosshairs don't spill out of the top of the screen
+\
+\.TT86
+\
+\CLC                    \ Set XX15+1 (Y1) = A + indent to get the y-coordinate
+\ADC QQ19+5             \ of the top edge of the indented crosshairs
+\STA XX15+1
+\
+\LDA QQ19+1             \ Set A = crosshairs y-coordinate + crosshairs size
+\CLC                    \ + indent to get the y-coordinate of the bottom edge
+\ADC QQ19+2             \ of the indented crosshairs
+\ADC QQ19+5
+\
+\CMP #152               \ If A < 152 then skip the following, as the crosshairs
+\BCC TT87               \ won't spill out of the bottom of the screen
+\
+\LDX QQ11               \ A >= 152, so we need to check whether this will fit in
+\                       \ this view, so fetch the view number
+\
+\BMI TT87               \ If this is the Short-range Chart then the y-coordinate
+\                       \ is fine, so skip to TT87
+\
+\LDA #151               \ Otherwise this is the Long-range Chart, so we need to
+\                       \ clip the crosshairs at a maximum y-coordinate of 151
+\
+\.TT87
+\
+\STA XX15+3             \ Set XX15+3 (Y2) = A (the y-coordinate of the bottom
+\                       \ edge of the crosshairs)
+\
+\LDA QQ19               \ Set XX15 (X1) = the x-coordinate of the centre of the
+\STA XX15               \ crosshairs
+\
+\STA XX15+2             \ Set XX15+2 (X2) = the x-coordinate of the centre of
+\                       \ the crosshairs
+\
+\JMP LL30               \ Draw a vertical line (X1, Y1) to (X2, Y2), which will
+\                       \ draw from the top edge of the crosshairs to the bottom
+\                       \ edge, through the centre of the crosshairs, returning
+\                       \ from the subroutine using a tail call
 
- BCS TT84               \ If the above subtraction didn't underflow, then A is
-                        \ positive, so skip the next instruction
+                        \ --- And replaced by: -------------------------------->
 
- LDA #0                 \ The subtraction underflowed, so set A to 0 so the
-                        \ crosshairs don't spill out of the left of the screen
+ CLC                    \ Set A = crosshairs y-coordinate + indent to get the
+ ADC QQ19+1             \ y-coordinate of the centre of the crosshairs
 
-.TT84
+ PLOT_SCALE_Y           \ Scale the y-coordinate into sixels
 
-                        \ In the following, the authors have used XX15 for
-                        \ temporary storage. XX15 shares location with X1, Y1,
-                        \ X2 and Y2, so in the following, you can consider
-                        \ the variables like this:
-                        \
-                        \   XX15   is the same as X1
-                        \   XX15+1 is the same as Y1
-                        \   XX15+2 is the same as X2
-                        \   XX15+3 is the same as Y2
-                        \
-                        \ Presumably this routine was written at a different
-                        \ time to the line-drawing routine, before the two
-                        \ workspaces were merged to save space
+ STA XX15+1             \ Store the sixel y-coordinate of the centre in XX15+1
 
- STA XX15               \ Set XX15 (X1) = A (the x-coordinate of the left edge
-                        \ of the crosshairs)
+ TAY                    \ Copy the y-coordinate into Y
 
- LDA QQ19               \ Set A = crosshairs x-coordinate + crosshairs size
- CLC                    \ to get the x-coordinate of the right edge of the
- ADC QQ19+2             \ crosshairs
-
- BCC P%+4               \ If the above addition didn't overflow, then A is
-                        \ correct, so skip the next instruction
-
- LDA #255               \ The addition overflowed, so set A to 255 so the
-                        \ crosshairs don't spill out of the right of the screen
-                        \ (as 255 is the x-coordinate of the rightmost pixel
-                        \ on-screen)
-
- STA XX15+2             \ Set XX15+2 (X2) = A (the x-coordinate of the right
-                        \ edge of the crosshairs)
-
- LDA QQ19+1             \ Set XX15+1 (Y1) = crosshairs y-coordinate + indent
- CLC                    \ to get the y-coordinate of the centre of the
- ADC QQ19+5             \ crosshairs
- STA XX15+1
-
- JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1),
-                        \ which will draw from the left edge of the crosshairs
-                        \ to the right edge, through the centre of the
+ LDA QQ19               \ Set A = crosshairs x-coordinate of the centre of the
                         \ crosshairs
 
- LDA QQ19+1             \ Set A = crosshairs y-coordinate - crosshairs size
- SEC                    \ to get the y-coordinate of the top edge of the
- SBC QQ19+2             \ crosshairs
+ PLOT_SCALE_X           \ Scale the x-coordinate into sixels
 
- BCS TT86               \ If the above subtraction didn't underflow, then A is
-                        \ correct, so skip the next instruction
+ STA XX15               \ Store the sixel x-coordinate of the centre in XX15
 
- LDA #0                 \ The subtraction underflowed, so set A to 0 so the
-                        \ crosshairs don't spill out of the top of the screen
+ TAX                    \ Copy the x-coordinate into X
 
-.TT86
+ DEX                    \ Plot the first pixel to the left
+ JSR PlotPixelClipped
 
- CLC                    \ Set XX15+1 (Y1) = A + indent to get the y-coordinate
- ADC QQ19+5             \ of the top edge of the indented crosshairs
- STA XX15+1
+ DEX                    \ Plot the second pixel to the left
+ JSR PlotPixelClipped
 
- LDA QQ19+1             \ Set A = crosshairs y-coordinate + crosshairs size
- CLC                    \ + indent to get the y-coordinate of the bottom edge
- ADC QQ19+2             \ of the indented crosshairs
- ADC QQ19+5
+ LDX XX15               \ Set X to the sixel x-coordinate of the centre
 
- CMP #152               \ If A < 152 then skip the following, as the crosshairs
- BCC TT87               \ won't spill out of the bottom of the screen
+ INX                    \ Plot the first pixel to the right
+ JSR PlotPixelClipped
 
- LDX QQ11               \ A >= 152, so we need to check whether this will fit in
-                        \ this view, so fetch the view number
+ INX                    \ Plot the second pixel to the right
+ JSR PlotPixelClipped
 
- BMI TT87               \ If this is the Short-range Chart then the y-coordinate
-                        \ is fine, so skip to TT87
+ LDX XX15               \ Set X to the sixel x-coordinate of the centre
 
- LDA #151               \ Otherwise this is the Long-range Chart, so we need to
-                        \ clip the crosshairs at a maximum y-coordinate of 151
+ LDY XX15+1             \ Set Y to the sixel y-coordinate of the centre
 
-.TT87
+ DEY                    \ Plot the first pixel above the centre
+ JSR PlotPixelClipped
 
- STA XX15+3             \ Set XX15+3 (Y2) = A (the y-coordinate of the bottom
-                        \ edge of the crosshairs)
+ DEY                    \ Plot the second pixel above the centre
+ JSR PlotPixelClipped
 
- LDA QQ19               \ Set XX15 (X1) = the x-coordinate of the centre of the
- STA XX15               \ crosshairs
+ LDY XX15+1             \ Set Y to the sixel y-coordinate of the centre
 
- STA XX15+2             \ Set XX15+2 (X2) = the x-coordinate of the centre of
-                        \ the crosshairs
+ INY                    \ Plot the first pixel below the centre
+ JSR PlotPixelClipped
 
- JMP LL30               \ Draw a vertical line (X1, Y1) to (X2, Y2), which will
-                        \ draw from the top edge of the crosshairs to the bottom
-                        \ edge, through the centre of the crosshairs, returning
-                        \ from the subroutine using a tail call
+ INY                    \ Plot the second pixel below the centre and return from
+ JMP PlotPixelClipped   \ the subroutine using a tail call
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
