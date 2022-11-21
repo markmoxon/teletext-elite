@@ -24092,6 +24092,13 @@ ENDIF
                         \ which will draw the crosshairs at our current home
                         \ system
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDX #0                 \ Zero the amount to move the crosshairs, as the new
+ LDY #0                 \ crosshair routines no longer do this
+
+                        \ --- End of added code ------------------------------->
+
 .ee2
 
  JSR TT16               \ Call TT16 to move the crosshairs by the amount in X
