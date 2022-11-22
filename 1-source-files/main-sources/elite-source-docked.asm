@@ -12327,7 +12327,18 @@ LOAD_D% = LOAD% + P% - CODE%
 \JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
 \                       \ current system's galactic coordinates
 
-                        \ --- End of removed code ----------------------------->
+                        \ --- And replaced by: -------------------------------->
+
+.TT22a
+
+ BIT showChart          \ Only display the fuel circle if bit 7 of showChart is
+ BPL P%+5               \ set, by skipping the following call if bit 7 is clear
+
+ JMP TT14               \ Call TT14 to draw a circle with crosshairs at the
+                        \ current system's galactic coordinates, and return from
+                        \ the routine using a tail call
+
+                        \ --- End of replacement ------------------------------>
 
  LDX #0                 \ We're now going to plot each of the galaxy's systems,
                         \ so set up a counter in X for each system, starting at
@@ -12384,6 +12395,17 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #4                 \ Set QQ19+2 to size 4 for the crosshairs size
  STA QQ19+2
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #LO(text2)         \ Point P(1 0) to the message text at text2
+ STA P
+ LDA #HI(text2)
+ STA P+1
+
+ JSR RevealMessage      \ Print the reveal message
+
+                        \ --- End of added code ------------------------------->
 
                         \ Fall through into TT15 to draw crosshairs of size 4 at
                         \ the selected system's coordinates
@@ -13881,8 +13903,9 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- BEQ RevealMessage      \ If X = 0 then we have done all 256 systems, so jump to
-                        \ RevealMessage to print the "reveal" message
+ BEQ RevealMessageShort \ If X = 0 then we have done all 256 systems, so jump to
+                        \ RevealMessageShort to print the "reveal" message in
+                        \ text1
 
                         \ --- End of replacement ------------------------------>
 
@@ -13891,11 +13914,41 @@ LOAD_D% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
 \
+\       Name: RevealMessageShort
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Print a message explaining how to reveal system data on the
+\             Short-range Chart
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.RevealMessageShort
+
+ LDA #LO(text1)         \ Point P to the message in text1
+ STA P
+ LDA #HI(text1)
+ STA P+1
+
+                        \ Fall through into RevealMessage to print the reveal
+                        \ message
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
 \       Name: RevealMessage
 \       Type: Variable
 \   Category: Teletext Elite
 \    Summary: Print a message explaining how to reveal system data on the
 \             Short-range Chart
+\
+\ ------------------------------------------------------------------------------
+\
+\ Arguments:
+\
+\   P(1 0)              The address of the 30-character text string to print
 \
 \ ******************************************************************************
 
@@ -13910,14 +13963,10 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #131
  STA MODE7_VRAM+(23*&28)+2
 
- LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+2)   \ Point P and SC to message text
+ LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+2)   \ Point SC to on-screen message
  STA SC
  LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+2)
  STA SCH
- LDA #LO(text1)
- STA P
- LDA #HI(text1)
- STA P+1
 
  LDY #30                \ Set Y to a counter to work through the message, so this
                         \ contains the message length
@@ -13953,6 +14002,27 @@ LOAD_D% = LOAD% + P% - CODE%
  EQUS "R"
  EQUB 34
  EQUS " to reveal system names"
+
+                        \ --- End of added code ------------------------------->
+
+\ ******************************************************************************
+\
+\       Name: text1
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Short-range Chart message
+\
+\ ******************************************************************************
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+.text2
+
+ EQUS " Hold "          \ EQUB 34 is the " character
+ EQUB 34
+ EQUS "R"
+ EQUB 34
+ EQUS " to reveal jump range "
 
                         \ --- End of added code ------------------------------->
 
@@ -20037,7 +20107,7 @@ LOAD_F% = LOAD% + P% - CODE%
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
  CMP #&33               \ If "R" was pressed, jump to RevealLabels to reveal the
- BEQ RevealLabels       \ fuel circle and labels on the Short-range Chart
+ BEQ RevealLabels       \ fuel circle and labels on the chart
 
                         \ --- End of added code ------------------------------->
 
@@ -20129,7 +20199,7 @@ LOAD_F% = LOAD% + P% - CODE%
 \       Name: RevealLabels
 \       Type: Variable
 \   Category: Teletext Elite
-\    Summary: Reveal the fuel circle and labels on the Short-range Chart until
+\    Summary: Reveal the fuel circle and labels on the relevant chart until
 \             the reveal key is released
 \
 \ ******************************************************************************
@@ -20139,8 +20209,8 @@ LOAD_F% = LOAD% + P% - CODE%
 .RevealLabels
 
  LDA QQ11               \ If the current view is the Short-range Chart (128),
- CMP #128               \ keep going, otherwise return from the subroutine (as
- BNE t95                \ t95 contains an RTS)
+ CMP #128               \ keep going, otherwise jump to revl2 to check if this
+ BNE revl2              \ is the Long-range Chart
 
  LDA #%10000000         \ Set bit 7 of showChart so we show labels and the fuel
  STA showChart          \ circle on the chart in the call to TT23a
@@ -20165,6 +20235,35 @@ LOAD_F% = LOAD% + P% - CODE%
  JMP TT23               \ Draw the Short-Range Chart without the fuel circle or
                         \ labels, returning from the subroutine using a tail
                         \ call
+
+.revl2
+
+ LDA QQ11               \ If the current view is the Long-range Chart (64),
+ CMP #64                \ keep going, otherwise return from the subroutine (as
+ BNE t95                \ t95 contains an RTS)
+
+ LDA #%10000000         \ Set bit 7 of showChart so we show labels and the fuel
+ STA showChart          \ circle on the chart in the call to TT23a
+
+ JSR TT22a              \ Draw the Long-Range Chart with the fuel circle,
+                        \ skipping the screen-clearing routine, so this
+                        \ superimposes the fuel circle and labels on top of the
+                        \ system pixels that are already there
+
+.revl3
+
+ JSR RDKEY              \ Scan the keyboard for a key press and return the
+                        \ internal key number in X (or 0 for no key press)
+
+ BNE revl3              \ If a key was already being held down when we entered
+                        \ this routine, keep looping back up to revl3, until the
+                        \ key is released
+
+ LDA #0                 \ Clear bit 7 of showChart so we do not show labels and
+ STA showChart          \ the fuel circle on the chart
+
+ JMP TT22               \ Draw the Long-Range Chart without the fuel circle,
+                        \ returning from the subroutine using a tail call
 
                         \ --- End of added code ------------------------------->
 
