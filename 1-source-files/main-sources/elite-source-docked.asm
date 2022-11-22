@@ -10632,6 +10632,12 @@ LOAD_C% = LOAD% +P% - CODE%
  JSR TT66               \ Clear the top part of the screen, draw a white border,
                         \ and set the current view type in QQ11 to 1
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR SetMode7Graphics   \ Set all screen rows to white graphics
+
+                        \ --- End of added code ------------------------------->
+
  LDA #64                \ Set the main loop counter to 64, so the ship rotates
  STA MCNT               \ for 64 iterations through MVEIT
 
@@ -10694,6 +10700,16 @@ LOAD_C% = LOAD% +P% - CODE%
 
  INC INWK+7             \ Increment z_hi, to keep the ship at the same distance
                         \ as we just incremented z_lo past 255
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #135               \ Set A to the "white text" control code
+
+ FOR n, 10, 20          \ Set rows 10 to 20 to white text, for the mission
+  STA MODE7_VRAM + n*40 \ briefing
+ NEXT
+
+                        \ --- End of added code ------------------------------->
 
  LDA #10                \ Set A = 10 so the call to BRP prints extended token 10
                         \ (the briefing for mission 1 where we find out all
@@ -10758,6 +10774,16 @@ LOAD_C% = LOAD% +P% - CODE%
 
  LDA #1                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 1
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #151               \ Set A to the "white graphics" control code
+
+ FOR n, 1, 9
+  STA MODE7_VRAM + n*40 \ Set rows 1 to 9 to white graphics
+ NEXT
+
+                        \ --- End of added code ------------------------------->
 
  JSR LL9                \ Draw the ship on screen to remove it
 
