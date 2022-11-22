@@ -12332,11 +12332,20 @@ LOAD_D% = LOAD% + P% - CODE%
 .TT22a
 
  BIT showChart          \ Only display the fuel circle if bit 7 of showChart is
- BPL P%+5               \ set, by skipping the following call if bit 7 is clear
+ BPL long1              \ set, by skipping the following if bit 7 is clear
 
- JMP TT14               \ Call TT14 to draw a circle with crosshairs at the
-                        \ current system's galactic coordinates, and return from
-                        \ the routine using a tail call
+ LDA #&11               \ Set sixel plotting logic to ORA (SC),Y, so the fuel
+ STA pixelLogic         \ circle is fully drawn
+
+ JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
+                        \ current system's galactic coordinates
+
+ LDA #&51               \ Set sixel plotting logic back to EOR (SC),Y
+ STA pixelLogic
+
+ RTS                    \ Return from the subroutine
+
+.long1
 
                         \ --- End of replacement ------------------------------>
 

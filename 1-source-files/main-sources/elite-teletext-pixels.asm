@@ -74,6 +74,14 @@ NEXT
 \   Category: Teletext Elite
 \    Summary: Plot a mode 7 pixel
 \
+\ ------------------------------------------------------------------------------
+\
+\ Arguments:
+\
+\   X                   Sixel x-coordinate
+\
+\   Y                   Sixel y-coordinate
+\
 \ ******************************************************************************
 
 .PlotPixelClipped
@@ -112,6 +120,8 @@ ENDIF
 
  LDA pixel_ytable_chr,Y \ Get 2-pixel wide teletext glyph for y-coordinate
  AND pixel_xtable_chr,X \ Apply odd/even x-coordinate mask
+
+.pixelLogic
 
 IF _LOADER
 
