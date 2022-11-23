@@ -2121,6 +2121,13 @@ BRKV = P% - 2           \ The address of the destination address in the above
  LDY #44                \ Wait for 44/50 of a second (0.88 seconds)
  JSR DELAY
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #%10000000         \ Set bit 7 of displayTitle so we do not show the title
+ STA displayTitle       \ row while showing the mission briefing
+
+                        \ --- End of added code ------------------------------->
+
  LDA TP                 \ Fetch bits 0 and 1 of TP, and if they are non-zero
  AND #%00000011         \ (i.e. mission 1 is either in progress or has been
  BNE EN1                \ completed), skip to EN1
@@ -20583,6 +20590,14 @@ LOAD_F% = LOAD% + P% - CODE%
 \ ******************************************************************************
 
 .BAY
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #0                 \ Clear bit 7 of displayTitle so we show the title row
+ STA displayTitle       \ from now on (in case we have jumped here from a
+                        \ mission debriefing)
+
+                        \ --- End of added code ------------------------------->
 
  LDA #&FF               \ Set QQ12 = &FF (the docked flag) to indicate that we
  STA QQ12               \ are docked

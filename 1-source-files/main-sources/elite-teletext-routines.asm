@@ -380,18 +380,24 @@ NEXT
 
 .StyleTitleRow
 
- LDA QQ11               \ If this is not the death screen, jump to stit1
- CMP #6
- BNE stit1
+ LDA displayTitle       \ If bit 7 of displayTitle is set, jump to stit1 to skip
+ BMI stit1              \ displaying the title
 
- LDA #151               \ This is the death screen, so style the top row as
- STA MODE7_VRAM         \ white graphics
+ LDA QQ11               \ If this is not the death screen, jump to stit2 to
+ CMP #6                 \ display the title
+ BNE stit2
 
- BNE stit2              \ Jump to stit2 to style the second row as white
+.stit1
+
+ LDA #151               \ This is either the death screen or bit 7 of
+ STA MODE7_VRAM         \ displayTitle is set, so style the top row as white
+                        \ graphics
+
+ BNE stit3              \ Jump to stit3 to style the second row as white
                         \ graphics (this BNE is effectively a JMP as A is never
                         \ zero)
 
-.stit1
+.stit2
 
  LDA #132               \ Style the top row as yellow text on blue background
  STA MODE7_VRAM
@@ -400,12 +406,30 @@ NEXT
  LDA #131
  STA MODE7_VRAM+2
 
-.stit2
+.stit3
 
  LDA #151               \ Style the second row as white graphics
  STA MODE7_VRAM+(1*&28)
 
  RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: displayTitle
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Flag to control whether to display a blue title row at the top of
+\             the screen
+\
+\ ******************************************************************************
+
+.displayTitle
+
+ EQUB 0                 \ Determines whether to draw a blue title row:
+                        \
+                        \   * Bit 7 clear = draw a blue title row
+                        \
+                        \   * Bit 7 set = do not draw a blue title row
 
 \ ******************************************************************************
 \
