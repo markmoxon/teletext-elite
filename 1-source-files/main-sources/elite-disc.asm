@@ -55,5 +55,8 @@ PUTFILE "3-assembled-output/D.MOO.bin", "D.MOO", &005600, &005600
 PUTFILE "3-assembled-output/D.MOP.bin", "D.MOP", &005600, &005600
 
 PUTFILE "1-source-files/other-files/E.MAX.bin", "E.MAX", &000000, &000000
+PUTFILE "1-source-files/other-files/E.MISS1.bin", "E.MISS1", &000000, &000000
+PUTFILE "1-source-files/other-files/E.MISS2.bin", "E.MISS2", &000000, &000000
+PUTFILE "1-source-files/other-files/E.FIGHT.bin", "E.FIGHT", &000000, &000000
 
 PUTFILE "3-assembled-output/README.txt", "README", &FFFFFF, &FFFFFF
