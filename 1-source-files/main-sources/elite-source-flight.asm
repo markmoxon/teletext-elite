@@ -20948,9 +20948,19 @@ LOAD_E% = LOAD% + P% - CODE%
 \
 \ ******************************************************************************
 
- LDY #2*Y-1             \ Set Y = y-coordinate of the bottom of the screen,
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDY #2*Y-1             \ Set Y = y-coordinate of the bottom of the screen,
+\                       \ which we use as a counter in the following routine to
+\                       \ redraw the old sun
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDY #2*Y-4             \ Set Y = y-coordinate of the bottom of the screen,
                         \ which we use as a counter in the following routine to
                         \ redraw the old sun
+
+                        \ --- End of replacement ------------------------------>
 
  LDA SUNX               \ Set YY(1 0) = SUNX(1 0), the x-coordinate of the
  STA YY                 \ vertical centre axis of the old sun that's currently
@@ -20963,22 +20973,20 @@ LOAD_E% = LOAD% + P% - CODE%
  BEQ PLFL               \ start drawing the new sun, so there is no need to
                         \ keep erasing the old one, so jump down to PLFL
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ BCC PLFL               \ If Y < TGT, we have passed the line where we will
+                        \ start drawing the new sun, so there is no need to
+                        \ keep erasing the old one, so jump down to PLFL
+
+                        \ --- End of added code ------------------------------->
+
  LDA LSO,Y              \ Fetch the Y-th point from the sun line heap, which
                         \ gives us the half-width of the old sun's line on this
                         \ line of the screen
 
  BEQ PLF13              \ If A = 0, skip the following call to HLOIN2 as there
                         \ is no sun line on this line of the screen
-
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
- TYA                    \ We only draw a sun line once every four pixel rows, so
- AND #%00000011         \ jump to PLF13 when the row in Y is not a multiple of 4
- BNE PLF13
-
- LDA LSO,Y              \ Fetch the Y-th point from the sun line heap
-
-                        \ --- End of added code ------------------------------->
 
  JSR HLOIN2             \ Call HLOIN2 to draw a horizontal line on pixel line Y,
                         \ with centre point YY(1 0) and half-width A, and remove
@@ -20987,6 +20995,14 @@ LOAD_E% = LOAD% + P% - CODE%
 .PLF13
 
  DEY                    \ Decrement the loop counter
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ DEY                    \ Decrement the loop counter by 4 in total, as we are
+ DEY                    \ only drawing one line out of every four
+ DEY
+
+                        \ --- End of added code ------------------------------->
 
  BNE PLFL2              \ Loop back for the next line in the line heap until
                         \ we have either gone through the entire heap, or
@@ -21162,19 +21178,11 @@ LOAD_E% = LOAD% + P% - CODE%
 \                       \ We can draw from X1 to XX and X2 to XX+1 by swapping
 \                       \ XX and X2 and drawing from X1 to X2, and then drawing
 \                       \ from XX to XX+1, so let's do this now
-
+\
 \LDA X2                 \ Swap XX and X2
 \LDX XX
 \STX X2
 \STA XX
-
-                        \ --- And replaced by: -------------------------------->
-
- TYA                    \ We only draw a sun line once every four pixel rows, so
- AND #%00000011         \ jump to PLF23 when the row in Y is a multiple of 4
- BNE PLF23
-
-                        \ --- End of added code ------------------------------->
 
  JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1)
 
@@ -21191,20 +21199,20 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF16
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
- TYA                    \ We only draw a sun line once every four pixel rows, so
- AND #%00000011         \ jump to PLF6 when the row in Y is a multiple of 4
- BNE PLF6
-
-                        \ --- End of added code ------------------------------->
-
  JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1)
 
 .PLF6
 
  DEY                    \ Decrement the line number in Y to move to the line
                         \ above
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ DEY                    \ Decrement the loop counter by 4 in total, as we are
+ DEY                    \ only drawing one line out of every four
+ DEY
+
+                        \ --- End of added code ------------------------------->
 
  BEQ PLF8               \ If we have reached the top of the screen, jump to PLF8
                         \ as we are done drawing (the top line of the screen is
@@ -21218,8 +21226,27 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ out the width, so this makes the line get wider, as we
                         \ move up towards the sun's centre
 
- BNE PLFL               \ If V is non-zero, jump back up to PLFL to do the next
-                        \ screen line up
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\BNE PLFL               \ If V is non-zero, jump back up to PLFL to do the next
+\                       \ screen line up
+
+                        \ --- And replaced by: -------------------------------->
+
+ DEC V                  \ Decrement V by 4 in total, as we are only drawing one
+ DEC V                  \ line out of every four
+ DEC V
+
+ BMI P%+4               \ If V is non-zero and still positive, jump back up to
+ BNE PLFLS              \ PLFL to do the next screen line up
+
+ LDA V                  \ Otherwise negate V so it is positive, using two's
+ EOR #&FF               \ complement, as we are now counting up from zero rather
+ CLC                    \ than down to zero
+ ADC #1
+ STA V
+
+                        \ --- End of replacement ------------------------------>
 
  DEC V+1                \ Otherwise V is 0 and we have reached the centre of the
                         \ sun, so decrement V+1 to -1 so we start incrementing V
@@ -21254,9 +21281,22 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF10
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDX V                  \ Increment V, the height of the sun that we use to work
+\INX                    \ out the width, so this makes the line get narrower, as
+\STX V                  \ we move up and away from the sun's centre
+
+                        \ --- And replaced by: -------------------------------->
+
  LDX V                  \ Increment V, the height of the sun that we use to work
- INX                    \ out the width, so this makes the line get narrower, as
- STX V                  \ we move up and away from the sun's centre
+ INX                    \ out the width, by 4, so this makes the line get
+ INX                    \ narrower, as we move up and away from the sun's centre
+ INX
+ INX
+ STX V
+
+                        \ --- End of replacement ------------------------------>
 
  CPX K                  \ If V <= the radius of the sun, we still have lines to
  BCC PLFLS              \ draw, so jump up to PLFL (via PLFLS) to do the next
@@ -21295,16 +21335,6 @@ LOAD_E% = LOAD% + P% - CODE%
  BEQ PLF9               \ If A = 0, skip the following call to HLOIN2 as there
                         \ is no sun line on this line of the screen
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
- TYA                    \ We only draw a sun line once every four pixel rows, so
- AND #%00000011         \ jump to PLF9 when the row in Y is not a multiple of 4
- BNE PLF9
-
- LDA LSO,Y              \ Fetch the Y-th point from the sun line heap
-
-                        \ --- End of added code ------------------------------->
-
  JSR HLOIN2             \ Call HLOIN2 to draw a horizontal line on pixel line Y,
                         \ with centre point YY(1 0) and half-width A, and remove
                         \ the line from the sun line heap once done
@@ -21313,6 +21343,14 @@ LOAD_E% = LOAD% + P% - CODE%
 
  DEY                    \ Decrement the line number in Y to move to the line
                         \ above
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ DEY                    \ Decrement the loop counter by 4 in total, as we are
+ DEY                    \ only drawing one line out of every four
+ DEY
+
+                        \ --- End of added code ------------------------------->
 
  BNE PLFL3              \ Jump up to PLFL3 to redraw the next line up, until we
                         \ have reached the top of the screen
