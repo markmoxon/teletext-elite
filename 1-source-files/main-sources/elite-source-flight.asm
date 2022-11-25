@@ -1872,11 +1872,28 @@ ORG &0E00
 
 .BUF
 
- SKIP 191               \ The line buffer used by DASC to print justified text
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\SKIP 191               \ The line buffer used by DASC to print justified text
+\                       \
+\                       \ This buffer shares space with the LSO buffer, which
+\                       \ works because neither the sun or space station are
+\                       \ shown at the same time as printing justified text
+
+                        \ --- And replaced by: -------------------------------->
+
+ SKIP 195               \ The line buffer used by DASC to print justified text
                         \
                         \ This buffer shares space with the LSO buffer, which
                         \ works because neither the sun or space station are
                         \ shown at the same time as printing justified text
+                        \
+                        \ For Teletext Elite, we need an extra four bytes for
+                        \ the top line, so we can draw the sun there (in the
+                        \ original version, the top line is omitted as it is
+                        \ part of the screen border
+
+                        \ --- End of replacement ------------------------------>
 
 .LSX2
 
@@ -21133,9 +21150,16 @@ LOAD_E% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- LDY #2*Y-4             \ Set Y = y-coordinate of the bottom of the screen,
+ LDY #2*Y+1             \ Set Y = y-coordinate of the bottom of the screen,
                         \ which we use as a counter in the following routine to
                         \ redraw the old sun
+                        \
+                        \ We add 2 to this value compared to the original
+                        \ version as we store an extra line in the LSO block,
+                        \ and as we only draw every fourth line, this enables us
+                        \ to draw both the first and last lines in mode 7, due
+                        \ to the way the sixel routines round to the nearest
+                        \ multiple of 4
 
                         \ --- End of replacement ------------------------------>
 
@@ -21173,26 +21197,30 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF13
 
- DEY                    \ Decrement the loop counter
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
+\DEY                    \ Decrement the loop counter
+\
+\BNE PLFL2              \ Loop back for the next line in the line heap until
+\                       \ we have either gone through the entire heap, or
+\                       \ reached the bottom row of the new sun
 
- DEY                    \ Decrement the loop counter by 4 in total, as we are
- DEY                    \ only drawing one line out of every four
- DEY
+                        \ --- And replaced by: -------------------------------->
 
-                        \ --- End of added code ------------------------------->
+ TYA                    \ Set Y = Y - 4 to move to the sixel line above
+ SEC
+ SBC #4
+ TAY
 
- BNE PLFL2              \ Loop back for the next line in the line heap until
+ BCS PLFL2              \ Loop back for the next line in the line heap until
                         \ we have either gone through the entire heap, or
                         \ reached the bottom row of the new sun
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
+ JMP PLF8               \ If the above subtraction underflowed, then we have
+                        \ reached the top of the screen, jump to PLF8 to return
+                        \ from the subroutine
 
- BEQ PLF8S              \ If we have reached the top of the screen, jump to PLF8
-                        \ via PLF8S to return from the subroutine
-
-                        \ --- End of added code ------------------------------->
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -21404,8 +21432,7 @@ LOAD_E% = LOAD% + P% - CODE%
  TAY
 
  BCC PLF8               \ If Y <= 0 then we went past the top of the screen, so
-.PLF8S                  \ jump to PLF8 as we are done drawing (the top line of
- BEQ PLF8               \ the screen is the border, so we don't draw there)
+ BEQ PLF8               \ jump to PLF8 as we are done drawing
 
                         \ --- End of replacement ------------------------------>
 
@@ -21425,8 +21452,8 @@ LOAD_E% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- LDA V                  \ Decrement V by 4 in total, as we are only drawing one
- SEC                    \ line out of every four
+ LDA V                  \ Decrement V by 4, as we are only drawing one sixel
+ SEC                    \ line out of every four pixel lines
  SBC #4
  STA V
 
@@ -21482,9 +21509,9 @@ LOAD_E% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- LDX V                  \ Increment V, the height of the sun that we use to work
- INX                    \ out the width, by 4, so this makes the line get
- INX                    \ narrower, as we move up and away from the sun's centre
+ LDX V                  \ Increment V by 4, as we are only drawing one sixel
+ INX                    \ line out of every four pixel lines
+ INX
  INX
  INX
  STX V
@@ -21534,19 +21561,25 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF9
 
- DEY                    \ Decrement the line number in Y to move to the line
-                        \ above
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
+\DEY                    \ Decrement the line number in Y to move to the line
+\                       \ above
+\
+\BNE PLFL3              \ Jump up to PLFL3 to redraw the next line up, until we
+\                       \ have reached the top of the screen
 
- DEY                    \ Decrement the loop counter by 4 in total, as we are
- DEY                    \ only drawing one line out of every four
- DEY
+                        \ --- And replaced by: -------------------------------->
 
-                        \ --- End of added code ------------------------------->
+ TYA                    \ Set Y = Y - 4 to move to the sixel line above
+ SEC
+ SBC #4
+ TAY
 
- BNE PLFL3              \ Jump up to PLFL3 to redraw the next line up, until we
+ BCS PLFL3              \ Jump up to PLFL3 to redraw the next line up, until we
                         \ have reached the top of the screen
+
+                        \ --- End of replacement ------------------------------>
 
 .PLF8
 
@@ -21883,10 +21916,28 @@ LOAD_E% = LOAD% + P% - CODE%
  LDA SUNX+1             \ screen
  STA YY+1
 
- LDY #2*Y-1             \ #Y is the y-coordinate of the centre of the space
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDY #2*Y-1             \ #Y is the y-coordinate of the centre of the space
+\                       \ view, so this sets Y as a counter for the number of
+\                       \ lines in the space view (i.e. 191), which is also the
+\                       \ number of lines in the LSO block
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDY #2*Y+1             \ #Y is the y-coordinate of the centre of the space
                         \ view, so this sets Y as a counter for the number of
-                        \ lines in the space view (i.e. 191), which is also the
-                        \ number of lines in the LSO block
+                        \ lines in the space view, which is also the number of
+                        \ lines in the LSO block
+                        \
+                        \ We add 2 to this value compared to the original
+                        \ version as we store an extra line in the LSO block,
+                        \ and as we only draw every fourth line, this enables us
+                        \ to draw both the first and last lines in mode 7, due
+                        \ to the way the sixel routines round to the nearest
+                        \ multiple of 4
+
+                        \ --- End of replacement ------------------------------>
 
 .WPL2
 
@@ -21894,42 +21945,34 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ gives us the half-width of the sun's line on this line
                         \ of the screen
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
-
-\BEQ P%+5               \ If A = 0, skip the following call to HLOIN2 as there
-\                       \ is no sun line on this line of the screen
-
-                        \ --- And replaced by: -------------------------------->
-
- BEQ wpls1              \ If A = 0, skip the following call to HLOIN2 as there
+ BEQ P%+5               \ If A = 0, skip the following call to HLOIN2 as there
                         \ is no sun line on this line of the screen
-
- TYA                    \ We only draw a sun line once every four pixel rows, so
- AND #%00000011         \ jump to wpls2 when the row in Y is not a multiple of 4
- BNE wpls1
-
- LDA LSO,Y              \ Fetch the Y-th point from the sun line heap
-
-                        \ --- End of replacement ------------------------------>
 
  JSR HLOIN2             \ Call HLOIN2 to draw a horizontal line on pixel line Y,
                         \ with centre point YY(1 0) and half-width A, and remove
                         \ the line from the sun line heap once done
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
-.wpls1
+\DEY                    \ Decrement the loop counter
+\
+\BNE WPL2               \ Loop back for the next line in the line heap until
+\                       \ we have gone through the entire heap
+\
+\DEY                    \ This sets Y to &FF, as we end the loop with Y = 0
 
-                        \ --- End of added code ------------------------------->
+                        \ --- And replaced by: -------------------------------->
 
- DEY                    \ Decrement the loop counter
+ TYA                    \ Set Y = Y - 4 to move to the sixel line above
+ SEC
+ SBC #4
+ TAY
 
- BNE WPL2               \ Loop back for the next line in the line heap until
+ BCS WPL2               \ Loop back for the next line in the line heap until
                         \ we have gone through the entire heap
 
- DEY                    \ This sets Y to &FF, as we end the loop with Y = 0
-
- STY LSX                \ Set LSX to &FF to indicate the sun line heap is empty
+ LDY #&FF               \ Set LSX to &FF to indicate the sun line heap is empty
+ STY LSX
 
  RTS                    \ Return from the subroutine
 
