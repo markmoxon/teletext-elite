@@ -21187,6 +21187,13 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ we have either gone through the entire heap, or
                         \ reached the bottom row of the new sun
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ BEQ PLF8S              \ If we have reached the top of the screen, jump to PLF8
+                        \ via PLF8S to return from the subroutine
+
+                        \ --- End of added code ------------------------------->
+
 \ ******************************************************************************
 \
 \       Name: SUN (Part 3 of 4)
@@ -21384,42 +21391,46 @@ LOAD_E% = LOAD% + P% - CODE%
 
 \DEY                    \ Decrement the line number in Y to move to the line
 \                       \ above
-
+\
+\BEQ PLF8               \ If we have reached the top of the screen, jump to PLF8
+\                       \ as we are done drawing (the top line of the screen is
+\                       \ the border, so we don't draw there)
 
                         \ --- And replaced by: -------------------------------->
 
- TYA
+ TYA                    \ Set Y = Y - 4 to move to the sixel line above
  SEC
  SBC #4
  TAY
- BCC PLF8
+
+ BCC PLF8               \ If Y <= 0 then we went past the top of the screen, so
+.PLF8S                  \ jump to PLF8 as we are done drawing (the top line of
+ BEQ PLF8               \ the screen is the border, so we don't draw there)
 
                         \ --- End of replacement ------------------------------>
 
- BEQ PLF8               \ If we have reached the top of the screen, jump to PLF8
-                        \ as we are done drawing (the top line of the screen is
-                        \ the border, so we don't draw there)
 
  LDA V+1                \ If V+1 is non-zero then we are doing the top half of
  BNE PLF10              \ the new sun, so jump down to PLF10 to increment V and
                         \ decrease the width of the line we draw
 
- DEC V                  \ Decrement V, the height of the sun that we use to work
-                        \ out the width, so this makes the line get wider, as we
-                        \ move up towards the sun's centre
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\DEC V                  \ Decrement V, the height of the sun that we use to work
+\                       \ out the width, so this makes the line get wider, as we
+\                       \ move up towards the sun's centre
+\
 \BNE PLFL               \ If V is non-zero, jump back up to PLFL to do the next
 \                       \ screen line up
 
                         \ --- And replaced by: -------------------------------->
 
- DEC V                  \ Decrement V by 4 in total, as we are only drawing one
- DEC V                  \ line out of every four
- DEC V
+ LDA V                  \ Decrement V by 4 in total, as we are only drawing one
+ SEC                    \ line out of every four
+ SBC #4
+ STA V
 
- BMI P%+4               \ If V is non-zero and still positive, jump back up to
+ BCC P%+4               \ If V is non-zero and still positive, jump back up to
  BNE PLFLS              \ PLFL to do the next screen line up
 
  LDA V                  \ Otherwise negate V so it is positive, using two's
