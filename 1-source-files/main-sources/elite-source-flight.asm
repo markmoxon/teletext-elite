@@ -7830,6 +7830,10 @@ NEXT
 \                       \ one page of 256 bytes) - so this sets up SC to point
 \                       \ to the next indicator, i.e. the one below the one we
 \                       \ just drew
+\
+\.DL9
+\
+\RTS                    \ Return from the subroutine
 
                         \ --- And replaced by: -------------------------------->
 
@@ -7892,18 +7896,18 @@ NEXT
  CPY #4                 \ Loop back until we have done 0 to 3
  BCC dilx1
 
-                        \ --- End of replacement ------------------------------>
-
-.DL9
-
  LDA SC                 \ Add &28 to SC(1 0) so it points to the next indicator
  CLC                    \ down
  ADC #&28
  STA SC
- BCC P%+1
+ BCC dilx5
  INC SC+1
 
+.dilx5
+
  RTS                    \ Return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -8088,8 +8092,10 @@ NEXT
  CLC                    \ down
  ADC #&28
  STA SC
- BCC P%+1
+ BCC dill4
  INC SC+1
+
+.dill4
 
                         \ --- End of replacement ------------------------------>
 

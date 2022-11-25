@@ -37,7 +37,7 @@ _STH_DISC               = (_VARIANT = 2)
  EQUS "Teletext Elite"
  EQUB 10, 13
  EQUB 10, 13
- EQUS "For the BBC Micro with disc drive"
+ EQUS "For the BBC Micro and BBC Master 128"
  EQUB 10, 13
  EQUB 10, 13
  EQUS "Based on the Acornsoft SNG38 release"
