@@ -36,8 +36,6 @@ _STH_DISC               = (_VARIANT = 2)
  EQUB 10, 13
  EQUS "Teletext Elite"
  EQUB 10, 13
- EQUS "by Mark Moxon and Kieran Connell"
- EQUB 10, 13
  EQUB 10, 13
  EQUS "For the BBC Micro with disc drive"
  EQUB 10, 13
@@ -47,6 +45,16 @@ _STH_DISC               = (_VARIANT = 2)
  EQUS "of Elite by Ian Bell and David Braben"
  EQUB 10, 13
  EQUS "Copyright (c) Acornsoft 1984"
+ EQUB 10, 13
+ EQUB 10, 13
+ EQUS "Teletext conversion by Mark Moxon"
+ EQUB 10, 13
+ EQUB 10, 13
+ EQUS "Teletext drawing routines by Kieran"
+ EQUB 10, 13
+ EQUS "Connell and Simon.M, adapted from"
+ EQUB 10, 13
+ EQUS "Bresenham code by Rich Talbot-Watkins"
  EQUB 10, 13
  EQUB 10, 13
  EQUS "See www.bbcelite.com for details"
