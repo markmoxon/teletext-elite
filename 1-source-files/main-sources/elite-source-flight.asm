@@ -21380,16 +21380,21 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF6
 
- DEY                    \ Decrement the line number in Y to move to the line
-                        \ above
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
+\DEY                    \ Decrement the line number in Y to move to the line
+\                       \ above
 
- DEY                    \ Decrement the loop counter by 4 in total, as we are
- DEY                    \ only drawing one line out of every four
- DEY
 
-                        \ --- End of added code ------------------------------->
+                        \ --- And replaced by: -------------------------------->
+
+ TYA
+ SEC
+ SBC #4
+ TAY
+ BCC PLF8
+
+                        \ --- End of replacement ------------------------------>
 
  BEQ PLF8               \ If we have reached the top of the screen, jump to PLF8
                         \ as we are done drawing (the top line of the screen is
