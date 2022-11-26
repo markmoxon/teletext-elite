@@ -33443,8 +33443,18 @@ LOAD_H% = LOAD% + P% - CODE%
 
 .SC2
 
- ADC #123               \ Set X1 = 123 + x_hi
- STA X1
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\ADC #123               \ Set X1 = 123 + x_hi
+\STA X1
+
+                        \ --- And replaced by: -------------------------------->
+
+ ADC #125               \ Set X1 = 125 + x_hi (the additional two lets us take
+ STA X1                 \ advantage of the rounding from mode 4 pixels to mode 7
+                        \ sixels)
+
+                        \ --- End of replacement ------------------------------>
 
                         \ Next, we convert the z_hi coordinate of the ship into
                         \ the y-coordinate of the base of the ship's stick,
