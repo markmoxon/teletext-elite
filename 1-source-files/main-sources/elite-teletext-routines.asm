@@ -380,7 +380,7 @@ NEXT
 
 .StyleTitleRow
 
- LDA displayTitle       \ If bit 7 of displayTitle is set, jump to stit1 to skip
+ BIT displayTitle       \ If bit 7 of displayTitle is set, jump to stit1 to skip
  BMI stit1              \ displaying the title
 
  LDA QQ11               \ If this is not the death screen, jump to stit2 to

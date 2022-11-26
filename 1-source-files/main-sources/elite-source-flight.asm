@@ -7437,6 +7437,9 @@ NEXT
  BNE rT9                \ dashboard, so return from the subroutine (as rT9
                         \ contains an RTS)
 
+ BIT hideDashboard      \ If bit 7 of hideDashboard is set, then jump to rT9 to
+ BMI rT9                \ skip updating the dashboard
+
  LDA #&F0               \ Set SC(1 0) = &7EF0, which is the screen address for
  STA SC                 \ the character block containing the left end of the
  LDA #&7E               \ top indicator in the right part of the dashboard, the
@@ -24761,6 +24764,24 @@ ENDIF
 
 \ ******************************************************************************
 \
+\       Name: hideDashboard
+\       Type: Variable
+\   Category: Teletext Elite
+\    Summary: Flag to control whether to update the dashboard and scanner, for
+\             use in the death screen
+\
+\ ******************************************************************************
+
+.hideDashboard
+
+ EQUB 0                 \ Determines whether to draw a blue title row:
+                        \
+                        \   * Bit 7 clear = draw the dashboard
+                        \
+                        \   * Bit 7 set = do not draw the dashboard
+
+\ ******************************************************************************
+\
 \       Name: DEATH
 \       Type: Subroutine
 \   Category: Start and end
@@ -24788,6 +24809,9 @@ ENDIF
 \JSR DET1               \ the dashboard, setting A to 6 in the process
 
                         \ --- And replaced by: -------------------------------->
+
+ LDA #%10000000         \ Set bit 7 of hideDashboard so we do not update the
+ STA hideDashboard      \ dashboard or scanner in the space view
 
  LDA #6                 \ Set A to 6 to set as the view number for the death
                         \ screen
@@ -24938,6 +24962,9 @@ ENDIF
 
  LDX #6                 \ Set the view to the death screen so we don't show the
  STX QQ11               \ dashboard in DEATH2
+
+ LDA #0                 \ Clear bit 7 of hideDashboard so we once again update
+ STA hideDashboard      \ the dashboard and scanner in the space view
 
                         \ --- End of replacement ------------------------------>
 
@@ -33354,8 +33381,11 @@ LOAD_H% = LOAD% + P% - CODE%
  BNE SC5                \ from the subroutine, as the scanner is not being
                         \ shown
 
-                        \ --- End of added code ------------------------------->
+ BIT hideDashboard      \ If bit 7 of hideDashboard is set, then jump to SC5 to
+ BMI SC5                \ skip updating the scanner
 
+
+                        \ --- End of added code ------------------------------->
 
  LDA INWK+31            \ Fetch the ship's scanner flag from byte #31
 
