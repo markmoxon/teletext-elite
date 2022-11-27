@@ -7410,12 +7410,7 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 \STA (SC),Y             \ Draw the shape of the mask on pixel row Y of the
                         \ character block we are processing
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  INY                    \ Draw the next pixel row, incrementing Y
 
@@ -7423,12 +7418,7 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
 \STA (SC),Y
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
 
  INY                    \ And draw the third pixel row, incrementing Y
@@ -7437,12 +7427,7 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
 \STA (SC),Y
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  TYA                    \ Add 6 to Y, so Y is now 8 more than when we started
  CLC                    \ this loop iteration, so Y now points to the address
@@ -7617,12 +7602,7 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 \STA (SC),Y             \ Draw the shape of the mask on pixel row Y of the
                         \ character block we are processing
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  INY                    \ Draw the next pixel row, incrementing Y
 
@@ -7630,12 +7610,7 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
 \STA (SC),Y
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  INY                    \ And draw the third pixel row, incrementing Y
 
@@ -7643,12 +7618,7 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
 \STA (SC),Y
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  INY                    \ And draw the fourth pixel row, incrementing Y
 
@@ -7656,12 +7626,7 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
 \STA (SC),Y
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  TYA                    \ Add 5 to Y, so Y is now 8 more than when we started
  CLC                    \ this loop iteration, so Y now points to the address
@@ -11672,14 +11637,7 @@ LOAD_C% = LOAD% +P% - CODE%
 \STA (SC),Y             \ remove it later without ruining the background that's
                         \ already on-screen
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  LDA CTWOS+1,X          \ Fetch a mode 5 1-pixel byte with the pixel position
                         \ at X+1, so we can draw the right pixel of the dash
@@ -11712,14 +11670,7 @@ LOAD_C% = LOAD% +P% - CODE%
 \STA (SC),Y             \ A, with the colour in COL, using EOR logic, just as
 \                       \ above
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  RTS                    \ Return from the subroutine
 
@@ -18315,12 +18266,7 @@ LOAD_E% = LOAD% + P% - CODE%
 \                       \ this will overwrite anything that is already there
 \                       \ (so drawing a black missile will delete what's there)
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
  DEY                    \ Decrement the counter for the next row
 
