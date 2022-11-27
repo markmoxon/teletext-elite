@@ -1459,7 +1459,7 @@ ORG CATDcode + P% - CATD
 
  EOR #%10000000         \ Flip the sign of A
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  TAY                    \ Copy the pixel y-coordinate to Y
 
@@ -1469,7 +1469,7 @@ ORG CATDcode + P% - CATD
  ADC #128               \ the screen, so add 128 so the origin is on the left
                         \ of the screen, ready for the PlotPixelClipped routine
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  TAX                    \ Copy the pixel y-coordinate to X
 

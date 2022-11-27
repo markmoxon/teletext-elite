@@ -4101,13 +4101,13 @@ NEXT
 
  LDA X1
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  TAX
 
  LDA Y1
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  TAY
 
@@ -4115,13 +4115,13 @@ NEXT
 
  LDA X2
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  TAX
 
  LDA Y2
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  TAY
 
@@ -4779,13 +4779,13 @@ NEXT
 
  STY T1                 \ Store Y in T1
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  TAY
 
  TXA
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  TAX
 
@@ -14389,7 +14389,7 @@ LOAD_D% = LOAD% + P% - CODE%
  CLC                    \ Set A = crosshairs y-coordinate + indent to get the
  ADC QQ19+1             \ y-coordinate of the centre of the crosshairs
 
- PLOT_SCALE_Y           \ Scale the y-coordinate into sixels
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  STA XX15+1             \ Store the sixel y-coordinate of the centre in XX15+1
 
@@ -14398,7 +14398,7 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA QQ19               \ Set A = crosshairs x-coordinate of the centre of the
                         \ crosshairs
 
- PLOT_SCALE_X           \ Scale the x-coordinate into sixels
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  STA XX15               \ Store the sixel x-coordinate of the centre in XX15
 
@@ -19177,13 +19177,13 @@ LOAD_E% = LOAD% + P% - CODE%
 
  LDA Y1                 \ Fetch the y-coordinate into A
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  TAY
 
  LDA X1                 \ Fetch the x-coordinate into A
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  TAX
 

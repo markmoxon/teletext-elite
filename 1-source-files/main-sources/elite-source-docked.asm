@@ -4410,13 +4410,13 @@ LOAD_B% = LOAD% + P% - CODE%
 
  LDA X1
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  TAX
 
  LDA Y1
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  TAY
 
@@ -4424,13 +4424,13 @@ LOAD_B% = LOAD% + P% - CODE%
 
  LDA X2
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  TAX
 
  LDA Y2
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  TAY
 
@@ -5089,13 +5089,13 @@ LOAD_B% = LOAD% + P% - CODE%
 
  STY T1                 \ Store Y in T1
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  TAY
 
  TXA
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  TAX
 
@@ -8167,38 +8167,64 @@ LOAD_C% = LOAD% +P% - CODE%
                         \ screen, so Y is now the horizontal pixel row of the
                         \ line we want to draw to display the hangar floor
 
- LSR A                  \ Set A = A >> 3
- LSR A
- LSR A
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- ORA #&60               \ Each character row in Elite's screen mode takes up one
-                        \ page in memory (256 bytes), so we now OR with &60 to
-                        \ get the page containing the line
+\LSR A                  \ Set A = A >> 3
+\LSR A
+\LSR A
+\
+\ORA #&60               \ Each character row in Elite's screen mode takes up one
+\                       \ page in memory (256 bytes), so we now OR with &60 to
+\                       \ get the page containing the line
+\
+\STA SCH                \ Store the screen page in the high byte of SC(1 0)
+\
+\LDA P                  \ Set the low byte of SC(1 0) to the y-coordinate mod 7,
+\AND #7                 \ which determines the pixel row in the character block
+\STA SC                 \ we need to draw in (as each character row is 8 pixels
+\                       \ high), so SC(1 0) now points to the address of the
+\                       \ start of the horizontal line we want to draw
+\
+\LDY #0                 \ Set Y = 0 so the call to HAS2 starts drawing the line
+\                       \ in the first byte of the screen row, at the left edge
+\                       \ of the screen
 
- STA SCH                \ Store the screen page in the high byte of SC(1 0)
+                        \ --- And replaced by: -------------------------------->
 
- LDA P                  \ Set the low byte of SC(1 0) to the y-coordinate mod 7,
- AND #7                 \ which determines the pixel row in the character block
- STA SC                 \ we need to draw in (as each character row is 8 pixels
-                        \ high), so SC(1 0) now points to the address of the
-                        \ start of the horizontal line we want to draw
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
- LDY #0                 \ Set Y = 0 so the call to HAS2 starts drawing the line
-                        \ in the first byte of the screen row, at the left edge
-                        \ of the screen
+ TAY                    \ Set Y to the sixel y-coordinate
+
+ STY YSAV2              \ Store the y-coordinate in YSAV2, so we can retrieve it
+                        \ below
+
+ LDX #2                 \ Set X = 2 so we draw from the left edge of the screen,
+                        \ skipping past the graphics control character in the
+                        \ first column
+
+                        \ --- End of replacement ------------------------------>
 
  JSR HAS2               \ Draw a horizontal line from the left edge of the
                         \ screen, going right until we bump into something
                         \ already on-screen, at which point stop drawing
 
- LDA #%00000100         \ Now to draw the same line but from the right edge of
-                        \ the screen, so set a pixel mask in A to check the
-                        \ sixth pixel of the last byte, so we skip the 2-pixel
-                        \ scren border at the right edge of the screen
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDY #248               \ Set Y = 248 so the call to HAS3 starts drawing the
-                        \ line in the last byte of the screen row, at the right
-                        \ edge of the screen
+\LDA #%00000100         \ Now to draw the same line but from the right edge of
+\                       \ the screen, so set a pixel mask in A to check the
+\                       \ sixth pixel of the last byte, so we skip the 2-pixel
+\                       \ scren border at the right edge of the screen
+\
+\LDY #248               \ Set Y = 248 so the call to HAS3 starts drawing the
+\                       \ line in the last byte of the screen row, at the right
+\                       \ edge of the screen
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDX #63                \ Set X = 63 so we draw from the right edge of the
+                        \ screen
+
+                        \ --- End of replacement ------------------------------>
 
  JSR HAS3               \ Draw a horizontal line from the right edge of the
                         \ screen, going left until we bump into something
@@ -8214,17 +8240,36 @@ LOAD_C% = LOAD% +P% - CODE%
                         \ hangar, so we also need to draw the horizontal line in
                         \ the gap between the ships
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDY YSAV2              \ Fetch the y-coordinate of the line from YSAV2, which
+                        \ we stored above
+
+ LDX #32                \ Set the x-coordinate to the right of centre of the
+                        \ screen
+
+                        \ --- End of added code ------------------------------->
+
  JSR HAS2               \ Call HAS2 to a line to the right, starting with the
                         \ third pixel of the pixel row at screen address SC(1 0)
 
- LDY #128               \ We now draw the line from the centre of the screen
-                        \ to the left. SC(1 0) points to the start address of
-                        \ the screen row, so we set Y to 128 so the call to
-                        \ HAS3 starts drawing from halfway along the row (i.e.
-                        \ from the centre of the screen)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDA #%01000000         \ We want to start drawing from the second pixel, to
-                        \ avoid the border, so we set a pixel mask accordingly
+\LDY #128               \ We now draw the line from the centre of the screen
+\                       \ to the left. SC(1 0) points to the start address of
+\                       \ the screen row, so we set Y to 128 so the call to
+\                       \ HAS3 starts drawing from halfway along the row (i.e.
+\                       \ from the centre of the screen)
+\
+\LDA #%01000000         \ We want to start drawing from the second pixel, to
+\                       \ avoid the border, so we set a pixel mask accordingly
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDX #31                \ Set the x-coordinate to the left of centre of the
+                        \ screen
+
+                        \ --- End of replacement ------------------------------>
 
  JSR HAS3               \ Call HAS3, which draws a line from the halfway point
                         \ across the left half of the screen, going left until
@@ -8239,86 +8284,127 @@ LOAD_C% = LOAD% +P% - CODE%
  LDX XSAV               \ Fetch the loop counter from XSAV and increment it
  INX
 
- CPX #13                \ If the loop counter is less than 13 (i.e. T = 2 to 12)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CPX #13                \ If the loop counter is less than 13 (i.e. T = 2 to 12)
+\BCC HAL1               \ then loop back to HAL1 to draw the next line
+\
+\                       \ The floor is done, so now we move on to the back wall
+\
+\LDA #16                \ We want to draw 15 vertical lines, one every 16 pixels
+\                       \ across the screen, with the first at x-coordinate 16,
+\                       \ so set this in A to act as the x-coordinate of each
+\                       \ line as we work our way through them from left to
+\                       \ right, incrementing by 16 for each new line
+\
+\.HAL6
+\
+\LDX #&60               \ Set the high byte of SC(1 0) to &60, the high byte of
+\STX SCH                \ the start of screen
+\
+\STA XSAV               \ Store this value in XSAV, so we can retrieve it later
+\
+\AND #%11111000         \ Each character block contains 8 pixel rows, so to get
+\                       \ the address of the first byte in the character block
+\                       \ that we need to draw into, as an offset from the start
+\                       \ of the row, we clear bits 0-2
+\
+\STA SC                 \ Set the low byte of SC(1 0) to this value, so SC(1 0)
+\                       \ now points to the address where the line starts
+\
+\LDX #%10000000         \ Set a mask in X to the first pixel the 8-pixel byte
+\
+\LDY #1                 \ We are going to start drawing the line from the second
+\                       \ pixel from the top (to avoid drawing on the 1-pixel
+\                       \ border), so set Y to 1 to point to the second row in
+\                       \ the first character block
+\
+\.HAL7
+\
+\TXA                    \ Copy the pixel mask to A
+\
+\AND (SC),Y             \ If the pixel we want to draw is non-zero (using A as a
+\BNE HA6                \ mask), then this means it already contains something,
+\                       \ so jump to HA6 to stop drawing this line
+\
+\TXA                    \ Copy the pixel mask to A again
+\
+\ORA (SC),Y             \ OR the byte with the current contents of screen
+\                       \ memory, so the pixel we want is set
+\
+\STA (SC),Y             \ Store the updated pixel in screen memory
+\
+\INY                    \ Increment Y to point to the next row in the character
+\                       \ block, i.e. the next pixel down
+\
+\CPY #8                 \ Loop back to HAL7 to draw this next pixel until we
+\BNE HAL7               \ have drawn all 8 in the character block
+\
+\INC SC+1               \ Point SC(1 0) to the next page in memory, i.e. the
+\                       \ next character row
+\
+\LDY #0                 \ Set Y = 0 to point to the first row in this character
+\                       \ block
+\
+\BEQ HAL7               \ Loop back up to HAL7 to keep drawing the line (this
+\                       \ BEQ is effectively a JMP as Y is always zero)
+\
+\.HA6
+\
+\LDA XSAV               \ Fetch the x-coordinate of the line we just drew from
+\CLC                    \ XSAV into A, and add 16 so that A contains the
+\ADC #16                \ x-coordinate of the next line to draw
+\
+\BNE HAL6               \ Loop back to HAL6 until we have run through the loop
+\                       \ 60 times, by which point we are most definitely done
+
+                        \ --- And replaced by: -------------------------------->
+
+ CPX #7                 \ If the loop counter is less than 7 (i.e. T = 2 to 6)
  BCC HAL1               \ then loop back to HAL1 to draw the next line
 
                         \ The floor is done, so now we move on to the back wall
 
- LDA #16                \ We want to draw 15 vertical lines, one every 16 pixels
-                        \ across the screen, with the first at x-coordinate 16,
-                        \ so set this in A to act as the x-coordinate of each
-                        \ line as we work our way through them from left to
-                        \ right, incrementing by 16 for each new line
+ LDX #3                 \ Set X so we start drawing vertical lines at sixel
+                        \ column 3
+
+ LDY #3                 \ Set X so we start drawing vertical lines at sixel
+                        \ row 3
 
 .HAL6
 
- LDX #&60               \ Set the high byte of SC(1 0) to &60, the high byte of
- STX SCH                \ the start of screen
+ JSR PlotPixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
+                        \ empty
 
- STA XSAV               \ Store this value in XSAV, so we can retrieve it later
+ BNE HAL7               \ If we did not plot the sixel because there is already
+                        \ something on-screen, jump to HAL7
 
- AND #%11111000         \ Each character block contains 8 pixel rows, so to get
-                        \ the address of the first byte in the character block
-                        \ that we need to draw into, as an offset from the start
-                        \ of the row, we clear bits 0-2
+ INY                    \ Move to the next sixel down
 
- STA SC                 \ Set the low byte of SC(1 0) to this value, so SC(1 0)
-                        \ now points to the address where the line starts
+ JSR PlotPixelClipped   \ Plot the sixel at (X, Y)
 
- LDX #%10000000         \ Set a mask in X to the first pixel the 8-pixel byte
+ INY                    \ Move to the next sixel down
 
- LDY #1                 \ We are going to start drawing the line from the second
-                        \ pixel from the top (to avoid drawing on the 1-pixel
-                        \ border), so set Y to 1 to point to the second row in
-                        \ the first character block
+ JSR PlotPixelClipped   \ Plot the sixel at (X, Y)
+
+ INY                    \ Move to the next character row down
+
+ CPY #30                \ If we have not yet reached the horizon halfway down
+ BCC HAL6               \ the space view, loop back to HAL6 to keep drawing
 
 .HAL7
 
- TXA                    \ Copy the pixel mask to A
+ LDY #3                 \ Reset the row to the top of the screen
 
- AND (SC),Y             \ If the pixel we want to draw is non-zero (using A as a
- BNE HA6                \ mask), then this means it already contains something,
-                        \ so jump to HA6 to stop drawing this line
+ TXA                    \ Set X = X + 4 to move along to the next vertical line
+ CLC
+ ADC #4
+ TAX
 
- TXA                    \ Copy the pixel mask to A again
-
- ORA (SC),Y             \ OR the byte with the current contents of screen
-                        \ memory, so the pixel we want is set
-
-                        \ --- Mod: Original Acornsoft code removed: ----------->
-
-\STA (SC),Y             \ Store the updated pixel in screen memory
-
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
+ CPX #64                \ Loop back to draw the next vertical line until we have
+ BCC HAL6               \ reached the right edge of the screen
 
                         \ --- End of replacement ------------------------------>
-
- INY                    \ Increment Y to point to the next row in the character
-                        \ block, i.e. the next pixel down
-
- CPY #8                 \ Loop back to HAL7 to draw this next pixel until we
- BNE HAL7               \ have drawn all 8 in the character block
-
- INC SC+1               \ Point SC(1 0) to the next page in memory, i.e. the
-                        \ next character row
-
- LDY #0                 \ Set Y = 0 to point to the first row in this character
-                        \ block
-
- BEQ HAL7               \ Loop back up to HAL7 to keep drawing the line (this
-                        \ BEQ is effectively a JMP as Y is always zero)
-
-.HA6
-
- LDA XSAV               \ Fetch the x-coordinate of the line we just drew from
- CLC                    \ XSAV into A, and add 16 so that A contains the
- ADC #16                \ x-coordinate of the next line to draw
-
- BNE HAL6               \ Loop back to HAL6 until we have run through the loop
-                        \ 60 times, by which point we are most definitely done
 
  RTS                    \ Return from the subroutine
 
@@ -8503,59 +8589,72 @@ LOAD_C% = LOAD% +P% - CODE%
 
 .HAS2
 
- LDA #%00100000         \ Set A to the pixel pattern for a mode 4 character row
-                        \ byte with the third pixel set, so we start drawing the
-                        \ horizontal line just to the right of the 2-pixel
-                        \ border along the edge of the screen
-
-.HAL2
-
- TAX                    \ Store A in X so we can retrieve it after the following
-                        \ check and again after updating screen memory
-
- AND (SC),Y             \ If the pixel we want to draw is non-zero (using A as a
- BNE HA3                \ mask), then this means it already contains something,
-                        \ so we stop drawing because we have run into something
-                        \ that's already on-screen, and return from the
-                        \ subroutine (as HA3 contains an RTS)
-
- TXA                    \ Retrieve the value of A we stored above, so A now
-                        \ contains the pixel mask again
-
- ORA (SC),Y             \ OR the byte with the current contents of screen
-                        \ memory, so the pixel we want is set to red (because
-                        \ we know the bits are already 0 from the above test)
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\LDA #%00100000         \ Set A to the pixel pattern for a mode 4 character row
+\                       \ byte with the third pixel set, so we start drawing the
+\                       \ horizontal line just to the right of the 2-pixel
+\                       \ border along the edge of the screen
+\
+\.HAL2
+\
+\TAX                    \ Store A in X so we can retrieve it after the following
+\                       \ check and again after updating screen memory
+\
+\AND (SC),Y             \ If the pixel we want to draw is non-zero (using A as a
+\BNE HA3                \ mask), then this means it already contains something,
+\                       \ so we stop drawing because we have run into something
+\                       \ that's already on-screen, and return from the
+\                       \ subroutine (as HA3 contains an RTS)
+\
+\TXA                    \ Retrieve the value of A we stored above, so A now
+\                       \ contains the pixel mask again
+\
+\ORA (SC),Y             \ OR the byte with the current contents of screen
+\                       \ memory, so the pixel we want is set to red (because
+\                       \ we know the bits are already 0 from the above test)
+\
 \STA (SC),Y             \ Store the updated pixel in screen memory
+\
+\TXA                    \ Retrieve the value of A we stored above, so A now
+\                       \ contains the pixel mask again
+\
+\LSR A                  \ Shift A to the right to move on to the next pixel
+\
+\BCC HAL2               \ If bit 0 before the shift was clear (i.e. we didn't
+\                       \ just do the fourth pixel in this block), loop back to
+\                       \ HAL2 to check and draw the next pixel
+\
+\TYA                    \ Set Y = Y + 8 (as we know the C flag is set) to point
+\ADC #7                 \ to the next character block along
+\TAY
+\
+\LDA #%10000000         \ Reset the pixel mask in A to the first pixel in the
+\                       \ new 8-pixel character block
+\
+\BCC HAL2               \ If the above addition didn't overflow, jump back to
+\                       \ HAL2 to keep drawing the line in the next character
+\                       \ block
 
                         \ --- And replaced by: -------------------------------->
 
- NOP                    \ Pad the code out to the same length as in the original
- NOP
+ JSR PlotPixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
+                        \ empty
+
+ BNE HA3                \ If we did not plot the sixel because there is already
+                        \ something on-screen, jump to HA3 to return from the
+                        \ subroutine
+
+ INX                    \ Move to the next sixel to the right
+
+ JSR PlotPixelClipped   \ Plot the sixel at (X, Y)
+
+ INX                    \ Move to the next character column to the right
+
+ CPX #39                \ If we have not yet reached the right edge of the
+ BCC HAS2               \ screen, loop back to HAS2 to keep drawing
 
                         \ --- End of replacement ------------------------------>
-
- TXA                    \ Retrieve the value of A we stored above, so A now
-                        \ contains the pixel mask again
-
- LSR A                  \ Shift A to the right to move on to the next pixel
-
- BCC HAL2               \ If bit 0 before the shift was clear (i.e. we didn't
-                        \ just do the fourth pixel in this block), loop back to
-                        \ HAL2 to check and draw the next pixel
-
- TYA                    \ Set Y = Y + 8 (as we know the C flag is set) to point
- ADC #7                 \ to the next character block along
- TAY
-
- LDA #%10000000         \ Reset the pixel mask in A to the first pixel in the
-                        \ new 8-pixel character block
-
- BCC HAL2               \ If the above addition didn't overflow, jump back to
-                        \ HAL2 to keep drawing the line in the next character
-                        \ block
 
 .HA3
 
@@ -8580,52 +8679,66 @@ LOAD_C% = LOAD% +P% - CODE%
 
 .HAS3
 
- TAX                    \ Store A in X so we can retrieve it after the following
-                        \ check and again after updating screen memory
-
- AND (SC),Y             \ If the pixel we want to draw is non-zero (using A as a
- BNE HA3                \ mask), then this means it already contains something,
-                        \ so we stop drawing because we have run into something
-                        \ that's already on-screen, and return from the
-                        \ subroutine (as HA3 contains an RTS)
-
- TXA                    \ Retrieve the value of A we stored above, so A now
-                        \ contains the pixel mask again
-
- ORA (SC),Y             \ OR the byte with the current contents of screen
-                        \ memory, so the pixel we want is set to red (because
-                        \ we know the bits are already 0 from the above test)
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\TAX                    \ Store A in X so we can retrieve it after the following
+\                       \ check and again after updating screen memory
+\
+\AND (SC),Y             \ If the pixel we want to draw is non-zero (using A as a
+\BNE HA3                \ mask), then this means it already contains something,
+\                       \ so we stop drawing because we have run into something
+\                       \ that's already on-screen, and return from the
+\                       \ subroutine (as HA3 contains an RTS)
+\
+\TXA                    \ Retrieve the value of A we stored above, so A now
+\                       \ contains the pixel mask again
+\
+\ORA (SC),Y             \ OR the byte with the current contents of screen
+\                       \ memory, so the pixel we want is set to red (because
+\                       \ we know the bits are already 0 from the above test)
+\
 \STA (SC),Y             \ Store the updated pixel in screen memory
+\
+\TXA                    \ Retrieve the value of A we stored above, so A now
+\                       \ contains the pixel mask again
+\
+\ASL A                  \ Shift A to the left to move to the next pixel to the
+\                       \ left
+\
+\BCC HAS3               \ If bit 7 before the shift was clear (i.e. we didn't
+\                       \ just do the first pixel in this block), loop back to
+\                       \ HAS3 to check and draw the next pixel to the left
+\
+\TYA                    \ Set Y = Y - 8 (as we know the C flag is set) to point
+\SBC #8                 \ to the next character block to the left
+\TAY
+\
+\LDA #%00000001         \ Set a mask in A to the last pixel in the 8-pixel byte
+\
+\BCS HAS3               \ If the above subtraction didn't underflow, jump back
+\                       \ to HAS3 to keep drawing the line in the next character
+\                       \ block to the left
 
                         \ --- And replaced by: -------------------------------->
 
- NOP                    \ Pad the code out to the same length as in the original
- NOP
+ JSR PlotPixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
+                        \ empty
+
+ BNE HA3                \ If we did not plot the sixel because there is already
+                        \ something on-screen, jump to HA3 to return from the
+                        \ subroutine
+
+ DEX                    \ Move to the next sixel to the left
+
+ JSR PlotPixelClipped   \ Plot the sixel at (X, Y)
+
+ DEX                    \ Move to the next character column to the left
+
+ CPX #2                 \ If we have not yet reached the control character at
+ BCS HAS3               \ the left edge of the screen, loop back to HAS3 to keep
+                        \ drawing
 
                         \ --- End of replacement ------------------------------>
-
- TXA                    \ Retrieve the value of A we stored above, so A now
-                        \ contains the pixel mask again
-
- ASL A                  \ Shift A to the left to move to the next pixel to the
-                        \ left
-
- BCC HAS3               \ If bit 7 before the shift was clear (i.e. we didn't
-                        \ just do the first pixel in this block), loop back to
-                        \ HAS3 to check and draw the next pixel to the left
-
- TYA                    \ Set Y = Y - 8 (as we know the C flag is set) to point
- SBC #8                 \ to the next character block to the left
- TAY
-
- LDA #%00000001         \ Set a mask in A to the last pixel in the 8-pixel byte
-
- BCS HAS3               \ If the above subtraction didn't underflow, jump back
-                        \ to HAS3 to keep drawing the line in the next character
-                        \ block to the left
 
  RTS                    \ Return from the subroutine
 
@@ -8661,7 +8774,6 @@ LOAD_C% = LOAD% +P% - CODE%
 
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
-
 \LDA LIL2+2             \ Flip bit 6 of LIL2+2 to change the EOR (SC),Y in LIL2
 \EOR #%01000000         \ to an ORA (SC),Y (or back again)
 \STA LIL2+2
@@ -8678,45 +8790,7 @@ LOAD_C% = LOAD% +P% - CODE%
 \EOR #%01000000         \ to an ORA (SC),Y (or back again)
 \STA LIL6+2
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
- NOP
- NOP
- NOP
- NOP
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
- NOP
- NOP
- NOP
- NOP
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
- NOP
- NOP
- NOP
- NOP
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
- NOP
- NOP
- NOP
- NOP
-
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of removed code ----------------------------->
 
 .HA1
 
@@ -12771,7 +12845,7 @@ LOAD_D% = LOAD% + P% - CODE%
  CLC                    \ Set A = crosshairs y-coordinate + indent to get the
  ADC QQ19+1             \ y-coordinate of the centre of the crosshairs
 
- PLOT_SCALE_Y           \ Scale the y-coordinate into sixels
+ PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
 
  STA XX15+1             \ Store the sixel y-coordinate of the centre in XX15+1
 
@@ -12780,7 +12854,7 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA QQ19               \ Set A = crosshairs x-coordinate of the centre of the
                         \ crosshairs
 
- PLOT_SCALE_X           \ Scale the x-coordinate into sixels
+ PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
 
  STA XX15               \ Store the sixel x-coordinate of the centre in XX15
 
@@ -33087,6 +33161,8 @@ ENDMACRO
                         \ --- And replaced by: -------------------------------->
 
 INCLUDE "1-source-files/main-sources/elite-teletext-routines.asm"
+
+INCLUDE "1-source-files/main-sources/elite-teletext-docked.asm"
 
                         \ --- End of replacement ------------------------------>
 

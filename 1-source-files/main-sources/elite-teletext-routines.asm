@@ -575,11 +575,11 @@ ENDIF
 
  STY YSAV               \ Store Y somewhere safe
 
- LDA XX12               \ Scale the system's x-coordinate
+ LDA XX12               \ Scale the system's pixel x-coordinate into sixels
  PLOT_SCALE_X
  TAX
 
- LDA K4                 \ Scale the system's y-coordinate
+ LDA K4                 \ Scale the system's pixel y-coordinate into sixels
  PLOT_SCALE_Y
  TAY
 
