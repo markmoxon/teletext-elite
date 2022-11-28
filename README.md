@@ -4,7 +4,7 @@
 
 This repository contains source code for Teletext Elite on the BBC Micro and BBC Master 128.
 
-Teletext Elite is the full version of BBC Micro disc Elite, but all graphics are converted to the BBC's teletext mode 7. For more information, see the [bbcelite.com website](https://www.bbcelite.com/hacks/teletext_elite.html).
+Teletext Elite is the full version of BBC Micro disc Elite, but all graphics have been converted to use the BBC's teletext mode 7. For more information, see the [bbcelite.com website](https://www.bbcelite.com/hacks/teletext_elite.html).
 
 This repository contains the full source code for Teletext Elite, which you can build yourself on a modern computer. See below for more details on [browsing the source code](#browsing-the-source-in-an-ide) and [building the Teletext Elite from the source](#building-teletext-elite-from-the-source).
 
@@ -34,9 +34,9 @@ Elite was written by Ian Bell and David Braben and is copyright &copy; Acornsoft
 
 The code on this site has been reconstructed from a disassembly of the version released on [Ian Bell's personal website](http://www.elitehomepage.org/).
 
-The commentary and Teletext Elite code is copyright &copy; Mark Moxon. Any misunderstandings or mistakes in the documentation are entirely my fault.
+The commentary and Teletext conversion code are copyright &copy; Mark Moxon. Any misunderstandings or mistakes in the documentation are entirely my fault.
 
-The Teletext routines are by Kieran Connell and Simon.M of the Bitshifters, and were adapted from Bresenham routines by Rich Talbot-Watkins. See the [teletextr](https://github.com/bitshifters/teletextr/tree/master/lib) repository for the original code.
+The Teletext routines are by Kieran Connell and Simon.M of the Bitshifters, and were adapted from Bresenham routines by Rich Talbot-Watkins. See the [Bitshifters teletextr](https://github.com/bitshifters/teletextr/tree/master/lib) repository for the original code.
 
 Huge thanks are due to the original authors for not only creating such an important piece of my childhood, but also for releasing the source code for us to play with; to Paul Brink for his annotated disassembly; and to Kieran Connell for his [BeebAsm version](https://github.com/kieranhj/elite-beebasm), which I forked as the original basis for this project. You can find more information about this project in the [accompanying website's project page](https://www.bbcelite.com/about_site/about_this_project.html).
 
@@ -64,7 +64,7 @@ If you want to browse the source in an IDE, you might find the following useful.
 
   * The main game's source code is in the [elite-source-flight.asm](1-source-files/main-sources/elite-source-flight.asm) and [elite-source-docked.asm](1-source-files/main-sources/elite-source-docked.asm) files (for when we're in-flight or docked) - this is the motherlode and probably contains all the stuff you're interested in.
 
-  * The game's loader is in the [elite-loader1.asm](1-source-files/main-sources/elite-loader1.asm), [elite-loader2.asm](1-source-files/main-sources/elite-loader2.asm) and [elite-loader3.asm](1-source-files/main-sources/elite-loader3.asm) files - these are mainly concerned with setup and copy protection.
+  * The game's loader is in the [elite-loader1.asm](1-source-files/main-sources/elite-loader1.asm), [elite-loader2.asm](1-source-files/main-sources/elite-loader2.asm) and [elite-loader3.asm](1-source-files/main-sources/elite-loader3.asm) files - these are mainly concerned with setup and copy protection. The last file contains the source for the Saturn loading screen.
 
   * The following source files contain Teletext-specific routines and macros, and are included in the main source files as required: [elite-teletext-docked.asm](1-source-files/main-sources/elite-teletext-docked.asm), [elite-teletext-flight.asm](1-source-files/main-sources/elite-teletext-flight.asm), [elite-teletext-macros.asm](1-source-files/main-sources/elite-teletext-macros.asm), [elite-teletext-pixels.asm](1-source-files/main-sources/elite-teletext-pixels.asm) and [elite-teletext-routines.asm](1-source-files/main-sources/elite-teletext-routines.asm)
 
