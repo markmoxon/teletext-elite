@@ -1,6 +1,6 @@
 \ ******************************************************************************
 \
-\ DISC ELITE DOCKED SOURCE
+\ TELETEXT ELITE DOCKED SOURCE
 \
 \ Elite was written by Ian Bell and David Braben and is copyright Acornsoft 1984
 \
@@ -4408,33 +4408,26 @@ LOAD_B% = LOAD% + P% - CODE%
  LDA #0                 \ Set SWAP to 0 as we don't need to swap coordinates
  STA SWAP
 
- LDA X1
-
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
-
+ LDA X1                 \ Scale the pixel x-coordinate in A into sixels
+ SCALE_SIXEL_X
  TAX
 
- LDA Y1
-
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
-
+ LDA Y1                 \ Scale the pixel y-coordinate in A into sixels
+ SCALE_SIXEL_Y
  TAY
 
- JSR MoveTo
+ JSR MoveToSixel        \ Move the graphics cursor to the start of the line at
+                        \ (X1, Y1)
 
- LDA X2
-
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
-
+ LDA X2                 \ Scale the pixel x-coordinate in A into sixels
+ SCALE_SIXEL_X
  TAX
 
- LDA Y2
-
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
-
+ LDA Y2                 \ Scale the pixel y-coordinate in A into sixels
+ SCALE_SIXEL_Y
  TAY
 
- JSR DrawTo
+ JSR DrawToSixel        \ Draw a line from (X1, Y1) to (X2, Y2)
 
  LDY YSAV               \ Restore Y from YSAV, so that it's preserved
 
@@ -5089,17 +5082,17 @@ LOAD_B% = LOAD% + P% - CODE%
 
  STY T1                 \ Store Y in T1
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
+ SCALE_SIXEL_Y          \ Scale the pixel y-coordinate in A into sixels
 
  TAY
 
  TXA
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
+ SCALE_SIXEL_X          \ Scale the pixel x-coordinate in A into sixels
 
  TAX
 
- JSR PlotPixelClipped   \ Plot the pixel
+ JSR PlotSixelClipped   \ Plot the pixel
 
 .PX13
 
@@ -7060,11 +7053,11 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
  LDA YC                 \ Fetch YC, the y-coordinate (row) of the text cursor
 
- ASL A                  \ Add the row address for YC (from the char_row_address
+ ASL A                  \ Add the row address for YC (from the charRowAddress
  TAY                    \ table) to SC to give the screen address of the
- LDA char_row_address,Y \ character
+ LDA charRowAddress,Y   \ character
  STA SC
- LDA char_row_address+1,Y
+ LDA charRowAddress+1,Y
  STA SCH
 
  LDA #' '               \ Store a space at the XC-th character on the row
@@ -7137,11 +7130,11 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
                         \ --- And replaced by: -------------------------------->
 
- ASL A                  \ Add the row address for YC (from the char_row_address
+ ASL A                  \ Add the row address for YC (from the charRowAddress
  TAY                    \ table) to SC to give the screen address of the
- LDA char_row_address,Y \ character
+ LDA charRowAddress,Y   \ character
  STA SC
- LDA char_row_address+1,Y
+ LDA charRowAddress+1,Y
  STA SCH
                         \ --- End of replacement ------------------------------>
 
@@ -8171,7 +8164,7 @@ LOAD_C% = LOAD% +P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
+ SCALE_SIXEL_Y          \ Scale the pixel y-coordinate in A into sixels
 
  TAY                    \ Set Y to the sixel y-coordinate
 
@@ -8357,7 +8350,7 @@ LOAD_C% = LOAD% +P% - CODE%
 
 .HAL6
 
- JSR PlotPixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
+ JSR PlotSixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
                         \ empty
 
  BNE HAL7               \ If we did not plot the sixel because there is already
@@ -8365,11 +8358,11 @@ LOAD_C% = LOAD% +P% - CODE%
 
  INY                    \ Move to the next sixel down
 
- JSR PlotPixelClipped   \ Plot the sixel at (X, Y)
+ JSR PlotSixelClipped   \ Plot the sixel at (X, Y)
 
  INY                    \ Move to the next sixel down
 
- JSR PlotPixelClipped   \ Plot the sixel at (X, Y)
+ JSR PlotSixelClipped   \ Plot the sixel at (X, Y)
 
  INY                    \ Move to the next character row down
 
@@ -8622,7 +8615,7 @@ LOAD_C% = LOAD% +P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- JSR PlotPixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
+ JSR PlotSixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
                         \ empty
 
  BNE HA3                \ If we did not plot the sixel because there is already
@@ -8631,7 +8624,7 @@ LOAD_C% = LOAD% +P% - CODE%
 
  INX                    \ Move to the next sixel to the right
 
- JSR PlotPixelClipped   \ Plot the sixel at (X, Y)
+ JSR PlotSixelClipped   \ Plot the sixel at (X, Y)
 
  INX                    \ Move to the next character column to the right
 
@@ -8705,7 +8698,7 @@ LOAD_C% = LOAD% +P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- JSR PlotPixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
+ JSR PlotSixelIfEmpty   \ Plot the sixel at (X, Y), if the character block is
                         \ empty
 
  BNE HA3                \ If we did not plot the sixel because there is already
@@ -8714,7 +8707,7 @@ LOAD_C% = LOAD% +P% - CODE%
 
  DEX                    \ Move to the next sixel to the left
 
- JSR PlotPixelClipped   \ Plot the sixel at (X, Y)
+ JSR PlotSixelClipped   \ Plot the sixel at (X, Y)
 
  DEX                    \ Move to the next character column to the left
 
@@ -12583,13 +12576,13 @@ LOAD_D% = LOAD% + P% - CODE%
  BPL long1              \ set, by skipping the following if bit 7 is clear
 
  LDA #&11               \ Set sixel plotting logic to ORA (SC),Y, so the fuel
- STA pixelLogic         \ circle is fully drawn
+ STA sixelLogic         \ circle is fully drawn
 
  JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
                         \ current system's galactic coordinates
 
  LDA #&51               \ Set sixel plotting logic back to EOR (SC),Y
- STA pixelLogic
+ STA sixelLogic
 
  RTS                    \ Return from the subroutine
 
@@ -12815,7 +12808,7 @@ LOAD_D% = LOAD% + P% - CODE%
  CLC                    \ Set A = crosshairs y-coordinate + indent to get the
  ADC QQ19+1             \ y-coordinate of the centre of the crosshairs
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
+ SCALE_SIXEL_Y          \ Scale the pixel y-coordinate in A into sixels
 
  STA XX15+1             \ Store the sixel y-coordinate of the centre in XX15+1
 
@@ -12824,43 +12817,43 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA QQ19               \ Set A = crosshairs x-coordinate of the centre of the
                         \ crosshairs
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
+ SCALE_SIXEL_X          \ Scale the pixel x-coordinate in A into sixels
 
  STA XX15               \ Store the sixel x-coordinate of the centre in XX15
 
  TAX                    \ Copy the x-coordinate into X
 
  DEX                    \ Plot the first pixel to the left
- JSR PlotPixelClipped
+ JSR PlotSixelClipped
 
  DEX                    \ Plot the second pixel to the left
- JSR PlotPixelClipped
+ JSR PlotSixelClipped
 
  LDX XX15               \ Set X to the sixel x-coordinate of the centre
 
  INX                    \ Plot the first pixel to the right
- JSR PlotPixelClipped
+ JSR PlotSixelClipped
 
  INX                    \ Plot the second pixel to the right
- JSR PlotPixelClipped
+ JSR PlotSixelClipped
 
  LDX XX15               \ Set X to the sixel x-coordinate of the centre
 
  LDY XX15+1             \ Set Y to the sixel y-coordinate of the centre
 
  DEY                    \ Plot the first pixel above the centre
- JSR PlotPixelClipped
+ JSR PlotSixelClipped
 
  DEY                    \ Plot the second pixel above the centre
- JSR PlotPixelClipped
+ JSR PlotSixelClipped
 
  LDY XX15+1             \ Set Y to the sixel y-coordinate of the centre
 
  INY                    \ Plot the first pixel below the centre
- JSR PlotPixelClipped
+ JSR PlotSixelClipped
 
  INY                    \ Plot the second pixel below the centre and return from
- JMP PlotPixelClipped   \ the subroutine using a tail call
+ JMP PlotSixelClipped   \ the subroutine using a tail call
 
                         \ --- End of replacement ------------------------------>
 
@@ -14032,7 +14025,7 @@ LOAD_D% = LOAD% + P% - CODE%
  BIT showChart          \ Only draw the system pixel if bit 7 of showChart is
  BMI P%+5               \ clear, by skipping the following call if bit 7 is set
 
- JSR DrawSystemPixel    \ Draw the system pixel
+ JSR DrawSystemSixel    \ Draw the system pixel
 
  BIT showChart          \ Only display the system label if bit 7 of showChart is
  BPL ee1                \ set, by jumping to ee1 if bit 7 is clear
@@ -33126,7 +33119,11 @@ ENDMACRO
 
                         \ --- And replaced by: -------------------------------->
 
-INCLUDE "1-source-files/main-sources/elite-teletext-routines.asm"
+INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
+
+INCLUDE "1-source-files/main-sources/elite-teletext-lines.asm"
+
+INCLUDE "1-source-files/main-sources/elite-teletext-text.asm"
 
 INCLUDE "1-source-files/main-sources/elite-teletext-docked.asm"
 

@@ -1,6 +1,6 @@
 \ ******************************************************************************
 \
-\ DISC ELITE RECURSIVE TEXT TOKEN FILE
+\ TELETEXT ELITE RECURSIVE TEXT TOKEN FILE
 \
 \ Elite was written by Ian Bell and David Braben and is copyright Acornsoft 1984
 \

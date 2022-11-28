@@ -1,268 +1,29 @@
-INCLUDE "1-source-files/main-sources/elite-teletext-pixels.asm"
-
-.char_row_address
-
-\ Screen address of the start of row n in mode 7, for plotting text
-
-FOR n, 0, 25
- EQUW MODE7_VRAM + MODE7_INDENT + (n*&28)
-NEXT
-
-.rtw_startx
-
- SKIP 1
-
-.rtw_starty
-
- SKIP 1
-
-.rtw_endx
-
- SKIP 1
-
-.rtw_endy
-
- SKIP 1
-
-.rtw_dx
-
- SKIP 1
-
-.rtw_dy
-
- SKIP 1
-
-.rtw_accum
-
- SKIP 1
-
-.rtw_count
-
- SKIP 1
-
 \ ******************************************************************************
 \
-\       Name: DrawTo
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Plot a mode 7 line from the graphics cursor to this one
+\ TELETEXT ELITE TEXT ROUTINES
+\
+\ Elite was written by Ian Bell and David Braben and is copyright Acornsoft 1984
+\
+\ The code on this site has been reconstructed from a disassembly of the version
+\ released on Ian Bell's personal website at http://www.elitehomepage.org/
+\
+\ The commentary is copyright Mark Moxon, and any misunderstandings or mistakes
+\ in the documentation are entirely my fault
+\
+\ The terminology and notations used in this commentary are explained at
+\ https://www.bbcelite.com/about_site/terminology_used_in_this_commentary.html
+\
+\ The deep dive articles referred to in this commentary can be found at
+\ https://www.bbcelite.com/deep_dives
 \
 \ ******************************************************************************
-
-.DrawTo
-
- LDA rtw_startx
- STA rtw_endx
- LDA rtw_starty
- STA rtw_endy
- STX rtw_startx
- STY rtw_starty
-
- JSR DrawMode7Line      \ Draw a mode 7 line from rtw_start to rtw_end
-
- RTS                    \ Return from the subroutine
-
-\ ******************************************************************************
-\
-\       Name: MoveTo
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Set the position of the graphics cursor
-\
-\ ******************************************************************************
-
-.MoveTo
-
- LDA rtw_startx
- STA rtw_endx
- LDA rtw_starty
- STA rtw_endy
- STX rtw_startx
- STY rtw_starty
-
- RTS                    \ Return from the subroutine
-
-\ ******************************************************************************
-\
-\       Name: DrawMode7Line
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Draw a mode 7 line
-\
-\ ******************************************************************************
-
-.DrawMode7Line
-
- ; calc dx = ABS(startx - endx)
- SEC
- LDA rtw_startx
- TAX
- SBC rtw_endx
- BCS posdx
- EOR #255
- ADC #1
-
-.posdx
-
- STA rtw_dx
- 
- ; C=0 if dir of startx -> endx is positive, otherwise C=1
- PHP
- 
- ; calc dy = ABS(starty - endy)
- SEC
- LDA rtw_starty
- TAY
- SBC rtw_endy
- BCS posdy
- EOR #255
- ADC #1
-
-.posdy
-
- STA rtw_dy
- 
- ; C=0 if dir of starty -> endy is positive, otherwise C=1
- PHP
- 
- ; Coincident start and end points exit early
- ORA rtw_dx
- BNE nonzero
-
- ; safe exit for coincident points
- PLP
- PLP
- RTS
-
-.nonzero
- 
- ; determine which type of line it is
- LDA rtw_dy
- CMP rtw_dx
- BCC shallowline
-  
-.steepline
-
- ; self-modify code so that line progresses according to direction
- ; remembered earlier
- PLP     ; C=sign of dy
- LDA #&C8   ; INY (goingdown)
- BCC P%+4
- LDA #&88   ; DEY (goingup)
- STA goingupdown
- 
- PLP     ; C=sign of dx
- LDA #&E8   ; INX (goingright)
- BCC P%+4
- LDA #&CA   ; DEX (goingleft)
- STA goingleftright
-
- ; initialise accumulator for 'steep' line
- LDA rtw_dy
- STA rtw_count
- LSR A
-
-.steeplineloop
-
- STA rtw_accum
- 
- ; plot pixel
- JSR PlotPixelClipped
-
- ; check if done
- DEC rtw_count
- BNE goingupdown
-
- .exitline
- RTS
- 
- ; move up to next line
-
-.goingupdown
-
- NOP     ; self-modified to INY (goingdown) or DEY (goingup)
- 
- ; check move to next pixel column
-
-.movetonextcolumn
-
- SEC
- LDA rtw_accum
- SBC rtw_dx
- BCS steeplineloop
- ADC rtw_dy
- 
- ; move left or right to next pixel column
-
-.goingleftright
-
- NOP     ; self-modifed to INX (goingright) or DEX (goingleft)
- JMP steeplineloop
- 
-.shallowline
-
- ; self-modify code so that line progresses according to direction
- ; remembered earlier
- PLP     ; C=sign of dy
- LDA #&C8   ; INY (goingdown)
- BCC P%+4
- LDA #&88   ; DEY (goingup)
- STA goingupdown2
- 
- PLP     ; C=sign of dx
- LDA #&E8   ; INX (goingright)
- BCC P%+4
- LDA #&CA   ; DEX (goingleft)
- STA goingleftright2
-
- ; initialise accumulator for 'steep' line
- LDA rtw_dx
- STA rtw_count
- LSR A
-
-.shallowlineloop
-
- STA rtw_accum
- 
- ; plot pixel in cached byte
- JSR PlotPixelClipped
- 
- ; check if done
- DEC rtw_count
- BNE goingleftright2
-
- .exitline2
- RTS
- 
- ; move left or right to next pixel column
-
-.goingleftright2
-
- NOP     ; self-modifed to INX (goingright) or DEX (goingleft)
- 
- ; check whether we move to the next line
-
-.movetonextline
-
- SEC
- LDA rtw_accum
- SBC rtw_dy
- BCS shallowlineloop
- ADC rtw_dx
-
- ; move down or up to next line
-
-.goingupdown2
-
- NOP     ; self-modified to INY (goingdown) or DEY (goingup)
- JMP shallowlineloop
 
 \ ******************************************************************************
 \
 \       Name: SetTextYellow
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Set yellow text
+\    Summary: Set yellow text in mode 7
 \
 \ ******************************************************************************
 
@@ -270,35 +31,24 @@ NEXT
 
  LDX #131               \ Set X to the "yellow text" control code
 
- BNE PrintCharacter     \ Jump to PrintCharacter to set the colour
-
-\ ******************************************************************************
-\
-\       Name: SetText
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Set white text
-\
-\ ******************************************************************************
-
-.SetText
-
- LDX #135               \ Set X to the "white text" control code
-
- EQUB &2C               \ Skip the next instruction
+ EQUB &2C               \ Skip the next instruction, so we fall through into
+                        \ PrintCharacter to print the control code
 
 \ ******************************************************************************
 \
 \       Name: SetGraphicsWhite
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Set white graphics
+\    Summary: Set white graphics in mode 7
 \
 \ ******************************************************************************
 
 .SetGraphicsWhite
 
  LDX #151               \ Set X to the "white graphics" control code
+
+                        \ Fall through into PrintCharacter to print the control
+                        \ code
 
 \ ******************************************************************************
 \
@@ -319,25 +69,25 @@ NEXT
 
  LDA YC                 \ Fetch YC, the y-coordinate (row) of the text cursor
 
- CMP #25                \ If character is off-screen, do not print it
- BCS prin1
+ CMP #25                \ If the character is off the bottom of the screen, jump
+ BCS prin1              \ to prin1 to return from the subroutine
 
- ASL A                  \ Add the row address for YC (from the char_row_address
- TAY                    \ table) to SC to give the screen address of the
- LDA char_row_address,Y \ character
+ ASL A                  \ Add the address for the start of row YC (from the
+ TAY                    \ charRowAddress table) to SC to give the screen
+ LDA charRowAddress,Y   \ address of the character we want to print
  STA P
- LDA char_row_address+1,Y
+ LDA charRowAddress+1,Y
  STA P+1
 
  LDY XC                 \ Fetch XC, x-coordinate (column) of the text cursor
 
- CPY #40                \ If character is off-screen, do not print it
- BCS prin1
+ CPY #40                \ If the character is off to the right of the screen,
+ BCS prin1              \ jump to prin1 to return from the subroutine
 
- TXA                    \ Store the character in X at the XC-th character on the
- STA (P),Y              \ row at SC(1 0)
+ TXA                    \ Store the character given in X in the XC-th character
+ STA (P),Y              \ on the row at SC(1 0)
 
- INC XC                 \ Move the text cursor to the right
+ INC XC                 \ Move the text cursor to the right by one character
 
 .prin1
 
@@ -369,24 +119,25 @@ NEXT
 
  BNE clrs1              \ Loop back until we have counted a whole page
 
-                        \ Fall into StyleTitleRow to style the title line
+                        \ Fall into StyleTitleRow to style the title line as
+                        \ appropriate
 
 \ ******************************************************************************
 \
 \       Name: StyleTitleRow
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Print the control codes for the first line of a two-line title
+\    Summary: Print the control codes to style the first two lines of the screen
 \
 \ ******************************************************************************
 
 .StyleTitleRow
 
  BIT displayTitle       \ If bit 7 of displayTitle is set, jump to stit1 to skip
- BMI stit1              \ displaying the title
+ BMI stit1              \ displaying the title row
 
  LDA QQ11               \ If this is not the death screen, jump to stit2 to
- CMP #6                 \ display the title
+ CMP #6                 \ display the title row
  BNE stit2
 
 .stit1
@@ -444,7 +195,7 @@ NEXT
 
 .StyleTwoLineTitle
 
- LDA #132               \ Style the second row as yellow text on blue background
+ LDA #132               \ Style the second row as yellow text, blue background
  STA MODE7_VRAM+(1*&28)
  LDA #157
  STA MODE7_VRAM+(1*&28)+1
@@ -464,7 +215,7 @@ NEXT
 
 .StyleMessages
 
- LDA #132               \ Message row: Yellow text on blue background
+ LDA #132               \ Style the message row as yellow text, blue background
  STA MODE7_VRAM+(MESSAGE_ROW*&28)
  LDA #157
  STA MODE7_VRAM+(MESSAGE_ROW*&28)+1
@@ -478,7 +229,7 @@ NEXT
 \       Name: ClearMessage
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Remove an in-flight message line from the messages bar
+\    Summary: Remove an in-flight message line from the message bar
 \
 \ ******************************************************************************
 
@@ -490,7 +241,7 @@ NEXT
 
 .mess1
 
- STA MODE7_VRAM+(MESSAGE_ROW*&28),X    \ Zero the X-th byte of the messages row
+ STA MODE7_VRAM+(MESSAGE_ROW*&28),X    \ Zero the X-th byte of the message row
 
  INX                    \ Increment the byte counter
 
@@ -512,7 +263,7 @@ NEXT
 
  LDA #135               \ Set A to the "white text" control code
 
- STA MODE7_VRAM+(21*&28)    \ Set rows 21-23 to text
+ STA MODE7_VRAM+(21*&28)    \ Set rows 21-23 to display white text
  STA MODE7_VRAM+(22*&28)
  STA MODE7_VRAM+(23*&28)
 
@@ -534,13 +285,12 @@ NEXT
 
  RTS                    \ Return from the subroutine
 
-
 \ ******************************************************************************
 \
 \       Name: SetMode7Graphics
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Insert a graphics control character on rows 2 onwards
+\    Summary: Insert a graphics control character at the start of row 2 onwards
 \
 \ ******************************************************************************
 
@@ -551,13 +301,13 @@ NEXT
 IF _DOCKED
 
  FOR n, 2, 20
-  STA MODE7_VRAM + n*40   \ Set rows 2 to 20 to white graphics
+  STA MODE7_VRAM + n*40 \ Set rows 2 to 20 to white graphics
  NEXT
 
 ELSE
 
  FOR n, 2, 24
-  STA MODE7_VRAM + n*40   \ Set row 2 to 24 to white graphics
+  STA MODE7_VRAM + n*40 \ Set rows 2 to 24 to white graphics
  NEXT
 
 ENDIF
@@ -566,26 +316,26 @@ ENDIF
 
 \ ******************************************************************************
 \
-\       Name: DrawSystemPixel
+\       Name: DrawSystemSixel
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Draw a system character on the Short-Range Chart
+\    Summary: Draw a system sixel on the Short-Range Chart
 \
 \ ******************************************************************************
 
-.DrawSystemPixel
+.DrawSystemSixel
 
  STY YSAV               \ Store Y somewhere safe
 
  LDA XX12               \ Scale the system's pixel x-coordinate into sixels
- PLOT_SCALE_X
+ SCALE_SIXEL_X          \ and store it in X
  TAX
 
  LDA K4                 \ Scale the system's pixel y-coordinate into sixels
- PLOT_SCALE_Y
+ SCALE_SIXEL_Y          \ and store it in Y
  TAY
 
- JSR PlotPixelClipped   \ Plot the system pixel
+ JSR PlotSixelClipped   \ Plot the system pixel at (X, Y)
 
  LDY YSAV               \ Retrieve the value of Y that we stored above
 

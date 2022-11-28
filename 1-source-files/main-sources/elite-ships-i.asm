@@ -1,6 +1,6 @@
 \ ******************************************************************************
 \
-\ DISC ELITE SHIP BLUEPRINTS FILE I
+\ TELETEXT ELITE SHIP BLUEPRINTS FILE I
 \
 \ Elite was written by Ian Bell and David Braben and is copyright Acornsoft 1984
 \

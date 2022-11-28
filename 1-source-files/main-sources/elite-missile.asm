@@ -1,6 +1,6 @@
 \ ******************************************************************************
 \
-\ DISC ELITE MISSILE SHIP BLUEPRINT FILE
+\ TELETEXT ELITE MISSILE SHIP BLUEPRINT FILE
 \
 \ Elite was written by Ian Bell and David Braben and is copyright Acornsoft 1984
 \

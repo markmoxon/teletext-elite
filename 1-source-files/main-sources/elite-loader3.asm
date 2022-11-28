@@ -1,6 +1,6 @@
 \ ******************************************************************************
 \
-\ DISC ELITE LOADER (PART 3) SOURCE
+\ TELETEXT ELITE LOADER (PART 3) SOURCE
 \
 \ Elite was written by Ian Bell and David Braben and is copyright Acornsoft 1984
 \
@@ -1459,7 +1459,7 @@ ORG CATDcode + P% - CATD
 
  EOR #%10000000         \ Flip the sign of A
 
- PLOT_SCALE_Y           \ Scale the pixel y-coordinate in A into sixels
+ SCALE_SIXEL_Y          \ Scale the pixel y-coordinate in A into sixels
 
  TAY                    \ Copy the pixel y-coordinate to Y
 
@@ -1467,13 +1467,13 @@ ORG CATDcode + P% - CATD
 
  CLC                    \ The origin for the x-coordinate is in the centre of
  ADC #128               \ the screen, so add 128 so the origin is on the left
-                        \ of the screen, ready for the PlotPixelClipped routine
+                        \ of the screen, ready for the PlotSixelClipped routine
 
- PLOT_SCALE_X           \ Scale the pixel x-coordinate in A into sixels
+ SCALE_SIXEL_X          \ Scale the pixel x-coordinate in A into sixels
 
  TAX                    \ Copy the pixel y-coordinate to X
 
- JSR PlotPixelClipped   \ Plot the sixel
+ JSR PlotSixelClipped   \ Plot the sixel
 
                         \ --- End of replacement ------------------------------>
 
@@ -2559,7 +2559,7 @@ ORG TVT1code + P% - TVT1
 
 \INCBIN "1-source-files/images/P.(C)ASFT.bin"
 
-INCLUDE "1-source-files/main-sources/elite-teletext-pixels.asm"
+INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
 
                         \ --- End of replacement ------------------------------>
 

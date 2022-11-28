@@ -1,9 +1,29 @@
 \ ******************************************************************************
 \
-\       Name: PLOT_SCALE_X
+\ TELETEXT ELITE MACROS
+\
+\ Elite was written by Ian Bell and David Braben and is copyright Acornsoft 1984
+\
+\ The code on this site has been reconstructed from a disassembly of the version
+\ released on Ian Bell's personal website at http://www.elitehomepage.org/
+\
+\ The commentary is copyright Mark Moxon, and any misunderstandings or mistakes
+\ in the documentation are entirely my fault
+\
+\ The terminology and notations used in this commentary are explained at
+\ https://www.bbcelite.com/about_site/terminology_used_in_this_commentary.html
+\
+\ The deep dive articles referred to in this commentary can be found at
+\ https://www.bbcelite.com/deep_dives
+\
+\ ******************************************************************************
+
+\ ******************************************************************************
+\
+\       Name: SCALE_SIXEL_X
 \       Type: Macro
 \   Category: Teletext Elite
-\    Summary: Scale a pixel x-coordinate to a sixel coordinate
+\    Summary: Scale a pixel x-coordinate to a sixel x-coordinate
 \
 \ ------------------------------------------------------------------------------
 \
@@ -17,7 +37,7 @@
 \
 \ ******************************************************************************
 
-MACRO PLOT_SCALE_X
+MACRO SCALE_SIXEL_X
 
  LSR A                  \ Set A = A / 4, rounded to the nearest integer
  LSR A
@@ -28,10 +48,10 @@ ENDMACRO
 
 \ ******************************************************************************
 \
-\       Name: PLOT_SCALE_Y
+\       Name: SCALE_SIXEL_Y
 \       Type: Macro
 \   Category: Teletext Elite
-\    Summary: Scale a pixel y-coordinate to a sixel coordinate, moving it down
+\    Summary: Scale a pixel y-coordinate to a sixel y-coordinate, moving it down
 \             a row to skip the border row along the top of the screen
 \
 \ ------------------------------------------------------------------------------
@@ -46,7 +66,7 @@ ENDMACRO
 \
 \ ******************************************************************************
 
-MACRO PLOT_SCALE_Y
+MACRO SCALE_SIXEL_Y
 
  LSR A                  \ Set A = A / 4, rounded to the nearest integer
  LSR A

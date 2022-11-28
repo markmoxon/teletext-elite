@@ -1,6 +1,6 @@
 \ ******************************************************************************
 \
-\ DISC ELITE LOADER (PART 1) SOURCE
+\ TELETEXT ELITE LOADER (PART 1) SOURCE
 \
 \ Elite was written by Ian Bell and David Braben and is copyright Acornsoft 1984
 \
