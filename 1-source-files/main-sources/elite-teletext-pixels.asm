@@ -28,15 +28,15 @@ MESSAGE_ROW = 17        \ Configure the row for the message bar
 
 FOR i, 0, MODE7_HIGH_Y-1
  y = (i DIV 3) * 40 + 1 + MODE7_INDENT \ +1 due to graphics chr, plus indent
- EQUB LO(y-i)   \ adjust for (zp),Y style addressing, where Y will be the y coordinate
-NEXT
+ EQUB LO(y-i)           \ Adjust for (ZP),Y style addressing, where Y will be
+NEXT                    \ the y-coordinate
 
 .pixel_ytable_hi
 
 FOR i, 0, MODE7_HIGH_Y-1
  y = (i DIV 3) * 40 + 1 + MODE7_INDENT \ +1 due to graphics chr, plus indent
- EQUB HI(y-i)           \ adjust for (zp),Y style addressing, where Y will be the y coordinate
-NEXT
+ EQUB HI(y-i)           \ Adjust for (ZP),Y style addressing, where Y will be
+NEXT                    \ the y-coordinate
 
 .pixel_ytable_chr
 

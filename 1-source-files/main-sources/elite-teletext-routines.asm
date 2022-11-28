@@ -143,7 +143,8 @@ NEXT
   
 .steepline
 
- ; self-modify code so that line progresses according to direction remembered earlier
+ ; self-modify code so that line progresses according to direction
+ ; remembered earlier
  PLP     ; C=sign of dy
  LDA #&C8   ; INY (goingdown)
  BCC P%+4
@@ -200,7 +201,8 @@ NEXT
  
 .shallowline
 
- ; self-modify code so that line progresses according to direction remembered earlier
+ ; self-modify code so that line progresses according to direction
+ ; remembered earlier
  PLP     ; C=sign of dy
  LDA #&C8   ; INY (goingdown)
  BCC P%+4

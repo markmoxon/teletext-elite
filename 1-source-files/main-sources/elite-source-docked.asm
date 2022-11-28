@@ -14221,8 +14221,8 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+2)
  STA SCH
 
- LDY #30                \ Set Y to a counter to work through the message, so this
-                        \ contains the message length
+ LDY #30                \ Set Y to a counter to work through the message, so
+                        \ this contains the message length
 
 .rmes1
 

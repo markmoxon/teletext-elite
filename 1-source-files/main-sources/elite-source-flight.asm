@@ -8051,9 +8051,9 @@ NEXT
  LDA #0                 \ Otherwise, plot a black pixel for both sixels in the
                         \ character
 
- BCS dilx4              \ Jump to dilx4 to plot a black pixel for the first sixel
-                        \ in the character (this BCS is effectively a JMP as we
-                        \ just passed through a BCC)
+ BCS dilx4              \ Jump to dilx4 to plot a black pixel for the first
+                        \ sixel in the character (this BCS is effectively a JMP
+                        \ as we just passed through a BCC)
 
 .dilx2
 
@@ -8250,8 +8250,8 @@ NEXT
  LDA #172               \ Set A to the character with both middle sixels filled
 
  CPX Q                  \ If X <> Q, then we do not need to plot a vertical bar
- BNE dill2              \ in the first column, so jump to dill2 to check the next
-                        \ column
+ BNE dill2              \ in the first column, so jump to dill2 to check the
+                        \ next column
 
  LDA #189               \ Set A to the character with both middle sixels filled
                         \ and the vertical bar in the first column
@@ -8263,8 +8263,8 @@ NEXT
  INX                    \ Move on to the right sixel
 
  CPX Q                  \ If X <> Q, then we do not need to plot a vertical bar
- BNE dill3              \ in the first column, so jump to dill2 to check the next
-                        \ column
+ BNE dill3              \ in the first column, so jump to dill2 to check the
+                        \ next column
 
  LDA #238               \ Set A to the character with both middle sixels filled
                         \ and the vertical bar in the second column
@@ -15276,8 +15276,8 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+2)
  STA SCH
 
- LDY #30                \ Set Y to a counter to work through the message, so this
-                        \ contains the message length
+ LDY #30                \ Set Y to a counter to work through the message, so
+                        \ this contains the message length
 
 .rmes1
 
