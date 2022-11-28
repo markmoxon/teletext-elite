@@ -7680,6 +7680,13 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
                         \ text buffer at BUF instead of the screen, and DTW5
                         \ gets set to the length of the system name
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #0                 \ Set QQ17 = 0 to switch to ALL CAPS, as we are not sure
+ STA QQ17               \ of the case at this point
+
+                        \ --- End of added code ------------------------------->
+
  JSR cpl                \ Print the selected system name into the justified text
                         \ buffer
 
@@ -7701,7 +7708,15 @@ DTW7 = MT16 + 1         \ Point DTW7 to the second byte of the instruction above
 
  LDA INWK+5,X           \ Set A to the X-th character of the entered search term
 
- ORA #%00100000         \ Set bit 5 of the character to make it lower case
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\ORA #%00100000         \ Set bit 5 of the character to make it lower case
+
+                        \ --- And replaced by: -------------------------------->
+
+ AND #%11011111         \ Clear bit 5 of the character to make it upper case
+
+                        \ --- End of replacement ------------------------------>
 
  CMP BUF,X              \ If the character in A matches the X-th character of
  BEQ HME4               \ the selected system name in BUF, loop back to HME4 to

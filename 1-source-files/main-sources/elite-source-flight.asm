@@ -33763,7 +33763,7 @@ LOAD_H% = LOAD% + P% - CODE%
 
  INX                    \ Move right by one sixel
 
- JSR PlotPixelClipped   \ Plot the right sixel of the dot ay (X, Y)
+ JSR PlotPixelClipped   \ Plot the right sixel of the dot at (X, Y)
 
  JSR MoveTo             \ Move to the right sixel, so we are ready to draw the
                         \ stick
