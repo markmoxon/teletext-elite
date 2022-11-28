@@ -1,12 +1,14 @@
 # Fully documented source code for Teletext Elite
 
-This repository contains source code for Teletext Elite on the BBC Micro with disc drive.
+![Screenshot of Teletext Elite](https://www.bbcelite.com/images/teletext_elite/title1.png)
 
-Teletext Elite is the full version of BBC Micro disc Elite, but all graphics are in the BBC's teletext mode 7.
+This repository contains source code for Teletext Elite on the BBC Micro and BBC Master 128.
 
-It is a companion to the [bbcelite.com website](https://www.bbcelite.com). For more information, see the [bbcelite.com website](https://www.bbcelite.com/hacks/teletext_elite.html).
+Teletext Elite is the full version of BBC Micro disc Elite, but all graphics are converted to the BBC's teletext mode 7. For more information, see the [bbcelite.com website](https://www.bbcelite.com/hacks/teletext_elite.html).
 
 This repository contains the full source code for Teletext Elite, which you can build yourself on a modern computer. See below for more details on [browsing the source code](#browsing-the-source-in-an-ide) and [building the Teletext Elite from the source](#building-teletext-elite-from-the-source).
+
+![Screenshot of the rear view in Teletext Elite](https://www.bbcelite.com/images/teletext_elite/station.png)
 
 ## Contents
 
@@ -34,7 +36,7 @@ The code on this site has been reconstructed from a disassembly of the version r
 
 The commentary and Teletext Elite code is copyright &copy; Mark Moxon. Any misunderstandings or mistakes in the documentation are entirely my fault.
 
-The Teletext routines are by Kieran Connell of the Bitshifters.
+The Teletext routines are by Kieran Connell and Simon.M of the Bitshifters, and were adapted from Bresenham routines by Rich Talbot-Watkins. See the [teletextr](https://github.com/bitshifters/teletextr/tree/master/lib) repository for the original code.
 
 Huge thanks are due to the original authors for not only creating such an important piece of my childhood, but also for releasing the source code for us to play with; to Paul Brink for his annotated disassembly; and to Kieran Connell for his [BeebAsm version](https://github.com/kieranhj/elite-beebasm), which I forked as the original basis for this project. You can find more information about this project in the [accompanying website's project page](https://www.bbcelite.com/about_site/about_this_project.html).
 
