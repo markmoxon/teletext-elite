@@ -52,7 +52,7 @@ _STH_DISC               = (_VARIANT = 2)
  EQUB 10, 13
  EQUS "Teletext drawing routines by Kieran"
  EQUB 10, 13
- EQUS "Connell and Simon.M, adapted from"
+ EQUS "Connell and Simon Morris, adapted from"
  EQUB 10, 13
  EQUS "Bresenham code by Rich Talbot-Watkins"
  EQUB 10, 13
