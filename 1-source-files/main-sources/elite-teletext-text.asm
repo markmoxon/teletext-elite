@@ -194,6 +194,10 @@
 
  STA &7D74              \ Rating
 
+ LDA #129               \ Set to the "red text" control code
+
+ STA &7DBC              \ Equipment header
+
  LDA #131               \ Set to the "yellow text" control code
 
  FOR n, 0, 11
@@ -253,8 +257,12 @@
 
  LDA #129               \ Set to the "red text" control code
 
+ STA &7CCC              \ Large cargo bay
+
+ LDA #131               \ Set to the "yellow text" control code
+
  FOR n, 0, 16
-  STA &7D01 + n*40      \ Set the amount in the 17 price rows to red
+  STA &7D01 + n*40      \ Set the amount in the 17 price rows to yellow
  NEXT
 
  RTS                    \ Return from the subroutine

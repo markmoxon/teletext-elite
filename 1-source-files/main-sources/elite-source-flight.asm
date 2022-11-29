@@ -13559,6 +13559,12 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #191               \ Print recursive token 31 ("DISTANCE") followed by
  JSR TT68               \ a colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDX QQ8                \ Load (Y X) from QQ8, which contains the 16-bit
  LDY QQ8+1              \ distance we want to show
 

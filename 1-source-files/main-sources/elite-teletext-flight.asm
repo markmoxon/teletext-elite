@@ -143,11 +143,15 @@
 \       Name: StyleSystemData
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Print the control codes to style the Inventory screen
+\    Summary: Print the control codes to style the Data on System screen
 \
 \ ******************************************************************************
 
 .StyleSystemData
+
+ LDA &7CA5              \ If the distance is showing, jump to syst1 to style the
+ CMP #'D'               \ screen, as everything moves down one line
+ BEQ syst1
 
  LDA #130               \ Set to the "green text" control code
 
@@ -164,5 +168,27 @@
  STA &7E70              \ Gross producticity
 
  STA &7EBC              \ Average radius
+
+ RTS                    \ Return from the subroutine
+
+.syst1
+
+ LDA #130               \ Set to the "green text" control code
+
+ STA &7CAE              \ Distance
+
+ STA &7CD5+40           \ Economy
+
+ STA &7D28+40           \ Government
+
+ STA &7D78+40           \ Tech level
+
+ STA &7DC8+40           \ Population
+
+ STA &7E0C+40           \ Species
+
+ STA &7E70+40           \ Gross producticity
+
+ STA &7EBC+40           \ Average radius
 
  RTS                    \ Return from the subroutine
