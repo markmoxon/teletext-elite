@@ -58,7 +58,7 @@ Q% = _REMOVE_CHECKSUMS  \ Set Q% to TRUE to max out the default commander, FALSE
 
                         \ --- And replaced by: -------------------------------->
 
- N% = 12                \ N% is set to the number of bytes in the VDU table, so
+N% = 12                 \ N% is set to the number of bytes in the VDU table, so
                         \ we can loop through them below
 
                         \ --- End of replacement ------------------------------>
@@ -169,7 +169,7 @@ ORG &0070
 
 .R
 
- SKIP 2                 \ Used in the mode 7 screen routines
+ SKIP 2                 \ Temporary storage, used in the mode 7 screen routines
 
                         \ --- End of added code ------------------------------->
 
@@ -308,7 +308,8 @@ ORG CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
- SKIP 55
+ SKIP 55                \ Pad the table out to the same length as in the
+                        \ original
 
                         \ --- End of added code ------------------------------->
 
@@ -1461,9 +1462,9 @@ ORG CATDcode + P% - CATD
 
  SCALE_SIXEL_Y          \ Scale the pixel y-coordinate in A into sixels
 
- TAY                    \ Copy the pixel y-coordinate to Y
+ TAY                    \ Copy the sixel y-coordinate to Y
 
- TXA                    \ Copy the x-coordinate to A
+ TXA                    \ Copy the pixel x-coordinate to A
 
  CLC                    \ The origin for the x-coordinate is in the centre of
  ADC #128               \ the screen, so add 128 so the origin is on the left
@@ -1471,7 +1472,7 @@ ORG CATDcode + P% - CATD
 
  SCALE_SIXEL_X          \ Scale the pixel x-coordinate in A into sixels
 
- TAX                    \ Copy the pixel y-coordinate to X
+ TAX                    \ Copy the sixel y-coordinate to X
 
  JSR PlotSixelClipped   \ Plot the sixel
 
@@ -2521,19 +2522,19 @@ ORG TVT1code + P% - TVT1
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
 \.ELITE
-
+\
 \INCBIN "1-source-files/images/P.ELITE.bin"
-
+\
 \.ASOFT
-
+\
 \INCBIN "1-source-files/images/P.A-SOFT.bin"
-
+\
 \.CpASOFT
-
+\
 \INCBIN "1-source-files/images/P.(C)ASFT.bin"
-
+\
 \IF _MATCH_ORIGINAL_BINARIES
-
+\
 \IF _STH_DISC
 \ INCBIN "4-reference-binaries/sth/workspaces/loader3.bin"
 \ELIF _IB_DISC
@@ -2549,15 +2550,9 @@ ORG TVT1code + P% - TVT1
 
 .ELITE
 
-\INCBIN "1-source-files/images/P.ELITE.bin"
-
 .ASOFT
 
-\INCBIN "1-source-files/images/P.A-SOFT.bin"
-
 .CpASOFT
-
-\INCBIN "1-source-files/images/P.(C)ASFT.bin"
 
 INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
 
@@ -2576,7 +2571,7 @@ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
 
 .DrawSaturn
 
- LDA #132               \ Style the top and bottom rows as yellow text on blue
+ LDA #132               \ Style the top and bottom rows as yellow text on a blue
  STA MODE7_VRAM         \ background
  STA MODE7_VRAM+(23*&28)
  LDA #157
@@ -2589,10 +2584,12 @@ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
  LDA #151               \ White graphics
 
  FOR n, 1, 22
+ 
   STA MODE7_VRAM + n*40 \ Set rows 1 to 22 to white graphics
+ 
  NEXT
 
- LDA #LO(MODE7_VRAM+MODE7_INDENT+10)     \ Print title text
+ LDA #LO(MODE7_VRAM+MODE7_INDENT+10)     \ Print the title text
  STA SC
  LDA #HI(MODE7_VRAM+MODE7_INDENT+10)
  STA SCH
@@ -2603,7 +2600,7 @@ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
  LDY #14
  JSR PrintText
 
- LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+8)   \ Print subtitle text
+ LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+8)   \ Print the subtitle text
  STA SC
  LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+8)
  STA SCH

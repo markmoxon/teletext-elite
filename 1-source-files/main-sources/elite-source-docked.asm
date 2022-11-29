@@ -5084,13 +5084,13 @@ LOAD_B% = LOAD% + P% - CODE%
 
  SCALE_SIXEL_Y          \ Scale the pixel y-coordinate in A into sixels
 
- TAY
+ TAY                    \ Copy the sixel y-coordinate to Y
 
- TXA
+ TXA                    \ Copy the pixel x-coordinate to A
 
  SCALE_SIXEL_X          \ Scale the pixel x-coordinate in A into sixels
 
- TAX
+ TAX                    \ Copy the sixel y-coordinate to X
 
  JSR PlotSixelClipped   \ Plot the pixel
 
