@@ -33436,18 +33436,8 @@ LOAD_H% = LOAD% + P% - CODE%
 
 .SC2
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
-
-\ADC #123               \ Set X1 = 123 + x_hi
-\STA X1
-
-                        \ --- And replaced by: -------------------------------->
-
- ADC #125               \ Set X1 = 125 + x_hi (the additional two lets us take
- STA X1                 \ advantage of the rounding from mode 4 pixels to mode 7
-                        \ sixels)
-
-                        \ --- End of replacement ------------------------------>
+ ADC #123               \ Set X1 = 123 + x_hi
+ STA X1
 
                         \ Next, we convert the z_hi coordinate of the ship into
                         \ the y-coordinate of the base of the ship's stick,
@@ -33740,16 +33730,14 @@ LOAD_H% = LOAD% + P% - CODE%
  PHA                    \ on the stack, as we overwrite SC in the drawing
                         \ routines below
 
- LDA Y1                 \ Set Y = (Y1 / 4) + 9
- LSR A
- LSR A
- CLC
+ LDA Y1                 \ Scale the pixel y-coordinate in Y1 into sixels and
+ SCALE_SIXEL_X          \ add 9, so Y contains the sixel y-coordinate of the
+ CLC                    \ dot
  ADC #9
  TAY
 
- LDA X1                 \ Set X = X1 / 4
- LSR A
- LSR A
+ LDA X1                 \ Scale the pixel x-coordinate in X1 into sixels
+ SCALE_SIXEL_X
  TAX
 
  JSR PlotSixelClipped   \ Plot the left sixel of the dot at (X, Y)
@@ -33758,25 +33746,55 @@ LOAD_H% = LOAD% + P% - CODE%
 
  JSR PlotSixelClipped   \ Plot the right sixel of the dot at (X, Y)
 
- JSR MoveToSixel        \ Move to the right sixel, so we are ready to draw the
-                        \ stick
+ STY YSAV2              \ Store the sixel y-coordinate of the dot in YSAV2, so
+                        \ we can retrieve it below
 
- PLA                    \ Fetch the y-coordinate of the end of the stick from
-                        \ the stack into A
+ PLA                    \ Fetch the pixel y-coordinate of the end of the stick
+                        \ fromthe stack into A
 
- CMP Y1                 \ If the y-coordinate of the dot equals the y-coordinate
- BEQ scan1              \ of the end of the stick, then there is no stick to
-                        \ draw, so jump to scan1 to return from the subroutine
-
- LSR A                  \ Set Y = (A / 4) + 9
- LSR A
- CLC
- ADC #9
+ SCALE_SIXEL_X          \ Scale the pixel y-coordinate in A into sixels and add
+ CLC                    \ 9, so Y contains the sixel y-coordinate of the end of
+ ADC #9                 \ the stick
  TAY
 
- JSR DrawToSixel        \ Draw the stick
+ CPY YSAV2              \ If the y-coordinate of the dot equals the y-coordinate
+ BEQ scan3              \ of the end of the stick, then there is no stick to
+                        \ draw, so jump to scan3 to return from the subroutine
+
+                        \ At this point the C flag is as follows:
+                        \
+                        \   * Clear if Y < YSAV2 (i.e. if the end of the stick
+                        \     in Y is higher up the screen than the dot in
+                        \     YSAV2)
+                        \
+                        \   * Set if Y > YSAV2 (i.e. if the end of the stick
+                        \     in Y is lower down the screen than the dot in
+                        \     YSAV2)
+
+ BCS scan1              \ If Y > YSAV2, jump to scan1
+
+ DEC YSAV2              \ Y < YSAV2, so the end of the stick is higher than the
+                        \ dot, so move the dot y-coordinate in YSAV2 up the
+                        \ screen to just above the dot, as the stick is going up
+                        \ from the dot to the stick
+
+ JMP scan2              \ Skip the next instruction
 
 .scan1
+
+ INC YSAV2              \ Y > YSAV2, so the end of the stick is lower than the
+                        \ dot, so move the dot y-coordinate in YSAV2 down the
+                        \ screen to just below the dot, as the stick is going
+                        \ down from the dot to the stick
+
+.scan2
+
+ JSR MoveToSixel        \ Move to the end of the stick
+
+ LDY YSAV2              \ Draw the stick from the end of the stick to the dot
+ JSR DrawToSixel
+
+.scan3
 
  RTS                    \ Return from the subroutine
 
