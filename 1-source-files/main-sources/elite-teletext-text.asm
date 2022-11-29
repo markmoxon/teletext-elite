@@ -162,7 +162,141 @@
 .stit3
 
  LDA #151               \ Style the second row as white graphics
- STA MODE7_VRAM+(1*&28)
+ STA MODE7_VRAM+(1*40)
+
+ LDA #134               \ Style the rest of the screen as cyan text, returning
+ JMP SetMode7Colour     \ from the subroutine using a tail call
+
+\ ******************************************************************************
+\
+\       Name: StyleStatusMode
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes to style the Status Mode screen
+\
+\ ******************************************************************************
+
+.StyleStatusMode
+
+ LDA #130               \ Set to the "green text" control code
+
+ STA &7C90              \ Present system
+
+ STA &7CB8              \ Hyperspace system
+
+ STA &7CE0              \ Condition
+
+ STA &7CFA              \ Fuel
+
+ STA &7D22              \ Cash
+
+ STA &7D52              \ Legal status
+
+ STA &7D74              \ Rating
+
+ LDA #131               \ Set to the "yellow text" control code
+
+ FOR n, 0, 11
+  STA &7DE5 + n*40      \ Set the name in the 12 equipment rows to yellow
+ NEXT
+
+ LDA &7CE2              \ If the Condition starts with "R", set the colour to
+ CMP #'R'               \ red ("Red")
+ BNE mode1
+ LDA #129
+ STA &7CE0
+ BNE mode2
+
+.mode1
+
+ CMP #'Y'               \ If the Condition starts with "Y", set the colour to
+ BNE mode2              \ yellow ("Yellow")
+ LDA #131
+ STA &7CE0
+
+.mode2
+
+ LDA &7D53              \ If the Legal Status starts with "F", set the colour to
+ CMP #'F'               \ red ("Fugitive")
+ BNE mode3
+ LDA #129
+ STA &7D52
+ BNE mode4
+
+.mode3
+
+ CMP #'O'               \ If the Condition starts with "O", set the colour to
+ BNE mode4              \ yellow ("Offender")
+ LDA #131
+ STA &7CE0
+
+.mode4
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: StyleInventory
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes to style the Inventory screen
+\
+\ ******************************************************************************
+
+.StyleInventory
+
+ LDA #130               \ Set to the "green text" control code
+
+ STA &7C82              \ Fuel
+
+ STA &7CAA              \ Cash
+
+ LDA #129               \ Set to the "red text" control code
+
+ FOR n, 0, 16
+  STA &7D01 + n*40      \ Set the amount in the 17 price rows to red
+ NEXT
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: StyleMarketPrices
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes to style the Market Prices screen
+\
+\ ******************************************************************************
+
+.StyleMarketPrices
+
+ LDA #132               \ Style rows 3 and 4 as yellow text, blue background
+ STA MODE7_VRAM+(3*40)
+ STA MODE7_VRAM+(4*40)
+ LDA #157
+ STA MODE7_VRAM+(3*40)+1
+ STA MODE7_VRAM+(4*40)+1
+ LDA #131
+ STA MODE7_VRAM+(3*40)+2
+ STA MODE7_VRAM+(4*40)+2
+
+ LDA #129               \ Set to the "red text" control code
+
+ FOR n, 0, 16
+  STA &7D01 + n*40      \ Set the unit in the 17 price rows to red
+ NEXT
+
+ LDA #130               \ Set to the "green text" control code
+
+ FOR n, 0, 16
+  STA &7D04 + n*40      \ Set the price in the 17 price rows to green
+ NEXT
+
+ LDA #131               \ Set to the "yellow text" control code
+
+ FOR n, 0, 16
+  STA &7D0A + n*40      \ Set the price in the 17 price rows to yellow
+ NEXT
 
  RTS                    \ Return from the subroutine
 
@@ -186,26 +320,6 @@
 
 \ ******************************************************************************
 \
-\       Name: StyleTwoLineTitle
-\       Type: Subroutine
-\   Category: Teletext Elite
-\    Summary: Print the control codes for the second line of a two-line title
-\
-\ ******************************************************************************
-
-.StyleTwoLineTitle
-
- LDA #132               \ Style the second row as yellow text, blue background
- STA MODE7_VRAM+(1*&28)
- LDA #157
- STA MODE7_VRAM+(1*&28)+1
- LDA #131
- STA MODE7_VRAM+(1*&28)+2
-
- RTS                    \ Return from the subroutine
-
-\ ******************************************************************************
-\
 \       Name: StyleMessages
 \       Type: Subroutine
 \   Category: Teletext Elite
@@ -216,11 +330,11 @@
 .StyleMessages
 
  LDA #132               \ Style the message row as yellow text, blue background
- STA MODE7_VRAM+(MESSAGE_ROW*&28)
+ STA MODE7_VRAM+(MESSAGE_ROW*40)
  LDA #157
- STA MODE7_VRAM+(MESSAGE_ROW*&28)+1
+ STA MODE7_VRAM+(MESSAGE_ROW*40)+1
  LDA #131
- STA MODE7_VRAM+(MESSAGE_ROW*&28)+2
+ STA MODE7_VRAM+(MESSAGE_ROW*40)+2
 
  RTS                    \ Return from the subroutine
 
@@ -235,18 +349,23 @@
 
 .ClearMessage
 
+ LDA QQ11               \ If this not the space view, jump to mess2 as there is
+ BNE mess2              \ no message bar
+
  LDA #0                 \ Set A = 0 so we can zero screen memory
 
  LDX #3                 \ Set a byte counter in X
 
 .mess1
 
- STA MODE7_VRAM+(MESSAGE_ROW*&28),X    \ Zero the X-th byte of the message row
+ STA MODE7_VRAM+(MESSAGE_ROW*40),X    \ Zero the X-th byte of the message row
 
  INX                    \ Increment the byte counter
 
- CPX #&28               \ Loop back until we have cleared the whole row
+ CPX #40               \ Loop back until we have cleared the whole row
  BCC mess1
+
+.mess2
 
  RTS                    \ Return from the subroutine
 
@@ -261,11 +380,11 @@
 
 .ClearLines
 
- LDA #135               \ Set A to the "white text" control code
+ LDA #131               \ Set A to the "yellow text" control code
 
- STA MODE7_VRAM+(21*&28)    \ Set rows 21-23 to display white text
- STA MODE7_VRAM+(22*&28)
- STA MODE7_VRAM+(23*&28)
+ STA MODE7_VRAM+(21*40) \ Set rows 21-23 to display white text
+ STA MODE7_VRAM+(22*40)
+ STA MODE7_VRAM+(23*40)
 
  LDA #0                 \ Set A = 0 so we can zero screen memory
 
@@ -274,13 +393,13 @@
 
 .clyn1
 
- STA MODE7_VRAM+(21*&28),X    \ Zero the X-th byte of rows 21 to 23
- STA MODE7_VRAM+(22*&28),X
- STA MODE7_VRAM+(23*&28),X
+ STA MODE7_VRAM+(21*40),X   \ Zero the X-th byte of rows 21 to 23
+ STA MODE7_VRAM+(22*40),X
+ STA MODE7_VRAM+(23*40),X
 
  INX                    \ Increment the byte counter
 
- CPX #&28               \ Loop back until we have cleared the whole row
+ CPX #40                \ Loop back until we have cleared the whole row
  BCC clyn1
 
  RTS                    \ Return from the subroutine
@@ -296,21 +415,28 @@
 
 .SetMode7Graphics
 
- LDA #151               \ White graphics
+ LDA #151               \ Set A to white graphics
 
-IF _DOCKED
+\ ******************************************************************************
+\
+\       Name: SetMode7Colour
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Insert a control character at the start of row 2 onwards
+\
+\ ------------------------------------------------------------------------------
+\
+\ Arguments:
+\
+\   A                   The control character to insert
+\
+\ ******************************************************************************
 
- FOR n, 2, 20
-  STA MODE7_VRAM + n*40 \ Set rows 2 to 20 to white graphics
- NEXT
-
-ELSE
+.SetMode7Colour
 
  FOR n, 2, 24
-  STA MODE7_VRAM + n*40 \ Set rows 2 to 24 to white graphics
+  STA MODE7_VRAM + n*40 \ Set rows 2 to 24 to the control character in A
  NEXT
-
-ENDIF
 
  RTS                    \ Return from the subroutine
 

@@ -92,3 +92,150 @@
  LDA #1                 \ Set A = 1 so we return with the Z flag clear
 
  RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: StyleSystemData
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes to style the Inventory screen
+\
+\ ******************************************************************************
+
+.StyleSystemData
+
+ LDA #130               \ Set to the "green text" control code
+
+ STA &7C85              \ Economy
+
+ STA &7CD8              \ Government
+
+ STA &7D28              \ Tech level
+
+ STA &7D78              \ Population
+
+ STA &7DBC              \ Species
+
+ STA &7E20              \ Gross producticity
+
+ STA &7E6C              \ Average radius
+
+ LDA #131               \ Set to the "yellow text" control code
+
+ STA &7EAC              \ Extended description
+ STA &7EAC+(1*40)
+ STA &7EAC+(2*40)
+ STA &7EAC+(3*40)
+ STA &7EAC+(4*40)
+
+ RTS                    \ Return from the subroutine
+
+\******************************************************************************
+\
+\       Name: StyleBuyCargo
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes for the Buy Cargo screen
+\
+\ ******************************************************************************
+
+.StyleBuyCargo
+
+ LDA #132               \ Style rows 0 and 1 as yellow text, blue background
+ STA MODE7_VRAM+(0*40)
+ STA MODE7_VRAM+(1*40)
+ LDA #157
+ STA MODE7_VRAM+(0*40)+1
+ STA MODE7_VRAM+(1*40)+1
+ LDA #131
+ STA MODE7_VRAM+(0*40)+2
+ STA MODE7_VRAM+(1*40)+2
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: StyleCargo
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes for the cargo list
+\
+\ ******************************************************************************
+
+.StyleCargo
+
+ LDA #129               \ Set to the "red text" control code
+
+ FOR n, 0, 16
+  STA &7C89 + n*40      \ Set the unit in the 17 price rows to red
+ NEXT
+
+ LDA #130               \ Set to the "green text" control code
+
+ FOR n, 0, 16
+  STA &7C8C + n*40      \ Set the price in the 17 price rows to green
+ NEXT
+
+ LDA #131               \ Set to the "yellow text" control code
+
+ FOR n, 0, 16
+  STA &7C92 + n*40      \ Set the price in the 17 price rows to yellow
+ NEXT
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: StyleSellCargo
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes for the Sell Cargo list
+\
+\ ******************************************************************************
+
+.StyleSellCargo
+
+ LDA #129               \ Set to the "red text" control code
+
+ FOR n, 0, 16
+  STA &7C61 + n*40      \ Set the unit in the 17 price rows to red
+ NEXT
+
+ LDA #131               \ Set to the "yellow text" control code
+
+ FOR n, 0, 16
+  STA &7C67 + n*40      \ Set the Sell(Y/N) in the 17 price rows to yellow
+ NEXT
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: StyleEquipShip
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes for the Sell Cargo list
+\
+\ ******************************************************************************
+
+.StyleEquipShip
+
+ LDA #131               \ Set to the "yellow text" control code
+
+ FOR n, 0, 16
+  STA &7C54 + n*40      \ Set the number in the 17 price rows to yellow
+ NEXT
+
+ LDA #134               \ Set to the "cyan text" control code
+
+ FOR n, 0, 16
+  STA &7C58 + n*40      \ Set the name in the 17 price rows to yellow
+ NEXT
+
+ LDA #130               \ Set to the "green text" control code
+
+ FOR n, 0, 16
+  STA &7C6C + n*40      \ Set the unit in the 17 price rows to green
+ NEXT
+
+ RTS                    \ Return from the subroutine

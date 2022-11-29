@@ -137,3 +137,32 @@
 
  JMP msblob             \ Draw the missiles, returning from the subroutine
                         \ using a tail call
+
+\ ******************************************************************************
+\
+\       Name: StyleSystemData
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print the control codes to style the Inventory screen
+\
+\ ******************************************************************************
+
+.StyleSystemData
+
+ LDA #130               \ Set to the "green text" control code
+
+ STA &7CD5              \ Economy
+
+ STA &7D28              \ Government
+
+ STA &7D78              \ Tech level
+
+ STA &7DC8              \ Population
+
+ STA &7E0C              \ Species
+
+ STA &7E70              \ Gross producticity
+
+ STA &7EBC              \ Average radius
+
+ RTS                    \ Return from the subroutine

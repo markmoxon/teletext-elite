@@ -6285,6 +6285,12 @@ NEXT
  CPX #4                 \ If this isn't the last of the four views, jump back up
  BCC st                 \ to st to print out the next one
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleStatusMode    \ Style the Status Mode screen
+
+                        \ --- End of added code ------------------------------->
+
  RTS                    \ Return from the subroutine
 
 \ ******************************************************************************
@@ -13732,6 +13738,12 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #194               \ Print recursive token 34 ("ECONOMY") followed by
  JSR TT68               \ a colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDA QQ3                \ The system economy is determined by the value in QQ3,
                         \ so fetch it into A. First we work out the system's
                         \ prosperity as follows:
@@ -13785,6 +13797,12 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #162               \ Print recursive token 2 ("GOVERNMENT") followed by
  JSR TT68               \ a colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDA QQ4                \ The system's government is determined by the value in
                         \ QQ4, so fetch it into A
 
@@ -13815,6 +13833,12 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #192               \ Print recursive token 32 ("POPULATION") followed by a
  JSR TT68               \ colon
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
 
  SEC                    \ Call pr2 to print the population as a 3-digit number
  LDX QQ6                \ with a decimal point (by setting the C flag), so the
@@ -13928,6 +13952,12 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #193               \ Print recursive token 33 ("GROSS PRODUCTIVITY"),
  JSR TT68               \ followed by colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDX QQ7                \ Fetch the 16-bit productivity value from QQ7 into
  LDY QQ7+1              \ (Y X)
 
@@ -13946,6 +13976,12 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #250               \ Print recursive token 90 ("AVERAGE RADIUS"), followed
  JSR TT68               \ by a colon
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
 
                         \ The average radius is calculated like this:
                         \
@@ -13981,10 +14017,24 @@ LOAD_D% = LOAD% + P% - CODE%
 
  JSR TT162              \ Print a space
 
- LDA #'k'               \ Print "km", returning from the subroutine using a
- JSR TT26               \ tail call
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #'k'               \ Print "km", returning from the subroutine using a
+\JSR TT26               \ tail call
+\LDA #'m'
+\JMP TT26
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #'k'               \ Print "km"
+ JSR TT26
  LDA #'m'
- JMP TT26
+ JSR TT26
+
+ JSR StyleSystemData    \ Style the Data on System screen, returning from the
+                        \ subroutine using a tail call
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -14667,6 +14717,12 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #107               \ We do have a cargo bay extension, so print recursive
  JSR TT27               \ token 107 ("LARGE CARGO{sentence case} BAY")
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleInventory     \ Style the Inventory screen
+
+                        \ --- End of added code ------------------------------->
 
  JMP TT210              \ Jump to TT210 to print the contents of our cargo bay
                         \ and return from the subroutine using a tail call
@@ -16421,6 +16477,12 @@ LOAD_D% = LOAD% + P% - CODE%
  CMP #17                \ last item
  BCC TT168
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleMarketPrices  \ Style the Market Prices screen
+
+                        \ --- End of added code ------------------------------->
+
  RTS                    \ Return from the subroutine
 
 \ ******************************************************************************
@@ -17328,6 +17390,12 @@ LOAD_E% = LOAD% + P% - CODE%
  LDA #105               \ Print recursive token 105 ("FUEL") followed by a
  JSR TT68               \ colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDX QQ14               \ Load the current fuel level from QQ14
 
  SEC                    \ We want to print the fuel level with a decimal point,
@@ -17376,6 +17444,12 @@ LOAD_E% = LOAD% + P% - CODE%
  DEX                    \ Decrement the loop counter
 
  BPL pc1                \ Loop back for the next byte to copy
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
 
  LDA #9                 \ We want to print the cash amount using up to 9 digits
  STA U                  \ (including the decimal point), so store this in U
@@ -26897,6 +26971,9 @@ ENDIF
 \STY YC
 
                         \ --- And replaced by: -------------------------------->
+
+ LDA QQ11               \ If this not the space view, jump to DK5 to return from
+ BNE DK5                \ the subroutine as there is no message bar
 
  LDY #9                 \ Move the text cursor to column 9
  STY XC

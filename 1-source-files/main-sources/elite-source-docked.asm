@@ -5677,6 +5677,12 @@ LOAD_B% = LOAD% + P% - CODE%
  CPX #4                 \ If this isn't the last of the four views, jump back up
  BCC st                 \ to st to print out the next one
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleStatusMode    \ Style the Status Mode screen
+
+                        \ --- End of added code ------------------------------->
+
  RTS                    \ Return from the subroutine
 
 \ ******************************************************************************
@@ -12139,6 +12145,12 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #194               \ Print recursive token 34 ("ECONOMY") followed by
  JSR TT68               \ a colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDA QQ3                \ The system economy is determined by the value in QQ3,
                         \ so fetch it into A. First we work out the system's
                         \ prosperity as follows:
@@ -12192,6 +12204,12 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #162               \ Print recursive token 2 ("GOVERNMENT") followed by
  JSR TT68               \ a colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDA QQ4                \ The system's government is determined by the value in
                         \ QQ4, so fetch it into A
 
@@ -12222,6 +12240,12 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #192               \ Print recursive token 32 ("POPULATION") followed by a
  JSR TT68               \ colon
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
 
  SEC                    \ Call pr2 to print the population as a 3-digit number
  LDX QQ6                \ with a decimal point (by setting the C flag), so the
@@ -12335,6 +12359,12 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #193               \ Print recursive token 33 ("GROSS PRODUCTIVITY"),
  JSR TT68               \ followed by colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDX QQ7                \ Fetch the 16-bit productivity value from QQ7 into
  LDY QQ7+1              \ (Y X)
 
@@ -12353,6 +12383,12 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #250               \ Print recursive token 90 ("AVERAGE RADIUS"), followed
  JSR TT68               \ by a colon
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
 
                         \ The average radius is calculated like this:
                         \
@@ -12394,6 +12430,12 @@ LOAD_D% = LOAD% + P% - CODE%
  JSR TT26
 
  JSR TTX69              \ Print a paragraph break and set Sentence Case
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleSystemData    \ Style the Data on System screen
+
+                        \ --- End of added code ------------------------------->
 
                         \ By this point, ZZ contains the current system number
                         \ which PDESC requires. It gets put there in the TT102
@@ -13001,8 +13043,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
- JSR StyleTwoLineTitle  \ Style the second line of the title, so both headers
-                        \ rows of the prices table are in title style
+ JSR StyleBuyCargo      \ Style the Buy Cargo screen headers
 
                         \ --- End of added code ------------------------------->
 
@@ -13022,6 +13063,12 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ item's price / 4, QQ25 to the quantity available and
                         \ QQ19+1 to byte #1 from the market prices table for
                         \ this item
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleCargo         \ Style the cargo line
+
+                        \ --- End of added code ------------------------------->
 
  LDA QQ25               \ If there are some of the current item available, jump
  BNE TT224              \ to TT224 below to see if we want to buy any
@@ -13456,11 +13503,23 @@ LOAD_D% = LOAD% + P% - CODE%
  CMP #4                 \ screen), jump to TT212 to skip the option to sell
  BNE TT212              \ items
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDA #205               \ Print recursive token 45 ("SELL")
  JSR TT27
 
  LDA #206               \ Print extended token 206 ("{all caps}(Y/N)?")
  JSR DETOK
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleSellCargo     \ Style the sell cargo line
+
+                        \ --- End of added code ------------------------------->
 
  JSR gnum               \ Call gnum to get a number from the keyboard, which
                         \ will be the number of the item we want to sell,
@@ -13567,6 +13626,12 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #107               \ We do have a cargo bay extension, so print recursive
  JSR TT27               \ token 107 ("LARGE CARGO{sentence case} BAY")
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleInventory     \ Style the Inventory screen
+
+                        \ --- End of added code ------------------------------->
 
  JMP TT210              \ Jump to TT210 to print the contents of our cargo bay
                         \ and return from the subroutine using a tail call
@@ -15343,6 +15408,12 @@ LOAD_D% = LOAD% + P% - CODE%
  CMP #17                \ last item
  BCC TT168
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleMarketPrices  \ Style the Market Prices screen
+
+                        \ --- End of added code ------------------------------->
+
  RTS                    \ Return from the subroutine
 
 \ ******************************************************************************
@@ -15819,6 +15890,12 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #127               \ Print recursive token 127 ("ITEM") followed by a
  JSR prq                \ question mark
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR StyleEquipShip     \ Style the equipment list
+
+                        \ --- End of added code ------------------------------->
 
  JSR gnum               \ Call gnum to get a number from the keyboard, which
                         \ will be the number of the item we want to purchase,
@@ -16727,6 +16804,12 @@ LOAD_E% = LOAD% + P% - CODE%
  LDA #105               \ Print recursive token 105 ("FUEL") followed by a
  JSR TT68               \ colon
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  LDX QQ14               \ Load the current fuel level from QQ14
 
  SEC                    \ We want to print the fuel level with a decimal point,
@@ -16775,6 +16858,12 @@ LOAD_E% = LOAD% + P% - CODE%
  DEX                    \ Decrement the loop counter
 
  BPL pc1                \ Loop back for the next byte to copy
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
 
  LDA #9                 \ We want to print the cash amount using up to 9 digits
  STA U                  \ (including the decimal point), so store this in U
