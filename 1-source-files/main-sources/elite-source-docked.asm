@@ -15377,7 +15377,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- LDA #7                 \ Move the text cursor to column 7
+ LDA #14                \ Move the text cursor to column 14
  STA XC
 
                         \ --- End of replacement ------------------------------>
@@ -15385,6 +15385,12 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #167               \ Print recursive token 7 ("{current system name} MARKET
  JSR NLIN3              \ PRICES") and draw a horizontal line at pixel row 19
                         \ to box in the title
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR AlignGalfaxHeader  \ Right-align the page title in the Galfax header
+
+                        \ --- End of added code ------------------------------->
 
  LDA #3                 \ Move the text cursor to row 3
  STA YC
@@ -20268,6 +20274,12 @@ LOAD_F% = LOAD% + P% - CODE%
 .EE20
 
  JSR DIALS              \ Call DIALS to update the dashboard
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR UpdateGalfaxPage   \ Update the Galfax page number
+
+                        \ --- End of added code ------------------------------->
 
  LDA QQ11               \ If this is a space view, skip the following two
  BEQ P%+7               \ instructions (i.e. jump to JSR TT17 below)

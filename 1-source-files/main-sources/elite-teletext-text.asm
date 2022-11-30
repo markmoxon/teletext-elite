@@ -146,11 +146,54 @@
  STA MODE7_VRAM         \ displayTitle is set, so style the top row as white
                         \ graphics
 
- BNE stit3              \ Jump to stit3 to style the second row as white
+ BNE stit4              \ Jump to stit4 to style the second row as white
                         \ graphics (this BNE is effectively a JMP as A is never
                         \ zero)
 
 .stit2
+
+ LDA QQ11               \ If this is not the Market Price screen, skip the
+ CMP #16                \ following
+ BNE stit3
+
+                        \ Insert "P100 GALFAX 100" header
+
+ LDA #135               \ Style the page number in white text
+ STA MODE7_VRAM
+
+ LDA #'P'               \ Print the "P" of the page number
+ STA MODE7_VRAM+1
+
+ LDA #'1'               \ Print a page number of 131
+ STA MODE7_VRAM+2
+ STA MODE7_VRAM+4
+ LDA #'3'
+ STA MODE7_VRAM+3
+
+ LDA #130               \ Style the Galfax title and page counter in green text
+ STA MODE7_VRAM+5
+
+ LDA #'G'               \ Print "GALFAX"
+ STA MODE7_VRAM+6
+ LDA #'A'
+ STA MODE7_VRAM+7
+ STA MODE7_VRAM+10
+ LDA #'L'
+ STA MODE7_VRAM+8
+ LDA #'F'
+ STA MODE7_VRAM+9
+ LDA #'X'
+ STA MODE7_VRAM+11
+
+ JSR UpdateGalfaxPage   \ Print the current Galfax page
+
+ LDA #152               \ Hide the page title using concealed text
+ STA MODE7_VRAM+17
+
+ BNE stit4              \ Jump to stit4 (this BNE is effectively a JMP as A is
+                        \ never zero)
+
+.stit3
 
  LDA #132               \ Style the top row as yellow text on blue background
  STA MODE7_VRAM
@@ -159,13 +202,131 @@
  LDA #131
  STA MODE7_VRAM+2
 
-.stit3
+.stit4
 
  LDA #151               \ Style the second row as white graphics
  STA MODE7_VRAM+(1*40)
 
  LDA #134               \ Style the rest of the screen as cyan text, returning
  JMP SetMode7Colour     \ from the subroutine using a tail call
+
+\ ******************************************************************************
+\
+\       Name: AlignGalfaxHeader
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Right-align the page title in the Galfax header, as we can't do
+\             this in situ in flight (as the text buffer is used for the sun)
+\
+\ ******************************************************************************
+
+.AlignGalfaxHeader
+
+ LDX #21                \ We want to find the first non-empty character on the
+                        \ right end of the Galfax header, so set an index in X
+                        \ to use as an offset from the start of the page title
+
+.alga1
+
+ LDA &7C12,X            \ Fetch the X-th character of the page title
+
+ BNE alga2              \ If it it non-zero then we have found a character, so
+                        \ jump to alga2
+
+ DEX                    \ Otherwise decrement the counter to move left to the
+                        \ next character
+
+ BPL alga1              \ Loop back until we have scanned the whole title
+
+ BMI alga5              \ if we get here then there is no page title, so just
+                        \ jump to alga5 to reveal it without justifyication
+
+.alga2
+
+ LDY #21                \ We now want to shuffle the title along from position
+                        \ X to the end of the line, so set Y as a counter for
+                        \ the index of the character we want to move to,
+                        \ starting at the end of the line
+                        \
+                        \ X is already set as the index of the current last
+                        \ character
+
+.alga3
+
+ LDA &7C12,X            \ Copy the character from index X to index Y
+ STA &7C12,Y
+
+ DEY                    \ Decrement the "to" index to move left to the next
+                        \ character
+
+ DEX                    \ Decrement the "from" index to move left to the next
+                        \ character
+
+ BPL alga3              \ Loop back until we have aligned the whole title
+
+.alga4
+
+ LDA #' '               \ We now need to blank out the first part of the
+ STA &7C12,Y            \ original title, moving left from index Y, so store
+                        \ a space in the Y-th character of the title
+
+ DEY                    \ Decrement the "to" index to move left to the next
+                        \ character
+
+ BPL alga4              \ Loop back until we have blanked the left part of the
+                        \ title
+
+.alga5
+
+ LDA #131               \ Reveal the page title by setting it to yellow text
+ STA MODE7_VRAM+17
+
+ RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: UpdateGalfaxPage
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Update the Galfax page number
+\
+\ ******************************************************************************
+
+.UpdateGalfaxPage
+
+ LDA QQ11               \ If this is not the Market Price screen, skip the
+ CMP #16                \ following
+ BNE page2
+
+ LDA #0                 \ Move the text cursor to column 9 on the top row
+ STA YC
+ LDA #9
+ STA XC
+
+ LDX &1101              \ Fetch the current page number from TVT1+1 (&1101),
+ LDY #0                 \ which will be in the range 100 to 219, into (Y X)
+
+ CPX #200               \ If the page number is less than 200, jump to page1 to
+ BCC page1              \ print it as-is
+
+ TXA                    \ Otherwise add 500 (&1F4) to the page number in (Y X)
+ CLC                    \ to move it into the range 700-719 for Telesoftware,
+ ADC #&F4               \ starting with the low bytes
+ TAX
+
+ TYA                    \ And then the high bytes
+ ADC #&01
+ TAY
+
+.page1
+
+ LDA #3                 \ Print the current page number in (Y X) to three figures
+ CLC                    \ and without a decimal point
+ JSR TT11
+
+.page2
+
+ RTS                    \ Return from the subroutine
 
 \ ******************************************************************************
 \

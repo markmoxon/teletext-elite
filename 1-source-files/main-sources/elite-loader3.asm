@@ -1962,32 +1962,45 @@ ORG &1100
 
 .TVT1
 
- EQUB &D4, &C4          \ This block of palette data is used to create two
- EQUB &94, &84          \ palettes used in three different places, all of them
- EQUB &F5, &E5          \ redefining four colours in mode 5:
- EQUB &B5, &A5          \
-                        \ 12 bytes from TVT1 (i.e. the first 6 rows): applied
- EQUB &76, &66          \ when the T1 timer runs down at the switch from the
- EQUB &36, &26          \ space view to the dashboard, so this is the standard
-                        \ dashboard palette
- EQUB &E1, &F1          \
- EQUB &B1, &A1          \ 8 bytes from TVT1+8 (i.e. the last 4 rows): applied
-                        \ when the T1 timer runs down at the switch from the
-                        \ space view to the dashboard, and we have an escape
-                        \ pod fitted, so this is the escape pod dashboard
-                        \ palette
-                        \
-                        \ 8 bytes from TVT1+8 (i.e. the last 4 rows): applied
-                        \ at vertical sync in LINSCN when HFX is non-zero, to
-                        \ create the hyperspace effect in LINSCN (where the
-                        \ whole screen is switched to mode 5 at vertical sync)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- EQUB &F0, &E0          \ 12 bytes of palette data at TVT1+16, used to set the
- EQUB &B0, &A0          \ mode 4 palette in LINSCN when we hit vertical sync,
- EQUB &D0, &C0          \ so the palette is set to monochrome when we start to
- EQUB &90, &80          \ draw the first row of the screen
- EQUB &77, &67
- EQUB &37, &27
+\EQUB &D4, &C4          \ This block of palette data is used to create two
+\EQUB &94, &84          \ palettes used in three different places, all of them
+\EQUB &F5, &E5          \ redefining four colours in mode 5:
+\EQUB &B5, &A5          \
+\                       \ 12 bytes from TVT1 (i.e. the first 6 rows): applied
+\EQUB &76, &66          \ when the T1 timer runs down at the switch from the
+\EQUB &36, &26          \ space view to the dashboard, so this is the standard
+\                       \ dashboard palette
+\EQUB &E1, &F1          \
+\EQUB &B1, &A1          \ 8 bytes from TVT1+8 (i.e. the last 4 rows): applied
+\                       \ when the T1 timer runs down at the switch from the
+\                       \ space view to the dashboard, and we have an escape
+\                       \ pod fitted, so this is the escape pod dashboard
+\                       \ palette
+\                       \
+\                       \ 8 bytes from TVT1+8 (i.e. the last 4 rows): applied
+\                       \ at vertical sync in LINSCN when HFX is non-zero, to
+\                       \ create the hyperspace effect in LINSCN (where the
+\                       \ whole screen is switched to mode 5 at vertical sync)
+\
+\EQUB &F0, &E0          \ 12 bytes of palette data at TVT1+16, used to set the
+\EQUB &B0, &A0          \ mode 4 palette in LINSCN when we hit vertical sync,
+\EQUB &D0, &C0          \ so the palette is set to monochrome when we start to
+\EQUB &90, &80          \ draw the first row of the screen
+\EQUB &77, &67
+\EQUB &37, &27
+
+                        \ --- And replaced by: -------------------------------->
+
+ EQUB 0                 \ Start the Galfax page counter at 0
+
+ EQUB 100               \ Start the Galfax page number at 100
+
+ SKIP 26                \ Zero the palette block so we can reuse it as variable
+                        \ space
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -2016,67 +2029,87 @@ ORG &1100
  STA DL                 \ routines like WSCAN can set DL to 0 and then wait for
                         \ it to change to non-zero to catch the vertical sync
 
- STA VIA+&44            \ Set 6522 System VIA T1C-L timer 1 low-order counter
-                        \ (SHEILA &44) to 30
-
- LDA #VSCAN             \ Set 6522 System VIA T1C-L timer 1 high-order counter
- STA VIA+&45            \ (SHEILA &45) to VSCAN (57) to start the T1 counter
-                        \ counting down from 14622 at a rate of 1 MHz
-
- LDA HFX                \ If HFX is non-zero, jump to VNT1 to set the mode 5
- BNE VNT1               \ palette instead of switching to mode 4, which will
-                        \ have the effect of blurring and colouring the top
-                        \ screen. This is how the white hyperspace rings turn
-                        \ to colour when we do a hyperspace jump, and is
-                        \ triggered by setting HFX to 1 in routine LL164
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\STA VIA+&44            \ Set 6522 System VIA T1C-L timer 1 low-order counter
+\                       \ (SHEILA &44) to 30
+\
+\LDA #VSCAN             \ Set 6522 System VIA T1C-L timer 1 high-order counter
+\STA VIA+&45            \ (SHEILA &45) to VSCAN (57) to start the T1 counter
+\                       \ counting down from 14622 at a rate of 1 MHz
+\
+\LDA HFX                \ If HFX is non-zero, jump to VNT1 to set the mode 5
+\BNE VNT1               \ palette instead of switching to mode 4, which will
+\                       \ have the effect of blurring and colouring the top
+\                       \ screen. This is how the white hyperspace rings turn
+\                       \ to colour when we do a hyperspace jump, and is
+\                       \ triggered by setting HFX to 1 in routine LL164
+\
 \LDA #%00001000         \ Set the Video ULA control register (SHEILA &20) to
 \STA VIA+&20            \ %00001000, which is the same as switching to mode 4
 \                       \ (i.e. the top part of the screen) but with no cursor
-
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
- NOP
-
-                        \ --- End of replacement ------------------------------>
-
-.VNT3
-
-                        \ --- Mod: Original Acornsoft code removed: ----------->
-
+\
+\.VNT3
+\
 \LDA TVT1+16,Y          \ Copy the Y-th palette byte from TVT1+16 to SHEILA &21
 \STA VIA+&21            \ to map logical to actual colours for the bottom part
 \                       \ of the screen (i.e. the dashboard)
-
+\
+\DEY                    \ Decrement the palette byte counter
+\
+\BPL VNT3               \ Loop back to VNT3 until we have copied all the
+                        \ palette bytes
 
                         \ --- And replaced by: -------------------------------->
 
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
- NOP
- NOP
+ INC TVT1               \ Increment the Galfax page counter that's used in
+                        \ the Teletext header (we can reuse TVT1 for this as we
+                        \ are no longer switching the palette, and the address
+                        \ of TVT1 is constant whether docked or in-flight)
+
+ LDA TVT1               \ If the counter in TVT1 is less than 16, jump to page2
+ CMP #16                \ to skip the following
+ BCC page2
+
+ INC TVT1+1             \ Increment the page number in TVT+1
+
+ LDA TVT1+1             \ If the page number back is less than 120, jump to
+ CMP #220               \ page1 to skip the following
+ BCC page1
+
+ LDA #100               \ Set the page number to 100, so it cycles from 100 to
+ STA TVT1+1             \ 219 and round again, incrementing once for every 10
+                        \ ticks of the counter in TVT1
+
+.page1
+
+ LDA VIA+&44            \ Read the 6522 System VIA T1C-L timer 1 low-order
+                        \ counter (SHEILA &44), which decrements one million
+                        \ times a second and will therefore be pretty random
+
+ AND #%11110000         \ Reduce the random number to the range 0 to 7, which
+ LSR A                  \ we can use as the starting point for the TVT1 counter
+ LSR A                  \ so it counts from this number up to 16 before updating
+ LSR A                  \ the page number
+ LSR A
+ LSR A
+
+ STA TVT1               \ Reset the TVT1 counter to the random value in A
+
+.page2
 
                         \ --- End of replacement ------------------------------>
-
- DEY                    \ Decrement the palette byte counter
-
- BPL VNT3               \ Loop back to VNT3 until we have copied all the
-                        \ palette bytes
 
  LDA LASCT              \ Decrement the value of LASCT, but if we go too far
  BEQ P%+5               \ and it becomes negative, bump it back up again (this
  DEC LASCT              \ controls the pulsing of pulse lasers)
 
- PLA                    \ Otherwise restore Y from the stack
- TAY
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\PLA                    \ Otherwise restore Y from the stack
+\TAY
+
+                        \ --- End of removed code ----------------------------->
 
  LDA VIA+&41            \ Read 6522 System VIA input register IRA (SHEILA &41)
 
@@ -2090,11 +2123,15 @@ ORG &1100
 
 .IRQ1
 
- TYA                    \ Store Y on the stack
- PHA
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
- LDY #11                \ Set Y as a counter for 12 bytes, to use when setting
-                        \ the dashboard palette below
+\TYA                    \ Store Y on the stack
+\PHA
+\
+\LDY #11                \ Set Y as a counter for 12 bytes, to use when setting
+\                       \ the dashboard palette below
+
+                        \ --- End of removed code ----------------------------->
 
  LDA #%00000010         \ Read the 6522 System VIA status byte bit 1 (SHEILA
  BIT VIA+&4D            \ &4D), which is set if vertical sync has occurred on
@@ -2104,96 +2141,76 @@ ORG &1100
                         \ to set up the timers to enable us to switch the
                         \ screen mode between the space view and dashboard
 
- BVC jvec               \ Read the 6522 System VIA status byte bit 6, which is
-                        \ set if timer 1 has timed out. We set the timer in
-                        \ LINSCN above, so this means we only run the next bit
-                        \ if the screen redraw has reached the boundary between
-                        \ the space view and the dashboard. Otherwise bit 6 is
-                        \ clear and we aren't at the boundary, so we jump to
-                        \ jvec to pass control to the next interrupt handler
-
- ASL A                  \ Double the value in A to 4
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\BVC jvec               \ Read the 6522 System VIA status byte bit 6, which is
+\                       \ set if timer 1 has timed out. We set the timer in
+\                       \ LINSCN above, so this means we only run the next bit
+\                       \ if the screen redraw has reached the boundary between
+\                       \ the space view and the dashboard. Otherwise bit 6 is
+\                       \ clear and we aren't at the boundary, so we jump to
+\                       \ jvec to pass control to the next interrupt handler
+\
+\ASL A                  \ Double the value in A to 4
+\
 \STA VIA+&20            \ Set the Video ULA control register (SHEILA &20) to
 \                       \ %00000100, which is the same as switching to mode 5,
 \                       \ (i.e. the bottom part of the screen) but with no
 \                       \ cursor
-
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
-
-                        \ --- End of replacement ------------------------------>
-
- LDA ESCP               \ If an escape pod is fitted, jump to VNT1 to set the
- BNE VNT1               \ mode 5 palette differently (so the dashboard is a
-                        \ different colour if we have an escape pod)
-
-                        \ --- Mod: Original Acornsoft code removed: ----------->
-
+\
+\LDA ESCP               \ If an escape pod is fitted, jump to VNT1 to set the
+\BNE VNT1               \ mode 5 palette differently (so the dashboard is a
+\                       \ different colour if we have an escape pod)
+\
 \LDA TVT1,Y             \ Copy the Y-th palette byte from TVT1 to SHEILA &21
 \STA VIA+&21            \ to map logical to actual colours for the bottom part
 \                       \ of the screen (i.e. the dashboard)
+\
+\DEY                    \ Decrement the palette byte counter
+\
+\BPL P%-7               \ Loop back to the LDA TVT1,Y instruction until we have
+\                       \ copied all the palette bytes
 
-                        \ --- And replaced by: -------------------------------->
-
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
- NOP
- NOP
-
-                        \ --- End of replacement ------------------------------>
-
- DEY                    \ Decrement the palette byte counter
-
- BPL P%-7               \ Loop back to the LDA TVT1,Y instruction until we have
-                        \ copied all the palette bytes
+                        \ --- End of removed code ----------------------------->
 
 .jvec
 
- PLA                    \ Restore Y from the stack
- TAY
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\PLA                    \ Restore Y from the stack
+\TAY
+
+                        \ --- End of removed code ----------------------------->
 
  JMP (VEC)              \ Jump to the address in VEC, which was set to the
                         \ original IRQ1V vector by the loading process, so this
                         \ instruction passes control to the next interrupt
                         \ handler
 
-.VNT1
-
- LDY #7                 \ Set Y as a counter for 8 bytes
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\.VNT1
+\
+\LDY #7                 \ Set Y as a counter for 8 bytes
+\
 \LDA TVT1+8,Y           \ Copy the Y-th palette byte from TVT1+8 to SHEILA &21
 \STA VIA+&21            \ to map logical to actual colours for the bottom part
 \                       \ of the screen (i.e. the dashboard)
+\
+\DEY                    \ Decrement the palette byte counter
+\
+\BPL VNT1+2             \ Loop back to the LDA TVT1+8,Y instruction until we
+\                       \ have copied all the palette bytes
+\
+\BMI jvec               \ Jump up to jvec to pass control to the next interrupt
+\                       \ handler (this BMI is effectively a JMP as we didn't
+\                       \ loop back with the BPL above, so BMI is always true)
 
                         \ --- And replaced by: -------------------------------->
 
- NOP                    \ Pad the code out to the same length as in the original
- NOP
- NOP
- NOP
- NOP
- NOP
+ORG &117C               \ Pad the code out to the same length as in the original
 
                         \ --- End of replacement ------------------------------>
-
- DEY                    \ Decrement the palette byte counter
-
- BPL VNT1+2             \ Loop back to the LDA TVT1+8,Y instruction until we
-                        \ have copied all the palette bytes
-
- BMI jvec               \ Jump up to jvec to pass control to the next interrupt
-                        \ handler (this BMI is effectively a JMP as we didn't
-                        \ loop back with the BPL above, so BMI is always true)
 
 \ ******************************************************************************
 \
