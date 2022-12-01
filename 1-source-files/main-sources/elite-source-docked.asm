@@ -21046,14 +21046,6 @@ LOAD_F% = LOAD% + P% - CODE%
 
  JSR BRKBK              \ Call BRKBK to set BRKV to point to the BRBR routine
 
-                        \ --- Mod: Code added for Teletext Elite: ------------->
-
- JSR ClearMode7Screen   \ Clear the screen
-
- JSR SetMode7Graphics   \ Set all screen rows to white graphics
-
-                        \ --- End of added code ------------------------------->
-
  LDX #(CATF-COMC)       \ We start by zeroing all the configuration variables
                         \ between COMC and CATF, to set them to their default
                         \ values, so set a counter in X for CATF - COMC bytes
@@ -21107,6 +21099,18 @@ LOAD_F% = LOAD% + P% - CODE%
 \ ******************************************************************************
 
 .BR1
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR ClearMode7Screen   \ Clear the screen
+
+ JSR SetFullGraphics    \ Set all screen rows to white graphics, including rows
+                        \ 2 and 3
+
+ LDA #0                 \ Clear the Galfax header, if present
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
 
  LDX #3                 \ Set XC = 3 (set text cursor to column 3)
  STX XC
