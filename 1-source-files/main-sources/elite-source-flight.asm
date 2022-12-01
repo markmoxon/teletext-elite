@@ -33376,8 +33376,14 @@ LOAD_H% = LOAD% + P% - CODE%
 
  JSR SetMode7Graphics   \ Set rows 4 onwards to white graphics
 
+ LDA QQ11               \ Show the dashboard and message row for the witchspace
+ CMP #3                 \ view
+ BEQ grfx3
+
  LDA QQ11               \ Show the dashboard and message row for the space view
  BNE BOL1
+
+.grfx3
 
  JSR StyleMessages      \ Style the messages row
 
