@@ -10851,6 +10851,14 @@ LOAD_C% = LOAD% +P% - CODE%
 
  JSR TTX66              \ Clear the screen and draw a white border
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR SetFullGraphics    \ Set full graphics, including rows 2 and 3
+
+ JSR StyleMessages      \ Style the messages bar in blue
+
+                        \ --- End of added code ------------------------------->
+
 .HFS1
 
  LDX #X                 \ Set K3 = #X (the x-coordinate of the centre of the
@@ -15896,12 +15904,25 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #189               \ Print recursive token 29 ("HYPERSPACE ")
  JSR TT27
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA QQ8+1              \ If the high byte of the distance to the selected
+\BNE TT147              \ system in QQ8 is > 0, then it is definitely too far to
+\                       \ jump (as our maximum range is 7.0 light years, or a
+\                       \ value of 70 in QQ8(1 0)), so jump to TT147 to print
+\                       \ "RANGE?" and return from the subroutine using a tail
+\                       \ call
+
+                        \ --- And replaced by: -------------------------------->
+
  LDA QQ8+1              \ If the high byte of the distance to the selected
- BNE TT147              \ system in QQ8 is > 0, then it is definitely too far to
-                        \ jump (as our maximum range is 7.0 light years, or a
+ BEQ P%+5               \ system in QQ8 is > 0, then it is definitely too far to
+ JMP TT147              \ jump (as our maximum range is 7.0 light years, or a
                         \ value of 70 in QQ8(1 0)), so jump to TT147 to print
                         \ "RANGE?" and return from the subroutine using a tail
                         \ call
+
+                        \ --- End of replacement ------------------------------>
 
  LDA QQ14               \ Fetch our current fuel level from Q114 into A
 
@@ -16126,6 +16147,10 @@ LOAD_D% = LOAD% + P% - CODE%
 \                       \ high byte in Y is 0
 
                         \ --- And replaced by: -------------------------------->
+
+ LDY QQ11               \ If this is a space view, jump to hy5 to return from
+ BNE hy5                \ the subroutine, so the counter doesn't clash with the
+                        \ Galfax header
 
  LDY #0                 \ Move the text cursor to column 0, row 0, while also
  STY XC                 \ setting the high byte of (Y X) to 0
@@ -33089,6 +33114,12 @@ LOAD_H% = LOAD% + P% - CODE%
 
  LDA #0                 \ Set A = 0, the type number of a space view
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ STA galfaxHeaderConfig \ Clear the Galfax header, if present
+
+                        \ --- End of added code ------------------------------->
+
  LDY QQ11               \ If the current view is not a space view, jump up to LQ
  BNE LQ                 \ to set up a new space view
 
@@ -33267,9 +33298,6 @@ LOAD_H% = LOAD% + P% - CODE%
  JSR ClearMode7Screen   \ Clear the screen
 
  LDA QQ11               \ If this is the space view, jump to grfx1 to set the
- BEQ grfx1              \ full graphics screen
-
- CMP #1                 \ If this is the launch screen, jump to grfx1 to set the
  BEQ grfx1              \ full graphics screen
 
  CMP #3                 \ If this is witchspace, jump to grfx1 to set the
