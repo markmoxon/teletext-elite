@@ -251,8 +251,7 @@
  LDA #0
  STA XC
 
- CLC                    \ Print the page number in X to three figures and
- JSR pr2                \ without a decimal point
+ JSR PrintPageNumber    \ Print the page number
 
  LDA MODE7_VRAM+4       \ Move the page number left to just after the P (we
  STA MODE7_VRAM+2       \ can't print on this part of the screen due to the
@@ -494,25 +493,9 @@
  STA XC
 
  LDX &1101              \ Fetch the current page number from TVT1+1 (&1101),
- LDY #0                 \ which will be in the range 100 to 219, into (Y X)
+                        \ which will be in the range 100 to 219, into (Y X)
 
- CPX #200               \ If the page number is less than 200, jump to page2 to
- BCC page2              \ print it as-is
-
- TXA                    \ Otherwise add 500 (&1F4) to the page number in (Y X)
- CLC                    \ to move it into the range 700-719 for Telesoftware,
- ADC #&F4               \ starting with the low bytes
- TAX
-
- TYA                    \ And then the high bytes
- ADC #&01
- TAY
-
-.page2
-
- LDA #3                 \ Print the current page number in (Y X) to three figures
- CLC                    \ and without a decimal point
- JSR TT11
+ JSR PrintPageNumber    \ Print the page number
 
 .page3
 
@@ -524,6 +507,43 @@
 .page4
 
  RTS                    \ Return from the subroutine
+
+\ ******************************************************************************
+\
+\       Name: PrintPageNumber
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print a page number, moving pages greater than 200 to 700
+\
+\ ------------------------------------------------------------------------------
+\
+\ Arguments:
+\
+\   X                   The page number from 100 upwards
+\
+\ ******************************************************************************
+
+.PrintPageNumber
+
+ LDY #0                 \ which will be in the range 100 to 219, into (Y X)
+
+ CPX #200               \ If the page number is less than 200, jump to numb1 to
+ BCC numb1              \ print it as-is
+
+ TXA                    \ Otherwise add 500 (&1F4) to the page number in (Y X)
+ CLC                    \ to move it into the range 700-719 for Telesoftware,
+ ADC #&F4               \ starting with the low bytes
+ TAX
+
+ TYA                    \ And then the high bytes
+ ADC #&01
+ TAY
+
+.numb1
+
+ LDA #3                 \ Print the current page number in (Y X) to three figures
+ CLC                    \ and without a decimal point, returning from the
+ JMP TT11               \ subroutine using a tail call
 
 \ ******************************************************************************
 \
