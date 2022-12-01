@@ -12749,9 +12749,19 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ twice as wide (x-axis) as it is high (y-axis), so the
                         \ chart is 256 pixels wide and 128 high
 
- CLC                    \ Add 24 to the halved y-coordinate and store in XX15+1
- ADC #24                \ (as the top of the chart is on pixel row 24, just
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CLC                    \ Add 24 to the halved y-coordinate and store in XX15+1
+\ADC #24                \ (as the top of the chart is on pixel row 24, just
+\STA XX15+1             \ below the line we drew on row 23 above)
+
+                        \ --- And replaced by: -------------------------------->
+
+ CLC                    \ Add 40 to the halved y-coordinate and store in XX15+1
+ ADC #40                \ (as the top of the chart is on pixel row 24, just
  STA XX15+1             \ below the line we drew on row 23 above)
+
+                        \ --- End of replacement ------------------------------>
 
  JSR PIXEL              \ Call PIXEL to draw a point at (X, A), with the size of
                         \ the point dependent on the distance specified in ZZ
@@ -12817,9 +12827,19 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT15
 
- LDA #24                \ Set A to 24, which we will use as the minimum
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #24                \ Set A to 24, which we will use as the minimum
+\                       \ screen indent for the crosshairs (i.e. the minimum
+\                       \ distance from the top-left corner of the screen)
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #40                \ Set A to 24, which we will use as the minimum
                         \ screen indent for the crosshairs (i.e. the minimum
                         \ distance from the top-left corner of the screen)
+
+                        \ --- End of replacement ------------------------------>
 
  LDX QQ11               \ If the current view is not the Short-range Chart,
  BPL P%+4               \ which is the only view with bit 7 set, then skip the
@@ -12943,6 +12963,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
  SCALE_SIXEL_Y          \ Scale the pixel y-coordinate in A into sixels
 
+ LDX QQ11               \ If the current view is not the Short-range Chart,
+ BPL P%+5               \ which is the only view with bit 7 set, then skip the
+                        \ following two instructions
+
+ CLC                    \ Move down by two lines
+ ADC #6
+
  STA XX15+1             \ Store the sixel y-coordinate of the centre in XX15+1
 
  TAY                    \ Copy the y-coordinate into Y
@@ -13008,8 +13035,17 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #104               \ Set QQ19 = 104, for the x-coordinate of the centre of
  STA QQ19               \ the fixed circle on the Short-range Chart
 
- LDA #90                \ Set QQ19+1 = 90, for the y-coordinate of the centre of
- STA QQ19+1             \ the fixed circle on the Short-range Chart
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #90                \ Set QQ19+1 = 90, for the y-coordinate of the centre of
+\STA QQ19+1             \ the fixed circle on the Short-range Chart
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #106               \ Set QQ19+1 = 106, for the y-coordinate of the centre
+ STA QQ19+1             \ of the fixed circle on the Short-range Chart
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #16                \ Set QQ19+2 = 16, the size of the crosshairs on the
  STA QQ19+2             \ Short-range Chart
@@ -13054,10 +13090,21 @@ LOAD_D% = LOAD% + P% - CODE%
  JSR TT15               \ Draw the set of crosshairs defined in QQ19, which will
                         \ be drawn 24 pixels to the right of QQ19+1
 
- LDA QQ19+1             \ Add 24 to the y-coordinate of the crosshairs in QQ19+1
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA QQ19+1             \ Add 24 to the y-coordinate of the crosshairs in QQ19+1
+\CLC                    \ so that the centre of the circle matches the centre
+\ADC #24                \ of the crosshairs
+\STA QQ19+1
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA QQ19+1             \ Add 40 to the y-coordinate of the crosshairs in QQ19+1
  CLC                    \ so that the centre of the circle matches the centre
- ADC #24                \ of the crosshairs
+ ADC #40                \ of the crosshairs
  STA QQ19+1
+
+                        \ --- End of replacement ------------------------------>
 
                         \ Fall through into TT128 to draw a circle with the
                         \ centre at the same coordinates as the crosshairs,
@@ -14307,6 +14354,9 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
+ INC YC                 \ Move down two lines to cater for the Galfax header
+ INC YC
+
  INC XC                 \ Move forward one character so we don't overwrite the
                         \ sixel containing the system pixel
 
@@ -14326,6 +14376,9 @@ LOAD_D% = LOAD% + P% - CODE%
  INC XC                 \ Move forward one character to compensate for the above
 
  JSR SetGraphicsWhite   \ Set mode 7 white graphics
+
+ DEC YC                 \ Move up two lines to undo the move we did above
+ DEC YC
 
                         \ --- End of added code ------------------------------->
 

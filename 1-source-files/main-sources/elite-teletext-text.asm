@@ -865,8 +865,10 @@
  SCALE_SIXEL_X          \ and store it in X
  TAX
 
- LDA K4                 \ Scale the system's pixel y-coordinate into sixels
- SCALE_SIXEL_Y          \ and store it in Y
+ LDA K4                 \ Scale the system's pixel y-coordinate into sixels,
+ SCALE_SIXEL_Y          \ move down two lines (6 sixels), and store it in Y
+ CLC
+ ADC #6
  TAY
 
  JSR PlotSixelClipped   \ Plot the system pixel at (X, Y)
