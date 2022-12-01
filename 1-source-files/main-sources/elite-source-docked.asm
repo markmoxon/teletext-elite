@@ -22357,6 +22357,13 @@ ENDIF
  CLC                    \ Clear the C flag to indicate we didn't just load a new
                         \ commander file
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #0                 \ Clear the Galfax header
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  JMP BRKBK              \ Jump to BRKBK to set BRKV back to the standard BRKV
                         \ handler for the game, and return from the subroutine
                         \ using a tail call
