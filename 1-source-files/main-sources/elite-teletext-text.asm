@@ -95,6 +95,90 @@
 
 \ ******************************************************************************
 \
+\       Name: PrintGalfaxTitle
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Print a title in the Galfax header
+\
+\ ------------------------------------------------------------------------------
+\
+\ Arguments:
+\
+\   P(1 0)              The address of the title to print
+\
+\   X                   The Galfax page number
+\
+\ ******************************************************************************
+
+.PrintGalfaxTitle
+
+ STX R                  \ Store the page number in R
+
+ LDY #LO(MODE7_VRAM+18) \ Set SC(1 0) to the screen location of the Galfax title
+ STY SC                 \ we want to print
+ LDY #HI(MODE7_VRAM+18)
+ STY SCH
+
+ LDA #LO(pageTitles)    \ Set P(1 0) to pageTitles
+ STA P
+ LDA #HI(pageTitles)
+ STA P+1
+
+ LDY #0                 \ Set Y as an index into the pageTitles table
+
+.pgal1
+
+ LDA (P),Y              \ Fetch the page number
+
+ CMP #&FF               \ If we have reached the end of the table, return from
+ BEQ prin1              \ the subroutine
+
+ CMP R                  \ If we have a match, jump to ptex1 to print the string
+ BEQ ptex1
+
+.pgal2
+
+ INC P                  \ Increment the address in P(1 0)
+ BNE P%+4
+ INC P+1
+
+ LDA (P),Y              \ Step through the table until we reach a zero
+ BNE pgal2
+
+ INC P                  \ Increment the address in P(1 0) to go past the zero
+ BNE P%+4
+ INC P+1
+
+ JMP pgal1              \ Loop back to check the next entry in the table
+
+.ptex1
+
+ INC P                  \ Increment the address in P(1 0) to point to the start
+ BNE P%+4               \ of the string
+ INC P+1
+
+.ptex2
+
+ LDA (P),Y              \ Fetch the Y-th character of the string from P(1 0)
+
+ BEQ ptex3              \ If we have reached the end of the string, jump to
+                        \ ptex1 to return from the subroutine
+
+ STA (SC),Y             \ Print the character to the Y-th byte of the screen at
+                        \ SC(1 0)
+
+ INY                    \ Decrement the counter
+
+ BNE ptex2              \ Loop back until we have printed the whole string (this
+                        \ BPL is effectively a JMP as Y is never zero 
+
+.ptex3
+
+ JMP AlignGalfaxHeader  \ Right-align the title, returning from the subroutine
+                        \ using a tail call
+
+\ ******************************************************************************
+\
 \       Name: ClearMode7Screen
 \       Type: Subroutine
 \   Category: Teletext Elite
@@ -146,29 +230,42 @@
  STA MODE7_VRAM         \ displayTitle is set, so style the top row as white
                         \ graphics
 
- BNE stit4              \ Jump to stit4 to style the second row as white
-                        \ graphics (this BNE is effectively a JMP as A is never
-                        \ zero)
+ JMP stit4              \ Jump to stit4 to style the second row as white
+                        \ graphics
 
 .stit2
 
- LDA QQ11               \ If this is not the Market Price screen, skip the
- CMP #16                \ following
- BNE stit3
+ BIT galfaxHeaderConfig \ If bit 7 of galfaxHeaderConfig is clear, jump to stit3
+ BMI P%+5               \ to display the normal blue title header
+ JMP stit3
 
-                        \ Insert "P100 GALFAX 100" header
+ LDA galfaxHeaderConfig \ Set X to bits 0-6 of galfaxHeaderConfig + 100 to get
+ AND #%01111111         \ the page number for the header, and store it on the
+ CLC                    \ stack so we can retrieve it below
+ ADC #100
+ PHA
+ TAX
+
+ LDA #0                 \ Move the text cursor to column 0 on the top row
+ STA YC
+ LDA #0
+ STA XC
+
+ CLC                    \ Print the page number in X to three figures and
+ JSR pr2                \ without a decimal point
+
+ LDA MODE7_VRAM+4       \ Move the page number left to just after the P (we
+ STA MODE7_VRAM+2       \ can't print on this part of the screen due to the
+ LDA MODE7_VRAM+5       \ screen indent, so we have to print it then move it)
+ STA MODE7_VRAM+3
+ LDA MODE7_VRAM+6
+ STA MODE7_VRAM+4
 
  LDA #135               \ Style the page number in white text
  STA MODE7_VRAM
 
  LDA #'P'               \ Print the "P" of the page number
  STA MODE7_VRAM+1
-
- LDA #'1'               \ Print a page number of 131
- STA MODE7_VRAM+2
- STA MODE7_VRAM+4
- LDA #'3'
- STA MODE7_VRAM+3
 
  LDA #130               \ Style the Galfax title and page counter in green text
  STA MODE7_VRAM+5
@@ -185,10 +282,29 @@
  LDA #'X'
  STA MODE7_VRAM+11
 
- JSR UpdateGalfaxPage   \ Print the current Galfax page
+ JSR UpdateGalfaxPage   \ Print the current Galfax page number
 
  LDA #152               \ Hide the page title using concealed text
  STA MODE7_VRAM+17
+
+ PLA                    \ Fetch the Galfax page number into X
+ TAX
+
+ LDA QQ11               \ If this is the Market Prices screen, jump to stit4 to
+ CMP #16                \ skip adding a title on row 3
+ BEQ stit4
+
+ JSR PrintGalfaxTitle   \ Print the page title
+
+ LDA #132               \ Style the third row as yellow text on blue background
+ STA MODE7_VRAM+(2*40)
+ LDA #157
+ STA MODE7_VRAM+(2*40)+1
+ LDA #131
+ STA MODE7_VRAM+(2*40)+2
+
+ LDA #151               \ Style the fourth row as white graphics
+ STA MODE7_VRAM+(3*40)
 
  BNE stit4              \ Jump to stit4 (this BNE is effectively a JMP as A is
                         \ never zero)
@@ -285,6 +401,74 @@
 
 \ ******************************************************************************
 \
+\       Name: galfaxHeaderConfig
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Flag to control whether this page contains a Galfax header
+\
+\ ******************************************************************************
+
+.galfaxHeaderConfig
+
+ EQUB 0                 \ Determines whether to draw a Galfax header:
+                        \
+                        \   * Bit 7 clear = draw a Galfax header
+                        \
+                        \   * Bit 7 set = do not draw a Galfax header
+                        \
+                        \   * Bits 0-6 = page number - 100
+
+\ ******************************************************************************
+\
+\       Name: pageTitles
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Galfax page title for page 100
+\
+\ ******************************************************************************
+
+.pageTitles
+
+ EQUB 100
+ EQUS "Status Mode"
+ EQUB 0
+
+ EQUB 131
+ EQUS "Buy Cargo"
+ EQUB 0
+
+ EQUB 132
+ EQUS "Sell Cargo"
+ EQUB 0
+
+ EQUB 137
+ EQUS "Equip Ship"
+ EQUB 0
+
+ EQUB 162
+ EQUS "Inventory"
+ EQUB 0
+
+ EQUB 180
+ EQUS "Long-range Chart"
+ EQUB 0
+
+ EQUB 181
+ EQUS "Short-range Chart"
+ EQUB 0
+
+ EQUB 184
+ EQUS "Data on System"
+ EQUB 0
+
+ EQUB 200
+ EQUS "Disk Access Menu"
+ EQUB 0
+
+ EQUB &FF
+
+\ ******************************************************************************
+\
 \       Name: UpdateGalfaxPage
 \       Type: Subroutine
 \   Category: Teletext Elite
@@ -294,9 +478,15 @@
 
 .UpdateGalfaxPage
 
- LDA QQ11               \ If this is not the Market Price screen, skip the
- CMP #16                \ following
- BNE page2
+ BIT galfaxHeaderConfig \ If bit 7 of galfaxHeaderConfig is clear, jump to page4
+ BPL page4              \ to return from the subroutine
+
+.page1
+
+ LDA XC                 \ Store the current text cursor on the stack
+ PHA
+ LDA YC
+ PHA
 
  LDA #0                 \ Move the text cursor to column 9 on the top row
  STA YC
@@ -306,8 +496,8 @@
  LDX &1101              \ Fetch the current page number from TVT1+1 (&1101),
  LDY #0                 \ which will be in the range 100 to 219, into (Y X)
 
- CPX #200               \ If the page number is less than 200, jump to page1 to
- BCC page1              \ print it as-is
+ CPX #200               \ If the page number is less than 200, jump to page2 to
+ BCC page2              \ print it as-is
 
  TXA                    \ Otherwise add 500 (&1F4) to the page number in (Y X)
  CLC                    \ to move it into the range 700-719 for Telesoftware,
@@ -318,13 +508,20 @@
  ADC #&01
  TAY
 
-.page1
+.page2
 
  LDA #3                 \ Print the current page number in (Y X) to three figures
  CLC                    \ and without a decimal point
  JSR TT11
 
-.page2
+.page3
+
+ PLA                    \ Restore the text cursor from the stack
+ STA YC
+ PLA
+ STA XC
+
+.page4
 
  RTS                    \ Return from the subroutine
 
@@ -341,35 +538,35 @@
 
  LDA #130               \ Set to the "green text" control code
 
- STA &7C90              \ Present system
+ STA &7C90+40           \ Present system
 
- STA &7CB8              \ Hyperspace system
+ STA &7CB8+40           \ Hyperspace system
 
- STA &7CE0              \ Condition
+ STA &7CE0+40           \ Condition
 
- STA &7CFA              \ Fuel
+ STA &7CFA+40           \ Fuel
 
- STA &7D22              \ Cash
+ STA &7D22+40           \ Cash
 
- STA &7D52              \ Legal status
+ STA &7D52+40           \ Legal status
 
- STA &7D74              \ Rating
+ STA &7D74+40           \ Rating
 
- LDA #129               \ Set to the "red text" control code
+\LDA #129               \ Set to the "red text" control code
 
- STA &7DBC              \ Equipment header
+\STA &7DBC+40           \ Equipment header
 
  LDA #131               \ Set to the "yellow text" control code
 
  FOR n, 0, 11
-  STA &7DE5 + n*40      \ Set the name in the 12 equipment rows to yellow
+  STA &7DE5+40 + n*40   \ Set the name in the 12 equipment rows to yellow
  NEXT
 
- LDA &7CE2              \ If the Condition starts with "R", set the colour to
+ LDA &7CE2+40           \ If the Condition starts with "R", set the colour to
  CMP #'R'               \ red ("Red")
  BNE mode1
  LDA #129
- STA &7CE0
+ STA &7CE0+40
  BNE mode2
 
 .mode1
@@ -377,15 +574,15 @@
  CMP #'Y'               \ If the Condition starts with "Y", set the colour to
  BNE mode2              \ yellow ("Yellow")
  LDA #131
- STA &7CE0
+ STA &7CE0+40
 
 .mode2
 
- LDA &7D53              \ If the Legal Status starts with "F", set the colour to
+ LDA &7D53+40           \ If the Legal Status starts with "F", set the colour to
  CMP #'F'               \ red ("Fugitive")
  BNE mode3
  LDA #129
- STA &7D52
+ STA &7D52+40
  BNE mode4
 
 .mode3
@@ -393,7 +590,7 @@
  CMP #'O'               \ If the Condition starts with "O", set the colour to
  BNE mode4              \ yellow ("Offender")
  LDA #131
- STA &7CE0
+ STA &7CE0+40
 
 .mode4
 
@@ -412,18 +609,18 @@
 
  LDA #130               \ Set to the "green text" control code
 
- STA &7C82              \ Fuel
+ STA &7C82+80           \ Fuel
 
- STA &7CAA              \ Cash
+ STA &7CAA+80           \ Cash
 
  LDA #129               \ Set to the "red text" control code
 
- STA &7CCC              \ Large cargo bay
+ STA &7CCC+80           \ Large cargo bay
 
  LDA #131               \ Set to the "yellow text" control code
 
  FOR n, 0, 16
-  STA &7D01 + n*40      \ Set the amount in the 17 price rows to yellow
+  STA &7D01+80 + n*40   \ Set the amount in the 17 price rows to yellow
  NEXT
 
  RTS                    \ Return from the subroutine
@@ -543,7 +740,7 @@
 \       Name: ClearLines
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Clear lines 21-23 in mode 7
+\    Summary: Clear lines 22-24 in mode 7
 \
 \ ******************************************************************************
 
@@ -551,9 +748,9 @@
 
  LDA #131               \ Set A to the "yellow text" control code
 
- STA MODE7_VRAM+(21*40) \ Set rows 21-23 to display white text
- STA MODE7_VRAM+(22*40)
+ STA MODE7_VRAM+(22*40) \ Set rows 22-24 to display white text
  STA MODE7_VRAM+(23*40)
+ STA MODE7_VRAM+(24*40)
 
  LDA #0                 \ Set A = 0 so we can zero screen memory
 
@@ -562,9 +759,9 @@
 
 .clyn1
 
- STA MODE7_VRAM+(21*40),X   \ Zero the X-th byte of rows 21 to 23
- STA MODE7_VRAM+(22*40),X
+ STA MODE7_VRAM+(22*40),X   \ Zero the X-th byte of rows 22 to 24
  STA MODE7_VRAM+(23*40),X
+ STA MODE7_VRAM+(24*40),X
 
  INX                    \ Increment the byte counter
 
@@ -575,10 +772,29 @@
 
 \ ******************************************************************************
 \
-\       Name: SetMode7Graphics
+\       Name: SetFullGraphics
 \       Type: Subroutine
 \   Category: Teletext Elite
 \    Summary: Insert a graphics control character at the start of row 2 onwards
+\
+\ ******************************************************************************
+
+.SetFullGraphics
+
+ LDA #151               \ Set A to white graphics
+
+ STA MODE7_VRAM + 2*40  \ Set rows 2 and 3 to graphics
+ STA MODE7_VRAM + 3*40
+
+                        \ Fall through into SetMode7Graphics to set the rest of
+                        \ the screen to graphics
+
+\ ******************************************************************************
+\
+\       Name: SetMode7Graphics
+\       Type: Subroutine
+\   Category: Teletext Elite
+\    Summary: Insert a graphics control character at the start of row 4 onwards
 \
 \ ******************************************************************************
 
@@ -586,12 +802,15 @@
 
  LDA #151               \ Set A to white graphics
 
+                        \ Fall through into SetMode7Colour to set the rest of
+                        \ the screen to graphics
+
 \ ******************************************************************************
 \
 \       Name: SetMode7Colour
 \       Type: Subroutine
 \   Category: Teletext Elite
-\    Summary: Insert a control character at the start of row 2 onwards
+\    Summary: Insert a control character at the start of row 4 onwards
 \
 \ ------------------------------------------------------------------------------
 \
@@ -603,8 +822,8 @@
 
 .SetMode7Colour
 
- FOR n, 2, 24
-  STA MODE7_VRAM + n*40 \ Set rows 2 to 24 to the control character in A
+ FOR n, 4, 24
+  STA MODE7_VRAM + n*40 \ Set rows 4 to 24 to the control character in A
  NEXT
 
  RTS                    \ Return from the subroutine

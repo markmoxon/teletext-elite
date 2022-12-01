@@ -1169,7 +1169,17 @@ ENDMACRO
  RTOK 92                \ Token 126:    "COMMANDER {commander name}{cr}
  CHAR ' '               \                {cr}
  CONT 4                 \                {cr}
- CONT 12                \                {sentence case}PRESENT SYSTEM{tab to
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CONT 12                \                {sentence case}PRESENT SYSTEM{tab to
+
+                        \ --- And replaced by: -------------------------------->
+
+ CHAR ' '               \                {sentence case}PRESENT SYSTEM{tab to
+
+                        \ --- End of replacement ------------------------------>
+
  CONT 12                \                column 21}:{current system name}{cr}
  CONT 12                \                HYPERSPACE SYSTEM{tab to column 21}:
  CONT 6                 \                {selected system name}{cr}

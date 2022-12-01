@@ -4161,10 +4161,19 @@ NEXT
 
 .NLIN3
 
- JSR TT27               \ Print the text token in A
+                        \ --- Mod: Original Acornsoft code removed: ----------->
 
-                        \ Fall through into NLIN4 to draw a horizontal line at
-                        \ pixel row 19
+\JSR TT27               \ Print the text token in A
+\
+\                       \ Fall through into NLIN4 to draw a horizontal line at
+\                       \ pixel row 19
+
+                        \ --- And replaced by: -------------------------------->
+
+ JMP TT27               \ Print the text token in A and return from the
+                        \ subroutine using a tail call
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
@@ -4190,6 +4199,9 @@ NEXT
 \                       \ be zero)
 
                         \ --- And replaced by: -------------------------------->
+
+ INC YC                 \ Move the text cursor down two lines
+ INC YC
 
  RTS                    \ Return from the subroutine
 
@@ -6021,6 +6033,13 @@ NEXT
 
 .STATUS
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+0             \ Set Galfax page number to 100
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #8                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 8 (Status
                         \ Mode screen)
@@ -6030,6 +6049,13 @@ NEXT
 
  LDA #7                 \ Move the text cursor to column 7
  STA XC
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
 
  LDA #126               \ Print recursive token 126, which prints the top
  JSR NLIN3              \ four lines of the Status Mode screen:
@@ -6043,6 +6069,12 @@ NEXT
                         \
                         \ and draw a horizontal line at pixel row 19 to box
                         \ in the title
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR AlignGalfaxHeader  \ Right-align the page title in the Galfax header
+
+                        \ --- End of added code ------------------------------->
 
  LDA #230               \ Otherwise we are in space, so start off by setting A
                         \ to token 70 ("GREEN")
@@ -7296,9 +7328,19 @@ NEXT
 
  LDA YC                 \ Fetch YC, the y-coordinate (row) of the text cursor
 
- CMP #24                \ If the text cursor is on the screen (i.e. YC < 24, so
- BCC RR3                \ we are on rows 1-23), then jump to RR3 to print the
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CMP #24                \ If the text cursor is on the screen (i.e. YC < 24, so
+\BCC RR3                \ we are on rows 0-23), then jump to RR3 to print the
+\                       \ character
+
+                        \ --- And replaced by: -------------------------------->
+
+ CMP #25                \ If the text cursor is on the screen (i.e. YC < 25, so
+ BCC RR3                \ we are on rows 0-24), then jump to RR3 to print the
                         \ character
+
+                        \ --- End of replacement ------------------------------>
 
  JSR TT66               \ Otherwise we are off the bottom of the screen, so
                         \ clear the screen and draw a white border
@@ -14699,6 +14741,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT213
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+62            \ Set Galfax page number to 162
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #8                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 8 (Inventory
                         \ screen)
@@ -14706,13 +14755,28 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #11                \ Move the text cursor to column 11 to print the screen
  STA XC                 \ title
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
+
  LDA #164               \ Print recursive token 4 ("INVENTORY{crlf}") followed
  JSR TT60               \ by a paragraph break and Sentence Case
 
- JSR NLIN4              \ Draw a horizontal line at pixel row 19 to box in the
-                        \ title. The authors could have used a call to NLIN3
-                        \ instead and saved the above call to TT60, but you
-                        \ just can't optimise everything
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\JSR NLIN4              \ Draw a horizontal line at pixel row 19 to box in the
+\                       \ title. The authors could have used a call to NLIN3
+\                       \ instead and saved the above call to TT60, but you
+\                       \ just can't optimise everything
+
+                        \ --- And replaced by: -------------------------------->
+
+ JSR AlignGalfaxHeader  \ Right-align the page title in the Galfax header
+
+                        \ --- End of replacement ------------------------------>
 
  JSR fwl                \ Call fwl to print the fuel and cash levels on two
                         \ separate lines
@@ -16945,6 +17009,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDX QQ12               \ If we are not docked (QQ12 = 0) then jump to NLUNCH
  BEQ NLUNCH             \ to skip the launch tunnel and setup process
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #0                 \ Set the view to 0 so we show a full graphics view for
+ STA QQ11               \ the launch tunnel
+
+                        \ --- End of added code ------------------------------->
 
  JSR LAUN               \ Show the space station launch tunnel
 
@@ -33144,23 +33215,33 @@ LOAD_H% = LOAD% + P% - CODE%
  JSR ClearMode7Screen   \ Clear the screen
 
  LDA QQ11               \ If this is the space view, jump to grfx1 to set the
- BEQ grfx1              \ graphics screen
+ BEQ grfx1              \ full graphics screen
+
+ CMP #1                 \ If this is the launch screen, jump to grfx1 to set the
+ BEQ grfx1              \ full graphics screen
 
  CMP #3                 \ If this is witchspace, jump to grfx1 to set the
- BEQ grfx1              \ graphics screen
+ BEQ grfx1              \ full graphics screen
 
  CMP #6                 \ If this is the death screen, jump to grfx1 to set the
- BEQ grfx1              \ graphics screen
+ BEQ grfx1              \ full graphics screen
 
- AND #%11000000         \ If this is a chart, fall through into grfx1, otherwise
- BEQ BOL1               \ jump to BOL1
+ AND #%11000000         \ If this is not a chart, jump to BOL1 to skip the
+ BEQ BOL1               \ graphics routines
+
+ JMP grfx2              \ This is a chart, so jump to grfx2 to set graphics for
+                        \ rows 4 onwards
 
 .grfx1
+
+ JSR SetFullGraphics    \ Set full graphics, including rows 2 and 3
 
                         \ If we get here then this is a space view, death screen
                         \ or chart, so we want a graphics view
 
- JSR SetMode7Graphics   \ Set all screen rows to white graphics
+.grfx2
+
+ JSR SetMode7Graphics   \ Set rows 4 onwards to white graphics
 
  LDA QQ11               \ Show the dashboard and message row for the space view
  BNE BOL1
@@ -33223,72 +33304,73 @@ LOAD_H% = LOAD% + P% - CODE%
 
 .tt66
 
- LDX #0                 \ Set (X1, Y1) to (0, 0)
- STX X1
- STX Y1
-
- STX QQ17               \ Set QQ17 = 0 to switch to ALL CAPS
-
- DEX                    \ Set X2 = 255
- STX X2
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
-
+\LDX #0                 \ Set (X1, Y1) to (0, 0)
+\STX X1
+\STX Y1
+\
+\STX QQ17               \ Set QQ17 = 0 to switch to ALL CAPS
+\
+\DEX                    \ Set X2 = 255
+\STX X2
+\
 \JSR HLOIN              \ Draw a horizontal line from (X1, Y1) to (X2, Y1), so
 \                       \ that's (0, 0) to (255, 0), along the very top of the
 \                       \ screen
-
-                        \ --- And replaced by: -------------------------------->
-
-
-                        \ --- End of replacement ------------------------------>
-
- LDA #2                 \ Set X1 = X2 = 2
- STA X1
- STA X2
-
- JSR BOS2               \ Call BOS2 below, which will call BOS1 twice, and then
-                        \ fall through into BOS2 again, so we effectively do
-                        \ BOS1 four times, decrementing X1 and X2 each time
-                        \ before calling LOIN, so this whole loop-within-a-loop
-                        \ mind-bender ends up drawing these four lines:
-                        \
-                        \   (1, 0)   to (1, 191)
-                        \   (0, 0)   to (0, 191)
-                        \   (255, 0) to (255, 191)
-                        \   (254, 0) to (254, 191)
-                        \
-                        \ So that's a 2-pixel wide vertical border along the
-                        \ left edge of the upper part of the screen, and a
-                        \ 2-pixel wide vertical border along the right edge
-
-.BOS2
-
- JSR BOS1               \ Call BOS1 below and then fall through into it, which
-                        \ ends up running BOS1 twice. This is all part of the
-                        \ loop-the-loop border-drawing mind-bender explained
-                        \ above
-
-.BOS1
-
- LDA #0                 \ Set Y1 = 0
- STA Y1
-
- LDA #2*Y-1             \ Set Y2 = 2 * #Y - 1. The constant #Y is 96, the
- STA Y2                 \ y-coordinate of the mid-point of the space view, so
-                        \ this sets Y2 to 191, the y-coordinate of the bottom
-                        \ pixel row of the space view
-
- DEC X1                 \ Decrement X1 and X2
- DEC X2
-
-                        \ --- Mod: Original Acornsoft code removed: ----------->
-
+\
+\LDA #2                 \ Set X1 = X2 = 2
+\STA X1
+\STA X2
+\
+\JSR BOS2               \ Call BOS2 below, which will call BOS1 twice, and then
+\                       \ fall through into BOS2 again, so we effectively do
+\                       \ BOS1 four times, decrementing X1 and X2 each time
+\                       \ before calling LOIN, so this whole loop-within-a-loop
+\                       \ mind-bender ends up drawing these four lines:
+\                       \
+\                       \   (1, 0)   to (1, 191)
+\                       \   (0, 0)   to (0, 191)
+\                       \   (255, 0) to (255, 191)
+\                       \   (254, 0) to (254, 191)
+\                       \
+\                       \ So that's a 2-pixel wide vertical border along the
+\                       \ left edge of the upper part of the screen, and a
+\                       \ 2-pixel wide vertical border along the right edge
+\
+\.BOS2
+\
+\JSR BOS1               \ Call BOS1 below and then fall through into it, which
+\                       \ ends up running BOS1 twice. This is all part of the
+\                       \ loop-the-loop border-drawing mind-bender explained
+\                       \ above
+\
+\.BOS1
+\
+\LDA #0                 \ Set Y1 = 0
+\STA Y1
+\
+\LDA #2*Y-1             \ Set Y2 = 2 * #Y - 1. The constant #Y is 96, the
+\STA Y2                 \ y-coordinate of the mid-point of the space view, so
+\                       \ this sets Y2 to 191, the y-coordinate of the bottom
+\                       \ pixel row of the space view
+\
+\DEC X1                 \ Decrement X1 and X2
+\DEC X2
+\
 \JMP LOIN               \ Draw a line from (X1, Y1) to (X2, Y2), and return from
 \                       \ the subroutine using a tail call
 
                         \ --- And replaced by: -------------------------------->
+
+ LDA QQ11               \ If this is the Market Prices screen, jump to BOS1 to
+ CMP #16                \ leave text in Sentence Case
+ BEQ BOS1
+
+ LDX #0                 \ Set QQ17 = 0 to switch to ALL CAPS
+ STX QQ17
+
+.BOS1
 
  RTS                    \ Return from the subroutine
 
@@ -33356,11 +33438,11 @@ LOAD_H% = LOAD% + P% - CODE%
 
 .CLYNS
 
- LDA #20                \ Move the text cursor to row 20, near the bottom of
- STA YC                 \ the screen
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\LDA #20                \ Move the text cursor to row 20, near the bottom of
+\STA YC                 \ the screen
+\
 \LDA #&75               \ Set the two-byte value in SC to &7507
 \STA SC+1
 \LDA #7
@@ -33382,13 +33464,16 @@ LOAD_H% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
+ LDA #21                \ Move the text cursor to row 21, near the bottom of
+ STA YC                 \ the screen
+
  JSR TT67               \ Print a newline, which will move the text cursor down
-                        \ a line (to row 21) and back to column 1
+                        \ a line (to row 22) and back to column 1
 
- JSR ClearLines         \ Clear rows 21-23 of the mode 7 screen
+ JSR ClearLines         \ Clear rows 22-24 of the mode 7 screen
 
- LDA #0                 \ Set A and Y to 0
- TAY
+ LDA #0                 \ Set A and Y to 0, which we need to return from the
+ TAY                    \ routine
 
 .SC5
 

@@ -149,25 +149,25 @@
 
 .StyleSystemData
 
- LDA &7CA5              \ If the distance is showing, jump to syst1 to style the
+ LDA &7CA5+80           \ If the distance is showing, jump to syst1 to style the
  CMP #'D'               \ screen, as everything moves down one line
  BEQ syst1
 
  LDA #130               \ Set to the "green text" control code
 
- STA &7CD5              \ Economy
+ STA &7CD5+80           \ Economy
 
- STA &7D28              \ Government
+ STA &7D28+80           \ Government
 
- STA &7D78              \ Tech level
+ STA &7D78+80           \ Tech level
 
- STA &7DC8              \ Population
+ STA &7DC8+80           \ Population
 
- STA &7E0C              \ Species
+ STA &7E0C+80           \ Species
 
- STA &7E70              \ Gross producticity
+ STA &7E70+80           \ Gross producticity
 
- STA &7EBC              \ Average radius
+ STA &7EBC+80           \ Average radius
 
  RTS                    \ Return from the subroutine
 
@@ -175,20 +175,20 @@
 
  LDA #130               \ Set to the "green text" control code
 
- STA &7CAE              \ Distance
+ STA &7CAE+80           \ Distance
 
- STA &7CD5+40           \ Economy
+ STA &7CD5+120          \ Economy
 
- STA &7D28+40           \ Government
+ STA &7D28+120          \ Government
 
- STA &7D78+40           \ Tech level
+ STA &7D78+120          \ Tech level
 
- STA &7DC8+40           \ Population
+ STA &7DC8+120          \ Population
 
- STA &7E0C+40           \ Species
+ STA &7E0C+120          \ Species
 
- STA &7E70+40           \ Gross producticity
+ STA &7E70+120          \ Gross producticity
 
- STA &7EBC+40           \ Average radius
+ STA &7EBC+120          \ Average radius
 
  RTS                    \ Return from the subroutine

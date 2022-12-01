@@ -104,33 +104,33 @@
 
 .StyleSystemData
 
- LDA &7C55              \ If the distance is showing, jump to syst1 to style the
+ LDA &7C55+80           \ If the distance is showing, jump to syst1 to style the
  CMP #'D'               \ screen, as everything moves down one line
  BEQ syst1
 
  LDA #130               \ Set to the "green text" control code
 
- STA &7C85              \ Economy
+ STA &7C85+80           \ Economy
 
- STA &7CD8              \ Government
+ STA &7CD8+80           \ Government
 
- STA &7D28              \ Tech level
+ STA &7D28+80           \ Tech level
 
- STA &7D78              \ Population
+ STA &7D78+80           \ Population
 
- STA &7DBC              \ Species
+ STA &7DBC+80           \ Species
 
- STA &7E20              \ Gross producticity
+ STA &7E20+80           \ Gross producticity
 
- STA &7E6C              \ Average radius
+ STA &7E6C+80           \ Average radius
 
  LDA #131               \ Set to the "yellow text" control code
 
- STA &7EAC              \ Extended description
- STA &7EAC+(1*40)
- STA &7EAC+(2*40)
+ STA &7EAC+(2*40)       \ Extended description
  STA &7EAC+(3*40)
  STA &7EAC+(4*40)
+ STA &7EAC+(5*40)
+ STA &7EAC+(6*40)
 
  RTS                    \ Return from the subroutine
 
@@ -138,29 +138,29 @@
 
  LDA #130               \ Set to the "green text" control code
 
- STA &7C5E              \ Distance
+ STA &7C5E+80           \ Distance
 
- STA &7C85+40           \ Economy
+ STA &7C85+120          \ Economy
 
- STA &7CD8+40           \ Government
+ STA &7CD8+120          \ Government
 
- STA &7D28+40           \ Tech level
+ STA &7D28+120          \ Tech level
 
- STA &7D78+40           \ Population
+ STA &7D78+120          \ Population
 
- STA &7DBC+40           \ Species
+ STA &7DBC+120          \ Species
 
- STA &7E20+40           \ Gross producticity
+ STA &7E20+120          \ Gross producticity
 
- STA &7E6C+40           \ Average radius
+ STA &7E6C+120          \ Average radius
 
  LDA #131               \ Set to the "yellow text" control code
 
- STA &7EAC+(1*40)       \ Extended description
- STA &7EAC+(2*40)
- STA &7EAC+(3*40)
+ STA &7EAC+(3*40)       \ Extended description
  STA &7EAC+(4*40)
  STA &7EAC+(5*40)
+ STA &7EAC+(6*40)
+ STA &7EAC+(7*40)
 
  RTS                    \ Return from the subroutine
 
@@ -175,15 +175,15 @@
 
 .StyleBuyCargo
 
- LDA #132               \ Style rows 0 and 1 as yellow text, blue background
- STA MODE7_VRAM+(0*40)
- STA MODE7_VRAM+(1*40)
+ LDA #132               \ Style rows 2 and 3 as yellow text, blue background
+ STA MODE7_VRAM+(2*40)
+ STA MODE7_VRAM+(3*40)
  LDA #157
- STA MODE7_VRAM+(0*40)+1
- STA MODE7_VRAM+(1*40)+1
+ STA MODE7_VRAM+(2*40)+1
+ STA MODE7_VRAM+(3*40)+1
  LDA #131
- STA MODE7_VRAM+(0*40)+2
- STA MODE7_VRAM+(1*40)+2
+ STA MODE7_VRAM+(2*40)+2
+ STA MODE7_VRAM+(3*40)+2
 
  RTS                    \ Return from the subroutine
 
@@ -201,19 +201,19 @@
  LDA #129               \ Set to the "red text" control code
 
  FOR n, 0, 16
-  STA &7C89 + n*40      \ Set the unit in the 17 price rows to red
+  STA &7C89+40 + n*40   \ Set the unit in the 17 price rows to red
  NEXT
 
  LDA #130               \ Set to the "green text" control code
 
  FOR n, 0, 16
-  STA &7C8C + n*40      \ Set the price in the 17 price rows to green
+  STA &7C8C+40 + n*40   \ Set the price in the 17 price rows to green
  NEXT
 
  LDA #131               \ Set to the "yellow text" control code
 
  FOR n, 0, 16
-  STA &7C92 + n*40      \ Set the price in the 17 price rows to yellow
+  STA &7C92+40 + n*40   \ Set the price in the 17 price rows to yellow
  NEXT
 
  RTS                    \ Return from the subroutine
@@ -232,13 +232,13 @@
  LDA #129               \ Set to the "red text" control code
 
  FOR n, 0, 16
-  STA &7C61 + n*40      \ Set the unit in the 17 price rows to red
+  STA &7C61+80 + n*40   \ Set the unit in the 17 price rows to red
  NEXT
 
  LDA #131               \ Set to the "yellow text" control code
 
  FOR n, 0, 16
-  STA &7C67 + n*40      \ Set the Sell(Y/N) in the 17 price rows to yellow
+  STA &7C67+80 + n*40   \ Set the Sell(Y/N) in the 17 price rows to yellow
  NEXT
 
  RTS                    \ Return from the subroutine
@@ -257,19 +257,19 @@
  LDA #131               \ Set to the "yellow text" control code
 
  FOR n, 0, 16
-  STA &7C54 + n*40      \ Set the number in the 17 price rows to yellow
+  STA &7C54+80 + n*40   \ Set the number in the 17 price rows to yellow
  NEXT
 
  LDA #134               \ Set to the "cyan text" control code
 
  FOR n, 0, 16
-  STA &7C58 + n*40      \ Set the name in the 17 price rows to yellow
+  STA &7C58+80 + n*40   \ Set the name in the 17 price rows to yellow
  NEXT
 
  LDA #130               \ Set to the "green text" control code
 
  FOR n, 0, 16
-  STA &7C6C + n*40      \ Set the unit in the 17 price rows to green
+  STA &7C6C+80 + n*40   \ Set the unit in the 17 price rows to green
  NEXT
 
  RTS                    \ Return from the subroutine
