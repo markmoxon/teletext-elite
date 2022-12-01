@@ -12188,11 +12188,25 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT25
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+84            \ Set Galfax page number to 184
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #1                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 1
 
  LDA #9                 \ Move the text cursor to column 9
  STA XC
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
 
  LDA #163               \ Print recursive token 3 ("DATA ON {selected system
  JSR NLIN3              \ name}" and draw a horizontal line at pixel row 19
@@ -12646,6 +12660,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT22
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+80            \ Set Galfax page number to 180
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #64                \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 32 (Long-
                         \ range Chart)
@@ -12653,23 +12674,30 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #7                 \ Move the text cursor to column 7
  STA XC
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
+
  JSR TT81               \ Set the seeds in QQ15 to those of system 0 in the
                         \ current galaxy (i.e. copy the seeds from QQ21 to QQ15)
 
  LDA #199               \ Print recursive token 39 ("GALACTIC CHART{galaxy
  JSR TT27               \ number right-aligned to width 3}")
 
- JSR NLIN               \ Draw a horizontal line at pixel row 23 to box in the
-                        \ title and act as the top frame of the chart, and move
-                        \ the text cursor down one line
-
- LDA #152               \ Draw a screen-wide horizontal line at pixel row 152
- JSR NLIN2              \ for the bottom edge of the chart, so the chart itself
-                        \ is 128 pixels high, starting on row 24 and ending on
-                        \ row 151
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\JSR NLIN               \ Draw a horizontal line at pixel row 23 to box in the
+\                       \ title and act as the top frame of the chart, and move
+\                       \ the text cursor down one line
+\
+\LDA #152               \ Draw a screen-wide horizontal line at pixel row 152
+\JSR NLIN2              \ for the bottom edge of the chart, so the chart itself
+\                       \ is 128 pixels high, starting on row 24 and ending on
+\                       \ row 151
+\
 \JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
 \                       \ current system's galactic coordinates
 
@@ -13099,8 +13127,22 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT219
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+31            \ Set Galfax page number to 131
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #2                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 2
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
 
  JSR TT163              \ Print the column headers for the prices table
 
@@ -13266,9 +13308,9 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- LDA QQ29               \ Move the text cursor to row QQ29 + 4 (where QQ29 is
+ LDA QQ29               \ Move the text cursor to row QQ29 + 6 (where QQ29 is
  CLC                    \ the item number, starting from 0)
- ADC #4
+ ADC #6
  STA YC
 
                         \ --- End of replacement ------------------------------>
@@ -13461,12 +13503,26 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT208
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+32            \ Set Galfax page number to 132
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #4                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 4 (Sell
                         \ Cargo screen)
 
  LDA #10                \ Move the text cursor to column 10
  STA XC
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
 
  JSR FLKB               \ Flush the keyboard buffer
 
@@ -13593,9 +13649,20 @@ LOAD_D% = LOAD% + P% - CODE%
  BEQ TT212              \ If no number was entered, jump to TT212 to move on to
                         \ the next item
 
- BCS NWDAV4             \ If the number entered was too big, jump to NWDAV4 to
-                        \ print an "ITEM?" error, make a beep and rejoin the
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\BCS NWDAV4             \ If the number entered was too big, jump to NWDAV4 to
+\                       \ print an "ITEM?" error, make a beep and rejoin the
+\                       \ routine at NWDAVxx above
+
+
+                        \ --- And replaced by: -------------------------------->
+
+ BCC P%+5               \ If the number entered was too big, jump to NWDAV4 to
+ JMP NWDAV4             \ print an "ITEM?" error, make a beep and rejoin the
                         \ routine at NWDAVxx above
+
+                        \ --- End of replacement ------------------------------>
 
  LDA QQ29               \ We are selling this item, so fetch the item number
                         \ from QQ29
@@ -14012,12 +14079,26 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT23
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+81            \ Set Galfax page number to 181
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #128               \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 128 (Short-
                         \ range Chart)
 
  LDA #7                 \ Move the text cursor to column 7
  STA XC
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
 
  LDA #190               \ Print recursive token 30 ("SHORT RANGE CHART") and
  JSR NLIN3              \ draw a horizontal line at pixel row 19 to box in the
@@ -15445,6 +15526,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT167
 
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #128+30            \ Set Galfax page number to 130
+ STA galfaxHeaderConfig
+
+                        \ --- End of replacement ------------------------------>
+
  LDA #16                \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 16 (Market
                         \ Price screen)
@@ -15468,6 +15556,9 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
  JSR AlignGalfaxHeader  \ Right-align the page title in the Galfax header
+
+ LDX #0                 \ Set QQ17 = 0 to switch to ALL CAPS
+ STX QQ17
 
                         \ --- End of added code ------------------------------->
 
@@ -15883,6 +15974,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .EQSHP
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+37            \ Set Galfax page number to 137
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #32                \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 32 (Equip
                         \ Ship screen)
@@ -15891,6 +15989,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
  LDA #12                \ Move the text cursor to column 12
  STA XC
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
 
  LDA #207               \ Print recursive token 47 ("EQUIP") followed by a space
  JSR spc
@@ -15994,12 +16099,33 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ the C flag if the number is bigger than the highest
                         \ item number in QQ25
 
- BEQ bay                \ If no number was entered, jump up to bay to go to the
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\BEQ bay                \ If no number was entered, jump up to bay to go to the
+\                       \ docking bay (i.e. show the Status Mode screen)
+\
+\BCS bay                \ If the number entered was too big, jump up to bay to
+\                       \ go to the docking bay (i.e. show the Status Mode
+\                       \ screen)
+
+                        \ --- And replaced by: -------------------------------->
+
+ BEQ bay2               \ If no number was entered, jump up to bay to go to the
                         \ docking bay (i.e. show the Status Mode screen)
 
- BCS bay                \ If the number entered was too big, jump up to bay to
+ BCS bay2               \ If the number entered was too big, jump up to bay to
                         \ go to the docking bay (i.e. show the Status Mode
                         \ screen)
+
+ JMP bay3               \ Skip the following jump call
+
+.bay2
+
+ JMP bay                \ Jump to bay (used as a branch hop, as bay is too far
+                        \ away for the BEQ and BCS instructions)
+
+.bay3
+                        \ --- End of replacement ------------------------------>
 
  SBC #0                 \ Set A to the number entered - 1 (because the C flag is
                         \ clear), which will be the actual item number we want
@@ -16447,14 +16573,35 @@ LOAD_D% = LOAD% + P% - CODE%
 
  TYA                    \ Transfer the counter value from Y to A
 
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CLC                    \ Print ASCII character "0" - 16 + A, so as A goes from
+\ADC #'0'-16            \ 16 to 19, this prints "0" through "3" followed by a
+\JSR spc                \ space
+\
+\LDA YC                 \ Print recursive text token 80 + YC, so as YC goes from
+\CLC                    \ 16 to 19, this prints "FRONT", "REAR", "LEFT" and
+\ADC #80                \ "RIGHT"
+\JSR TT27
+
+                        \ --- And replaced by: -------------------------------->
+
+ INC YC                 \ Increment YC by 2 so we print the menu two lines lower
+ INC YC                 \ down the screen
+
  CLC                    \ Print ASCII character "0" - 16 + A, so as A goes from
  ADC #'0'-16            \ 16 to 19, this prints "0" through "3" followed by a
  JSR spc                \ space
 
  LDA YC                 \ Print recursive text token 80 + YC, so as YC goes from
  CLC                    \ 16 to 19, this prints "FRONT", "REAR", "LEFT" and
- ADC #80                \ "RIGHT"
- JSR TT27
+ ADC #78                \ "RIGHT" (note, we incremented YC by 2 already, so we
+ JSR TT27               \ just add 78)
+
+ DEC YC                 \ Revert the value of YC
+ DEC YC
+
+                        \ --- End of replacement ------------------------------>
 
  INC YC                 \ Move the text cursor down a row, and increment the
                         \ counter in YC at the same time
@@ -20850,8 +20997,7 @@ LOAD_F% = LOAD% + P% - CODE%
 
  JSR ClearMode7Screen   \ Clear the screen
 
- LDA #144+7             \ Set all screen rows to white graphics
- JSR SetMode7Graphics
+ JSR SetMode7Graphics   \ Set all screen rows to white graphics
 
                         \ --- End of added code ------------------------------->
 
@@ -21133,7 +21279,12 @@ ENDIF
  LDA #1                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 1
 
- JSR SetMode7Graphics   \ Set all screen rows to white graphics
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR SetFullGraphics    \ Set all screen rows to white graphics, including rows
+                        \ 2 and 3
+
+                        \ --- End of added code ------------------------------->
 
  DEC QQ11               \ Decrement QQ11 to 0, so from here on we are using a
                         \ space view
@@ -22002,6 +22153,13 @@ ENDIF
  STA BRKV               \ BRKV handler for disc access operations, and replaces
  LDA #HI(MEBRK)         \ the standard BRKV handler in BRBR while disc access
  STA BRKV+1             \ operations are happening
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+100           \ Set Galfax page number to 700
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
 
  LDA #1                 \ Print extended token 1, the disc access menu, which
  JSR DETOK              \ presents these options:
@@ -23436,6 +23594,15 @@ ENDIF
  LDY #2                 \ Delay for 2 vertical syncs (2/50 = 0.04 seconds) so we
  JSR DELAY              \ don't take up too much CPU time while looping round
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR UpdateGalfaxPage   \ Update the Galfax page number, so it still updates
+                        \ in the trade screens when we are waiting for a key
+                        \ press
+
+                        \ --- End of added code ------------------------------->
+
+
  JSR RDKEY              \ Scan the keyboard for a key press and return the
                         \ internal key number in X (or 0 for no key press)
 
@@ -23444,6 +23611,15 @@ ENDIF
                         \ key is released
 
 .t2
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR UpdateGalfaxPage   \ Update the Galfax page number, so it still updates
+                        \ in the trade screens when we are waiting for a key
+                        \ press
+
+                        \ --- End of added code ------------------------------->
+
 
  JSR RDKEY              \ Any pre-existing key press is now gone, so we can
                         \ start scanning the keyboard again, returning the

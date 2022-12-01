@@ -13763,11 +13763,25 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT25
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+84            \ Set Galfax page number to 184
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #1                 \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 1
 
  LDA #9                 \ Move the text cursor to column 9
  STA XC
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
 
  LDA #163               \ Print recursive token 3 as a title in capitals at
  JSR TT27               \ the top ("DATA ON {selected system name}")
@@ -14213,6 +14227,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT22
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+80            \ Set Galfax page number to 180
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #64                \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 32 (Long-
                         \ range Chart)
@@ -14220,23 +14241,30 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #7                 \ Move the text cursor to column 7
  STA XC
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
+
  JSR TT81               \ Set the seeds in QQ15 to those of system 0 in the
                         \ current galaxy (i.e. copy the seeds from QQ21 to QQ15)
 
  LDA #199               \ Print recursive token 39 ("GALACTIC CHART{galaxy
  JSR TT27               \ number right-aligned to width 3}")
 
- JSR NLIN               \ Draw a horizontal line at pixel row 23 to box in the
-                        \ title and act as the top frame of the chart, and move
-                        \ the text cursor down one line
-
- LDA #152               \ Draw a screen-wide horizontal line at pixel row 152
- JSR NLIN2              \ for the bottom edge of the chart, so the chart itself
-                        \ is 128 pixels high, starting on row 24 and ending on
-                        \ row 151
-
                         \ --- Mod: Original Acornsoft code removed: ----------->
 
+\JSR NLIN               \ Draw a horizontal line at pixel row 23 to box in the
+\                       \ title and act as the top frame of the chart, and move
+\                       \ the text cursor down one line
+\
+\LDA #152               \ Draw a screen-wide horizontal line at pixel row 152
+\JSR NLIN2              \ for the bottom edge of the chart, so the chart itself
+\                       \ is 128 pixels high, starting on row 24 and ending on
+\                       \ row 151
+\
 \JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
 \                       \ current system's galactic coordinates
 
@@ -15039,12 +15067,26 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT23
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #128+81            \ Set Galfax page number to 181
+ STA galfaxHeaderConfig
+
+                        \ --- End of added code ------------------------------->
+
  LDA #128               \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 128 (Short-
                         \ range Chart)
 
  LDA #7                 \ Move the text cursor to column 7
  STA XC
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #2                 \ Move the text cursor the third row
+ STA YC
+
+                        \ --- End of added code ------------------------------->
 
  LDA #190               \ Print recursive token 30 ("SHORT RANGE CHART") and
  JSR NLIN3              \ draw a horizontal line at pixel row 19 to box in the
@@ -16499,6 +16541,13 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT167
 
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #128+30            \ Set Galfax page number to 130
+ STA galfaxHeaderConfig
+
+                        \ --- End of replacement ------------------------------>
+
  LDA #16                \ Clear the top part of the screen, draw a white border,
  JSR TT66               \ and set the current view type in QQ11 to 16 (Market
                         \ Price screen)
@@ -16522,6 +16571,9 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
  JSR AlignGalfaxHeader  \ Right-align the page title in the Galfax header
+
+ LDX #0                 \ Set QQ17 = 0 to switch to ALL CAPS
+ STX QQ17
 
                         \ --- End of added code ------------------------------->
 
