@@ -16446,8 +16446,18 @@ LOAD_D% = LOAD% + P% - CODE%
 
                         \ --- And replaced by: -------------------------------->
 
- LDA #14                \ Move the text cursor to column 14
- STA XC
+ LDA #5                 \ Set A so we move the text cursor to column 5 by
+                        \ default
+
+ LDX PATG               \ If PATG = 0, skip the following, so the Galfax header
+ BEQ P%+4               \ is only shown when the author credits are enabled (so
+                        \ it can be toggled by pausing the game and pressing
+                        \ "X")
+
+ LDA #14                \ Set A so we move the text cursor to column 14 for the
+                        \ Galfax header
+
+ STA XC                 \ Move the text cursor to the correct position
 
                         \ --- End of replacement ------------------------------>
 

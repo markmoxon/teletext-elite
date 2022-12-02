@@ -156,6 +156,11 @@
  CMP #16                \ following
  BNE stit3
 
+ LDA PATG               \ If PATG = 0, skip the following, so the Galfax header
+ BEQ stit3              \ is only shown when the author credits are enabled (so
+                        \ it can be toggled by pausing the game and pressing
+                        \ "X")
+
                         \ Insert "P100 GALFAX 100" header
 
  LDA #135               \ Style the page number in white text
@@ -222,6 +227,10 @@
 
 .AlignGalfaxHeader
 
+ LDA PATG               \ If PATG = 0, jump to alga6 to return from the
+ BEQ alga6              \ subroutine, so we only align the header when it is
+                        \ showing
+
  LDX #21                \ We want to find the first non-empty character on the
                         \ right end of the Galfax header, so set an index in X
                         \ to use as an offset from the start of the page title
@@ -281,6 +290,8 @@
  LDA #131               \ Reveal the page title by setting it to yellow text
  STA MODE7_VRAM+17
 
+.alga6
+
  RTS                    \ Return from the subroutine
 
 \ ******************************************************************************
@@ -294,9 +305,13 @@
 
 .UpdateGalfaxPage
 
- LDA QQ11               \ If this is not the Market Price screen, skip the
- CMP #16                \ following
+ LDA QQ11               \ If this is not the Market Price screen, jump to page2
+ CMP #16                \ to return from the subroutine
  BNE page2
+
+ LDA PATG               \ If PATG = 0, jump to page2 to return from the
+ BEQ page2              \ subroutine, so we only update the header when it is
+                        \ showing
 
  LDA #0                 \ Move the text cursor to column 9 on the top row
  STA YC
@@ -354,10 +369,6 @@
  STA &7D52              \ Legal status
 
  STA &7D74              \ Rating
-
- LDA #129               \ Set to the "red text" control code
-
- STA &7DBC              \ Equipment header
 
  LDA #131               \ Set to the "yellow text" control code
 
