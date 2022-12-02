@@ -8920,6 +8920,9 @@ LOAD_C% = LOAD% +P% - CODE%
 
  INC XX4                \ Increment the counter to halve the number of rings
 
+ LDY #2                 \ Wait for 2/50 of a second (0.04 seconds), to slow the
+ JSR DELAY              \ loop down a bit, as we are now drawing fewer rings
+
                         \ --- End of added code ------------------------------->
 
  INC XX4                \ Increment the counter and fetch it into X
