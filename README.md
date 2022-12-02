@@ -1,6 +1,6 @@
 # Fully documented source code for Teletext Elite
 
-![Screenshot of Teletext Elite](https://www.bbcelite.com/images/teletext_elite/title1.png)
+![Screenshot of the Teletext Elite title screen](https://www.bbcelite.com/images/teletext_elite/title1.png)
 
 This repository contains source code for Teletext Elite on the BBC Micro and BBC Master 128.
 
@@ -8,7 +8,7 @@ Teletext Elite is the full version of BBC Micro disc Elite, but all graphics hav
 
 This repository contains the full source code for Teletext Elite, which you can build yourself on a modern computer. See below for more details on [browsing the source code](#browsing-the-source-in-an-ide) and [building Teletext Elite from the source](#building-teletext-elite-from-the-source).
 
-![Screenshot of the rear view in Teletext Elite](https://www.bbcelite.com/images/teletext_elite/station.png)
+![Screenshot of the station in the rear view in Teletext Elite](https://www.bbcelite.com/images/teletext_elite/station.png)
 
 ## Contents
 
