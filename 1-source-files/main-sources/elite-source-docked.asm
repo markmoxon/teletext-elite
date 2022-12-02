@@ -8916,6 +8916,12 @@ LOAD_C% = LOAD% +P% - CODE%
                         \ twice the radius of the previous one, until they won't
                         \ fit on-screen
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ INC XX4                \ Increment the counter to halve the number of rings
+
+                        \ --- End of added code ------------------------------->
+
  INC XX4                \ Increment the counter and fetch it into X
  LDX XX4
 
