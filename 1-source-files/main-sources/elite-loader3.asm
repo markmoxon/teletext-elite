@@ -2073,12 +2073,12 @@ ORG &1100
 
  INC TVT1+1             \ Increment the page number in TVT+1
 
- LDA TVT1+1             \ If the page number back is less than 120, jump to
- CMP #220               \ page1 to skip the following
+ LDA TVT1+1             \ If the page number back is less than 208, jump to
+ CMP #208               \ page1 to skip the following
  BCC page1
 
  LDA #100               \ Set the page number to 100, so it cycles from 100 to
- STA TVT1+1             \ 219 and round again, incrementing once for every 10
+ STA TVT1+1             \ 207 and round again, incrementing once for every 10
                         \ ticks of the counter in TVT1
 
 .page1
