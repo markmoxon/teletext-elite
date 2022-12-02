@@ -56,8 +56,17 @@ INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 \
 \ ******************************************************************************
 
-NOST = 18               \ The number of stardust particles in normal space (this
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\NOST = 18              \ The number of stardust particles in normal space (this
                         \ goes down to 3 in witchspace)
+
+                        \ --- And replaced by: -------------------------------->
+
+NOST = 10               \ The number of stardust particles in normal space (this
+                        \ goes down to 3 in witchspace)
+
+                        \ --- End of replacement ------------------------------>
 
 NOSH = 12               \ The maximum number of ships in our local bubble of
                         \ universe
