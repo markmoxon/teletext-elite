@@ -11083,7 +11083,7 @@ S.ELTD &2901  &31DB  &11E3  &2901
 .WSL1
      34AE   BD 11 03   LDA &0311,X
      34B1   F0 23      BEQ &34D6
-     34B3   30 1E      BMI &34D3
+     34B3   30 1B      BMI &34D0
      34B5   85 8C      STA &8C
      34B7   20 F4 35   JSR &35F4
      34BA   A0 1F      LDY #&1F
@@ -11093,15 +11093,15 @@ S.ELTD &2901  &31DB  &11E3  &2901
      34C1   88         DEY
      34C2   10 F8      BPL &34BC
      34C4   86 84      STX &84
-     34C6   20 87 54   JSR &5487
-     34C9   A6 84      LDX &84
-     34CB   A0 1F      LDY #&1F
-     34CD   B1 20      LDA (&20),Y
-     34CF   29 A7      AND #&A7
-     34D1   91 20      STA (&20),Y
+     34C6   A6 84      LDX &84
+     34C8   A0 1F      LDY #&1F
+     34CA   B1 20      LDA (&20),Y
+     34CC   29 A7      AND #&A7
+     34CE   91 20      STA (&20),Y
 .WS1
-     34D3   E8         INX
-     34D4   D0 D8      BNE &34AE
+     34D0   E8         INX
+     34D1   D0 DB      BNE &34AE
+     34D3   20 E3 66   JSR &66E3
 .WS2
      34D6   A2 FF      LDX #&FF
      34D8   8E C4 0E   STX &0EC4
