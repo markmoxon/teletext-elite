@@ -932,12 +932,28 @@ ENDMACRO
  CHAR 'O'               \
  EQUB 0                 \ Encoded as:   "RO"
 
- RTOK 14                \ Token 95:     "UNIT  QUANTITY{cr}
+
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\RTOK 14                \ Token 95:     "UNIT  QUANTITY{cr}
+\CHAR ' '               \                 PRODUCT   UNIT PRICE FOR SALE{cr}{lf}
+\CHAR ' '               \               "
+\RTOK 16                \
+\CONT 12                \ Encoded as:   "[14]  [16]{13} [26]   [14] [6] F<153>
+\CHAR ' '               \                 SA<129>{12}{10}"
+
+                        \ --- And replaced by: -------------------------------->
+
+
+ RTOK 14                \ Token 95:     "UNIT QUANTITY {cr}
  CHAR ' '               \                 PRODUCT   UNIT PRICE FOR SALE{cr}{lf}
- CHAR ' '               \               "
- RTOK 16                \
- CONT 12                \ Encoded as:   "[14]  [16]{13} [26]   [14] [6] F<153>
+ RTOK 16                \               "
+ CHAR ' '               \
+ CONT 12                \ Encoded as:   "[14] [16] {13} [26]   [14] [6] F<153>
  CHAR ' '               \                 SA<129>{12}{10}"
+
+                        \ --- End of replacement ------------------------------>
+
  RTOK 26
  CHAR ' '
  CHAR ' '

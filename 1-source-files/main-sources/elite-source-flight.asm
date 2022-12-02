@@ -16231,6 +16231,12 @@ LOAD_D% = LOAD% + P% - CODE%
  JSR TT152              \ Call TT152 to print the item's unit ("t", "kg" or
                         \ "g"), padded to a width of two characters
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR TT162              \ Print a space
+
+                        \ --- End of added code ------------------------------->
+
  JSR var                \ Call var to set QQ19+3 = economy * |economic_factor|
                         \ (and set the availability of alien items to 0)
 
@@ -16430,8 +16436,17 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT163
 
- LDA #17                \ Move the text cursor in XC to column 17
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #17                \ Move the text cursor in XC to column 17
+\STA XC
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #18                \ Move the text cursor in XC to column 18
  STA XC
+
+                        \ --- End of replacement ------------------------------>
 
  LDA #255               \ Print recursive token 95 token ("UNIT  QUANTITY
  BNE TT162+2            \ {crlf} PRODUCT   UNIT PRICE FOR SALE{crlf}{lf}") by
