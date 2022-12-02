@@ -1,6 +1,6 @@
 # Fully documented source code for Teletext Elite
 
-![Screenshot of the Teletext Elite title screen](https://www.bbcelite.com/images/teletext_elite/title1.png)
+![Screenshot of the Teletext Elite title screen](https://www.bbcelite.com/images/teletext_elite/title.png)
 
 This repository contains source code for Teletext Elite on the BBC Micro and BBC Master 128.
 
