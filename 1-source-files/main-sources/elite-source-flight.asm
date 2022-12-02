@@ -27049,7 +27049,7 @@ ENDIF
 
                         \ --- And replaced by: -------------------------------->
 
- LDA QQ11               \ If this not the space view, jump to DK5 to return from
+ LDX QQ11               \ If this not the space view, jump to DK5 to return from
  BNE DK5                \ the subroutine as there is no message bar
 
  LDY #9                 \ Move the text cursor to column 9

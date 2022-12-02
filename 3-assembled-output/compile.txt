@@ -13402,7 +13402,7 @@ S.ELTE &31DB  &3D89  &11E3  &31DB
 .ou3
      44F3   A9 6F      LDA #&6F
 .MESS
-     44F5   A5 87      LDA &87
+     44F5   A6 87      LDX &87
      44F7   D0 ED      BNE &44E6
      44F9   A0 09      LDY #&09
      44FB   84 2C      STY &2C
