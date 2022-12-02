@@ -18773,8 +18773,12 @@ LOAD_E% = LOAD% + P% - CODE%
 
  STX XSAV               \ Store the ship slot number in XSAV while we call SCAN
 
- JSR SCAN               \ Call SCAN to plot this ship on the scanner, which will
-                        \ remove it as it's plotted with EOR logic
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\JSR SCAN               \ Call SCAN to plot this ship on the scanner, which will
+\                       \ remove it as it's plotted with EOR logic
+
+                        \ --- End of removed code ----------------------------->
 
  LDX XSAV               \ Restore the ship slot number from XSAV into X
 
@@ -18789,6 +18793,12 @@ LOAD_E% = LOAD% + P% - CODE%
 
  BNE WSL1               \ Loop back up to process the next slot (this BNE is
                         \ effectively a JMP as X will never be zero)
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ JSR ShowDashboard      \ Display the dashboard
+
+                        \ --- End of added code ------------------------------->
 
 .WS2
 
