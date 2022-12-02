@@ -21190,11 +21190,30 @@ ENDIF
 
  INC brkd               \ Increment the brkd counter
 
- LDA #7                 \ Move the text cursor to column 7
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA #7                 \ Move the text cursor to column 7
+\STA XC
+\
+\LDA #10                \ Move the text cursor to row 10
+\STA YC
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA #3                 \ Move the text cursor to column 3
  STA XC
 
- LDA #10                \ Move the text cursor to row 10
+ LDA #19                \ Move the text cursor to row 19
  STA YC
+
+ LDA #129               \ Override the first character on row 18 with a red text
+ STA &7EF8              \ control character, as otherwise error messages will
+                        \ appear as graphics characters
+                        \
+                        \ This also stops a line feed being printed as the first
+                        \ character in the loop below
+
+                        \ --- End of replacement ------------------------------>
 
                         \ The following loop prints out the null-terminated
                         \ message pointed to by (&FD &FE), which is the MOS
