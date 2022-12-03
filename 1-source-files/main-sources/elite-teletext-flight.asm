@@ -29,8 +29,8 @@
 
 .dashboard
 
- INCBIN "1-source-files/images/P.DIALS_2LINES.bin"  \ Side lines, ship as V
-\INCBIN "1-source-files/images/P.DIALS_DOT.bin"     \ Side lines, ship as dot
+\INCBIN "1-source-files/images/P.DIALS_2LINES.bin"  \ Side lines, ship as V
+ INCBIN "1-source-files/images/P.DIALS_DOT.bin"     \ Side lines, ship as dot
 \INCBIN "1-source-files/images/P.DIALS_3LINES.bin"  \ Side and centre lines
 \INCBIN "1-source-files/images/P.DIALS_ELLIPSE.bin" \ Just the ellipse
 \INCBIN "1-source-files/images/P.DIALS_FULL.bin"    \ Full set of lines
