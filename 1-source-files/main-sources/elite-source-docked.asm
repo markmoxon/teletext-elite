@@ -23353,6 +23353,25 @@ ENDIF
 
 .nobit
 
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ CPX #&42               \ If "X" is not being pressed, skip to cfax1
+ BNE cfax1
+
+ LDA QQ11               \ If this is not the Market Price screen, skip to cfax1
+ CMP #16
+ BNE cfax1
+
+ JSR TT167              \ "X" is being pressed and this is the Market Price
+                        \ screen, so call TT167 to redisplay the page so the
+                        \ header updates
+
+ JMP FREEZE             \ Loop back to keep listening for configuration keys
+
+.cfax1
+
+                        \ --- End of added code ------------------------------->
+
  CPX #&59               \ If DELETE is not being pressed, we are still paused,
  BNE FREEZE             \ so loop back up to keep listening for configuration
                         \ keys, otherwise fall through into the rest of the

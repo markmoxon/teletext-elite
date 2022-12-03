@@ -335,8 +335,8 @@
 
 .page1
 
- LDA #3                 \ Print the current page number in (Y X) to three figures
- CLC                    \ and without a decimal point
+ LDA #3                 \ Print the current page number in (Y X) to three
+ CLC                    \ figures and without a decimal point
  JSR TT11
 
 .page2
