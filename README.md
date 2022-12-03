@@ -8,7 +8,7 @@ Teletext Elite is the full version of BBC Micro disc Elite, but all graphics hav
 
 This repository contains the full source code for Teletext Elite, which you can build yourself on a modern computer. See below for more details on [browsing the source code](#browsing-the-source-in-an-ide) and [building Teletext Elite from the source](#building-teletext-elite-from-the-source).
 
-![Screenshot of the station in the rear view in Teletext Elite](https://www.bbcelite.com/images/teletext_elite/station_rear_view.png)
+![Screenshot of the station in the rear view in Teletext Elite](https://www.bbcelite.com/images/teletext_elite/station_view.png)
 
 ## Contents
 
