@@ -16,6 +16,17 @@
 \ The deep dive articles referred to in this commentary can be found at
 \ https://www.bbcelite.com/deep_dives
 \
+\ ------------------------------------------------------------------------------
+\
+\ The code in this section is mostly taken from the Bitshifters' sixel-plotting
+\ routines here:
+\
+\ https://github.com/bitshifters/teletextr/blob/master/lib/mode7_plot_pixel.asm
+\
+\ It has been reformatted and has been tweaked to work with Teletext Elite (to
+\ support EOR plotting, screen indents and so on), but the core routines are
+\ mostly unchanged from the original.
+\
 \ ******************************************************************************
 
 MODE7_VRAM = &7C00      \ The start of video RAM for mode 7

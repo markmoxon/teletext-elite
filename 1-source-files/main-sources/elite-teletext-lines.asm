@@ -16,6 +16,16 @@
 \ The deep dive articles referred to in this commentary can be found at
 \ https://www.bbcelite.com/deep_dives
 \
+\ ------------------------------------------------------------------------------
+\
+\ The code in this section is taken from the Bitshifters' sixel line-drawing
+\ routines here:
+\
+\ https://github.com/bitshifters/teletextr/blob/master/lib/bresenham.asm
+\
+\ It has been reformatted, but the core routines and comments are mostly
+\ unchanged from the original.
+\
 \ ******************************************************************************
 
 \ ******************************************************************************
