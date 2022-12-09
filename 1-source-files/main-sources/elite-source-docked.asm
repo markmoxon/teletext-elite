@@ -10956,9 +10956,9 @@ LOAD_C% = LOAD% +P% - CODE%
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
- LDA #135               \ Set A to the "white text" control code
+ LDA #134               \ Set A to the "cyan text" control code
 
- FOR n, 10, 20          \ Set rows 10 to 20 to white text, for the mission
+ FOR n, 10, 24          \ Set rows 10 to 24 to white text, for the mission
   STA MODE7_VRAM + n*40 \ briefing
  NEXT
 
@@ -10968,10 +10968,20 @@ LOAD_C% = LOAD% +P% - CODE%
                         \ (the briefing for mission 1 where we find out all
                         \ about the stolen Constrictor)
 
- BNE BRPS               \ Jump to BRP via BRPS to print the extended token in A
-                        \ and show the Status Mode screen), returning from the
-                        \ subroutine using a tail call (this BNE is effectively
-                        \ a JMP as A is never zero)
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\BNE BRPS               \ Jump to BRP via BRPS to print the extended token in A
+\                       \ and show the Status Mode screen, returning from the
+\                       \ subroutine using a tail call (this BNE is effectively
+\                       \ a JMP as A is never zero)
+
+                        \ --- And replaced by: -------------------------------->
+
+ JMP BRP                \ Jump to BRP to print the extended token in A and show
+                        \ the Status Mode screen, returning from the subroutine
+                        \ using a tail call
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
