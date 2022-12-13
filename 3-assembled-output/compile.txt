@@ -11528,7 +11528,7 @@ End macro SCALE_SIXEL_X
      37A2   C9 80      CMP #&80
      37A4   D0 3C      BNE &37E2
      37A6   A5 40      LDA &40
-     37A8   C9 06      CMP #&06
+     37A8   C9 18      CMP #&18
      37AA   90 F3      BCC &379F
      37AC   A5 54      LDA &54
      37AE   49 80      EOR #&80
@@ -11921,10 +11921,10 @@ End macro SCALE_SIXEL_X
      3A71   8D C4 0E   STA &0EC4
      3A74   A6 40      LDX &40
      3A76   A9 08      LDA #&08
-     3A78   E0 08      CPX #&08
+     3A78   E0 20      CPX #&20
      3A7A   90 06      BCC &3A82
      3A7C   4A         LSR A
-     3A7D   E0 3C      CPX #&3C
+     3A7D   E0 F0      CPX #&F0
      3A7F   90 01      BCC &3A82
      3A81   4A         LSR A
 .PL89
@@ -21962,10 +21962,10 @@ S.ELTD &2356  &2F18  &11E3  &2356
      32F0   8D C0 0E   STA &0EC0
      32F3   A6 40      LDX &40
      32F5   A9 08      LDA #&08
-     32F7   E0 08      CPX #&08
+     32F7   E0 20      CPX #&20
      32F9   90 06      BCC &3301
      32FB   4A         LSR A
-     32FC   E0 3C      CPX #&3C
+     32FC   E0 F0      CPX #&F0
      32FE   90 01      BCC &3301
      3300   4A         LSR A
 .PL89

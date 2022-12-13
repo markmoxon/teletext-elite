@@ -20586,9 +20586,19 @@ LOAD_E% = LOAD% + P% - CODE%
 \
 \ ******************************************************************************
 
- LDA K                  \ If the planet's radius is less than 6, the planet is
- CMP #6                 \ too small to show a crater, so jump to PL20 to return
- BCC PL20               \ from the subroutine
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\LDA K                  \ If the planet's radius is less than 6, the planet is
+\CMP #6                 \ too small to show a crater, so jump to PL20 to return
+\BCC PL20               \ from the subroutine
+
+                        \ --- And replaced by: -------------------------------->
+
+ LDA K                  \ If the planet's radius is less than 6 * 4, the planet
+ CMP #6*4               \ is too small to show a crater, so jump to PL20 to
+ BCC PL20               \ return from the subroutine
+
+                        \ --- End of replacement ------------------------------>
 
  LDA INWK+14            \ Set P = -nosev_z_hi
  EOR #%10000000
@@ -21782,13 +21792,31 @@ LOAD_E% = LOAD% + P% - CODE%
 
  LDA #8                 \ Set A = 8
 
- CPX #8                 \ If the radius < 8, skip to PL89
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CPX #8                 \ If the radius < 8, skip to PL89
+\BCC PL89
+
+                        \ --- And replaced by: -------------------------------->
+
+ CPX #8*4               \ If the radius < 8 * 4, skip to PL89
  BCC PL89
+
+                        \ --- End of replacement ------------------------------>
 
  LSR A                  \ Halve A so A = 4
 
- CPX #60                \ If the radius < 60, skip to PL89
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CPX #60                \ If the radius < 60, skip to PL89
+\BCC PL89
+
+                        \ --- And replaced by: -------------------------------->
+
+ CPX #60*4              \ If the radius < 60 * 4, skip to PL89
  BCC PL89
+
+                        \ --- End of replacement ------------------------------>
 
  LSR A                  \ Halve A so A = 2
 

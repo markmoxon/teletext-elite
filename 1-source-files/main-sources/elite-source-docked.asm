@@ -19020,13 +19020,31 @@ LOAD_E% = LOAD% + P% - CODE%
 
  LDA #8                 \ Set A = 8
 
- CPX #8                 \ If the radius < 8, skip to PL89
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CPX #8                 \ If the radius < 8, skip to PL89
+\BCC PL89
+
+                        \ --- And replaced by: -------------------------------->
+
+ CPX #8*4               \ If the radius < 8 * 4, skip to PL89
  BCC PL89
+
+                        \ --- End of replacement ------------------------------>
 
  LSR A                  \ Halve A so A = 4
 
- CPX #60                \ If the radius < 60, skip to PL89
+                        \ --- Mod: Original Acornsoft code removed: ----------->
+
+\CPX #60                \ If the radius < 60, skip to PL89
+\BCC PL89
+
+                        \ --- And replaced by: -------------------------------->
+
+ CPX #60*4              \ If the radius < 60 * 4, skip to PL89
  BCC PL89
+
+                        \ --- End of replacement ------------------------------>
 
  LSR A                  \ Halve A so A = 2
 
