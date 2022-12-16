@@ -5724,15 +5724,15 @@ End macro SCALE_SIXEL_X
      2C23   18         CLC
      2C24   BD F8 2A   LDA &2AF8,X
      2C27   79 62 2A   ADC &2A62,Y
-     2C2A   85 76      STA &76
+     2C2A   85 70      STA &70
      2C2C   B9 AD 2A   LDA &2AAD,Y
      2C2F   69 7C      ADC #&7C
-     2C31   85 77      STA &77
+     2C31   85 71      STA &71
      2C33   B9 94 2B   LDA &2B94,Y
      2C36   3D 46 2B   AND &2B46,X
 .sixelLogic
-     2C39   11 76      ORA (&76),Y
-     2C3B   91 76      STA (&76),Y
+     2C39   11 70      ORA (&70),Y
+     2C3B   91 70      STA (&70),Y
 .clip1
      2C3D   60         RTS
 .DrawSaturn

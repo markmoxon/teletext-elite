@@ -215,6 +215,19 @@ ENDIF
  CPY #MODE7_HIGH_Y
  BCS clip1
 
+IF _LOADER
+
+ CLC                    \ Set ZP(1 0) to the screen address of the character
+ LDA xSixel,X           \ block, starting with the low byte
+ ADC ySixelLo,Y
+ STA ZP
+
+ LDA ySixelHi,Y         \ And then the high byte
+ ADC #HI(MODE7_VRAM)
+ STA ZP+1
+
+ELSE
+
  CLC                    \ Set SC(1 0) to the screen address of the character
  LDA xSixel,X           \ block, starting with the low byte
  ADC ySixelLo,Y
@@ -223,6 +236,8 @@ ENDIF
  LDA ySixelHi,Y         \ And then the high byte
  ADC #HI(MODE7_VRAM)
  STA SCH
+
+ENDIF
 
  LDA ySixelChar,Y       \ Get the sixel character with the relevant row
                         \ pre-filled for the y-coordinate in Y
@@ -238,8 +253,8 @@ ENDIF
 
 IF _LOADER
 
- ORA (SC),Y             \ OR the sixel into the screen, overwriting whatever is
- STA (SC),Y             \ already there
+ ORA (ZP),Y             \ OR the sixel into the screen, overwriting whatever is
+ STA (ZP),Y             \ already there
 
 ELSE
 
