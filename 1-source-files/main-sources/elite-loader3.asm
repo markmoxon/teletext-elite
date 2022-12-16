@@ -2607,9 +2607,9 @@ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
  NEXT
 
  LDA #LO(MODE7_VRAM+MODE7_INDENT+10)     \ Print the title text
- STA SC
+ STA ZP
  LDA #HI(MODE7_VRAM+MODE7_INDENT+10)
- STA SCH
+ STA ZP+1
  LDA #LO(text1)
  STA P
  LDA #HI(text1)
@@ -2618,9 +2618,9 @@ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
  JSR PrintText
 
  LDA #LO(MODE7_VRAM+(23*&28)+MODE7_INDENT+8)   \ Print the subtitle text
- STA SC
+ STA ZP
  LDA #HI(MODE7_VRAM+(23*&28)+MODE7_INDENT+8)
- STA SCH
+ STA ZP+1
  LDA #LO(text2)
  STA P
  LDA #HI(text2)
@@ -2647,7 +2647,7 @@ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
 .PrintText
 
  LDA (P),Y              \ Copy the Y-th byte of the message from P(1 0) to
- STA (SC),Y             \ SC(1 0)
+ STA (ZP),Y             \ ZP(1 0)
 
  DEY                    \ Decrement the counter
 

@@ -5769,9 +5769,9 @@ End macro SCALE_SIXEL_X
      2C94   8D 48 7F   STA &7F48
      2C97   8D 70 7F   STA &7F70
      2C9A   A9 0D      LDA #&0D
-     2C9C   85 76      STA &76
+     2C9C   85 70      STA &70
      2C9E   A9 7C      LDA #&7C
-     2CA0   85 77      STA &77
+     2CA0   85 71      STA &71
      2CA2   A9 CF      LDA #&CF
      2CA4   85 72      STA &72
      2CA6   A9 2C      LDA #&2C
@@ -5779,9 +5779,9 @@ End macro SCALE_SIXEL_X
      2CAA   A0 0E      LDY #&0E
      2CAC   20 C7 2C   JSR &2CC7
      2CAF   A9 A3      LDA #&A3
-     2CB1   85 76      STA &76
+     2CB1   85 70      STA &70
      2CB3   A9 7F      LDA #&7F
-     2CB5   85 77      STA &77
+     2CB5   85 71      STA &71
      2CB7   A9 DE      LDA #&DE
      2CB9   85 72      STA &72
      2CBB   A9 2C      LDA #&2C
@@ -5791,7 +5791,7 @@ End macro SCALE_SIXEL_X
      2CC4   4C 89 1B   JMP &1B89
 .PrintText
      2CC7   B1 72      LDA (&72),Y
-     2CC9   91 76      STA (&76),Y
+     2CC9   91 70      STA (&70),Y
      2CCB   88         DEY
      2CCC   10 F9      BPL &2CC7
      2CCE   60         RTS
