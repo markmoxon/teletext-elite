@@ -3,6 +3,7 @@ PYTHON?=python
 
 variant-disc=2
 
+.PHONY:all
 all:
 	echo _VERSION=2 > 1-source-files/main-sources/elite-build-options.asm
 	echo _VARIANT=$(variant-disc) >> 1-source-files/main-sources/elite-build-options.asm
