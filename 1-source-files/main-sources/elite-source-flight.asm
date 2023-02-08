@@ -29,7 +29,7 @@ INCLUDE "1-source-files/main-sources/elite-build-options.asm"
 _IB_DISC                = (_VARIANT = 1)
 _STH_DISC               = (_VARIANT = 2)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \GUARD &6000            \ Guard against assembling over screen memory
 
@@ -56,7 +56,7 @@ INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \NOST = 18              \ The number of stardust particles in normal space (this
                         \ goes down to 3 in witchspace)
@@ -1881,7 +1881,7 @@ ORG &0E00
 
 .BUF
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \SKIP 191               \ The line buffer used by DASC to print justified text
 \                       \
@@ -2442,7 +2442,7 @@ LOAD_A% = LOAD%
                         \ value &FF, as we just loaded it from MSTG and checked
                         \ that it was negative)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDY #&E0               \ Change the leftmost missile indicator to yellow/white
 \JSR MSBAR              \ on the missile bar (this call changes the leftmost
@@ -4096,7 +4096,7 @@ NEXT
 
 .LOIN
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
                         \ The whole LOIN routine has been removed
 
@@ -4191,7 +4191,7 @@ NEXT
 
 .NLIN4
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #19                \ Jump to NLIN2 to draw a horizontal line at pixel row
 \BNE NLIN2              \ 19, returning from the subroutine with using a tail
@@ -4256,7 +4256,7 @@ NEXT
  LDX #254               \ Set X2 = 254, so (X2, Y2) = (254, A)
  STX X2
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \BNE HLOIN              \ Call HLOIN to draw a horizontal line from (2, A) to
 \                       \ (254, A) and return from the subroutine (this BNE is
@@ -4357,7 +4357,7 @@ NEXT
 
 .HL5
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \DEC X2                 \ Decrement X2 so we do not draw a pixel at the end
 \                       \ point
@@ -4592,7 +4592,7 @@ NEXT
 
 \ ******************************************************************************
 \
-\       Name: PX3
+\       Name: PX3, Removed
 \       Type: Subroutine
 \   Category: Drawing pixels
 \    Summary: Plot a single pixel at (X, Y) within a character block
@@ -4616,7 +4616,7 @@ NEXT
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \.PX3
 \
@@ -4773,7 +4773,7 @@ NEXT
 
 .PIXEL
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
                         \ The whole PIXEL routine has been removed
 
@@ -7213,7 +7213,7 @@ NEXT
 
 .RR1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \                       \ If we get here, then the character to print is an
 \                       \ ASCII character in the range 32-95. The quickest way
@@ -7351,7 +7351,7 @@ NEXT
                         \ the character data to the right place in screen
                         \ memory
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \ORA #&60               \ We already stored the least significant byte
 \                       \ of this screen address in SC above (see the STA SC
@@ -7383,7 +7383,7 @@ NEXT
 
 .RREN
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \STA SC+1               \ Store the page number of the destination screen
 \                       \ location in SC+1, so SC now points to the full screen
@@ -7403,7 +7403,7 @@ NEXT
 
 .RRL1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA (P+1),Y            \ The character definition is at P(2 1) - we set this up
 \                       \ above - so load the Y-th byte from P(2 1), which will
@@ -7460,7 +7460,7 @@ NEXT
 
 .DIALS
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #&D0               \ Set SC(1 0) = &78D0, which is the screen address for
 \STA SC                 \ the character block containing the left end of the
@@ -7703,7 +7703,7 @@ NEXT
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #&78               \ Set SC(1 0) = &7810, which is the screen address for
 \STA SC+1               \ the character block containing the left end of the
@@ -7762,7 +7762,7 @@ NEXT
                         \ 15 and 16, so this effectively switches off the colour
                         \ change for the altitude indicator
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \STA K+1                \ Set K+1 (the colour we should show for low values) to
 \                       \ 240, or &F0 (dashboard colour 2, yellow/white), so the
@@ -7825,7 +7825,7 @@ NEXT
 
 .PZW
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX #&F0               \ Set X to dashboard colour 2 (yellow/white)
 
@@ -7852,7 +7852,7 @@ NEXT
                         \ &2C &A9 &0F, or BIT &0FA9, which does nothing apart
                         \ from affect the flags
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #&0F               \ Set A to dashboard colour 1 (red)
 
@@ -7945,7 +7945,7 @@ NEXT
 
 .DL31
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \STA COL                \ Store the colour of the indicator in COL
 \
@@ -8167,7 +8167,7 @@ NEXT
 
 .DIL2
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDY #1                 \ We want to start drawing the vertical indicator bar on
 \                       \ the second line in the indicator's character block, so
@@ -14082,7 +14082,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
  JSR TT162              \ Print a space
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #'k'               \ Print "km", returning from the subroutine using a
 \JSR TT26               \ tail call
@@ -14252,7 +14252,7 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ is 128 pixels high, starting on row 24 and ending on
                         \ row 151
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \JSR TT14               \ Call TT14 to draw a circle with crosshairs at the
 \                       \ current system's galactic coordinates
@@ -14384,7 +14384,7 @@ LOAD_D% = LOAD% + P% - CODE%
  LDA #0                 \ This is the Short-range Chart, so set A to 0, so the
                         \ crosshairs can go right up against the screen edges
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \STA QQ19+5             \ Set QQ19+5 to A, which now contains the correct indent
 \                       \ for this view
@@ -15174,7 +15174,7 @@ LOAD_D% = LOAD% + P% - CODE%
                         \ so this sets K4 to the centre 90 +/- 74, the pixel
                         \ y-coordinate of this system
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LSR A                  \ Set Y = K4 / 8, so Y contains the number of the text
 \LSR A                  \ row that contains this system
@@ -15272,7 +15272,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .ee1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #0                 \ Now to plot the star, so set the high bytes of K, K3
 \STA K3+1               \ and K4 to 0
@@ -15318,7 +15318,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
  INC XX20               \ Increment the counter
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \BEQ TT111-1            \ If X = 0 then we have done all 256 systems, so return
 \                       \ from the subroutine (as TT111-1 contains an RTS)
@@ -15823,7 +15823,7 @@ LOAD_D% = LOAD% + P% - CODE%
  BEQ zZ+1               \ contains an RTS), as the selected system is the
                         \ current system
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #7                 \ Move the text cursor to column 7, row 23 (in the
 \STA XC                 \ middle of the bottom text row)
@@ -16066,7 +16066,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .ee3
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDY #1                 \ Move the text cursor to column 1
 \STY XC
@@ -16480,7 +16480,7 @@ LOAD_D% = LOAD% + P% - CODE%
 
 .TT163
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #17                \ Move the text cursor in XC to column 17
 \STA XC
@@ -16513,7 +16513,7 @@ LOAD_D% = LOAD% + P% - CODE%
  JSR TT66               \ and set the current view type in QQ11 to 16 (Market
                         \ Price screen)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #5                 \ Move the text cursor to column 5
 \STA XC
@@ -18602,7 +18602,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .SOS1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \JSR msblob             \ Reset the dashboard's missile indicators so none of
 \                       \ them are targeted
@@ -18814,7 +18814,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
  STX XSAV               \ Store the ship slot number in XSAV while we call SCAN
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \JSR SCAN               \ Call SCAN to plot this ship on the scanner, which will
 \                       \ remove it as it's plotted with EOR logic
@@ -19162,7 +19162,7 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ is the x-offset from the centre of the compass of the
                         \ dot we want to draw. Returns with the C flag clear
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \TXA                    \ Set COMX = 195 + X, as 186 is the pixel x-coordinate
 \ADC #195               \ of the leftmost dot possible on the compass, and X can
@@ -19192,7 +19192,7 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ is the y-offset from the centre of the compass of the
                         \ dot we want to draw. Returns with the C flag clear
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \STX T                  \ Set COMY = 204 - X, as 203 is the pixel y-coordinate
 \LDA #204               \ of the centre of the compass, the C flag is clear,
@@ -19343,7 +19343,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .CPIX2
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
                         \ The whole CPIX2 routine has been removed
 
@@ -19976,7 +19976,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
  STX MSTG               \ Store the target of our missile lock in MSTG
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX NOMSL              \ Call MSBAR to update the leftmost indicator in the
 \JSR MSBAR              \ dashboard's missile bar, which returns with Y = 0
@@ -20030,7 +20030,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .ECBLB
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #7*8               \ The E.C.M. bulb is in character block number 7
 \                       \ with each character taking 8 bytes, so this sets the
@@ -20077,7 +20077,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .SPBLB
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #24*8              \ The space station bulb is in character block number 24
 \                       \ with each character taking 8 bytes, so this sets the
@@ -20247,7 +20247,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .MSBAR
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \TXA                    \ Set T = X * 8
 \ASL A
@@ -20628,7 +20628,7 @@ LOAD_E% = LOAD% + P% - CODE%
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA K                  \ If the planet's radius is less than 6, the planet is
 \CMP #6                 \ too small to show a crater, so jump to PL20 to return
@@ -21341,7 +21341,7 @@ LOAD_E% = LOAD% + P% - CODE%
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDY #2*Y-1             \ Set Y = y-coordinate of the bottom of the screen,
 \                       \ which we use as a counter in the following routine to
@@ -21369,7 +21369,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLFL2
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \CPY TGT                \ If Y = TGT, we have reached the line where we will
 \BEQ PLFL               \ start drawing the new sun, so there is no need to
@@ -21396,7 +21396,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF13
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \DEY                    \ Decrement the loop counter
 \
@@ -21614,7 +21614,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF6
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \DEY                    \ Decrement the line number in Y to move to the line
 \                       \ above
@@ -21640,7 +21640,7 @@ LOAD_E% = LOAD% + P% - CODE%
  BNE PLF10              \ the new sun, so jump down to PLF10 to increment V and
                         \ decrease the width of the line we draw
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \DEC V                  \ Decrement V, the height of the sun that we use to work
 \                       \ out the width, so this makes the line get wider, as we
@@ -21700,7 +21700,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF10
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX V                  \ Increment V, the height of the sun that we use to work
 \INX                    \ out the width, so this makes the line get narrower, as
@@ -21760,7 +21760,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
 .PLF9
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \DEY                    \ Decrement the line number in Y to move to the line
 \                       \ above
@@ -21836,7 +21836,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
  LDA #8                 \ Set A = 8
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \CPX #8                 \ If the radius < 8, skip to PL89
 \BCC PL89
@@ -21850,7 +21850,7 @@ LOAD_E% = LOAD% + P% - CODE%
 
  LSR A                  \ Halve A so A = 4
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \CPX #60                \ If the radius < 60, skip to PL89
 \BCC PL89
@@ -22133,7 +22133,7 @@ LOAD_E% = LOAD% + P% - CODE%
  LDA SUNX+1             \ screen
  STA YY+1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDY #2*Y-1             \ #Y is the y-coordinate of the centre of the space
 \                       \ view, so this sets Y as a counter for the number of
@@ -22169,7 +22169,7 @@ LOAD_E% = LOAD% + P% - CODE%
                         \ with centre point YY(1 0) and half-width A, and remove
                         \ the line from the sun line heap once done
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \DEY                    \ Decrement the loop counter
 \
@@ -23601,7 +23601,7 @@ LOAD_F% = LOAD% + P% - CODE%
  LDA #3                 \ Reset DELTA (speed) to 3
  STA DELTA
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA SSPR               \ Fetch the "space station present" flag, and if we are
 \BEQ P%+5               \ not inside the safe zone, skip the next instruction
@@ -23754,7 +23754,7 @@ LOAD_F% = LOAD% + P% - CODE%
 
 .me2
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA MCH                \ Fetch the token number of the current message into A
 \
@@ -25023,7 +25023,7 @@ ENDIF
  ASL DELTA              \ Divide our speed in DELTA by 4
  ASL DELTA
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX #24                \ Set the screen to only show 24 text rows, which hides
 \JSR DET1               \ the dashboard, setting A to 6 in the process
@@ -25049,7 +25049,7 @@ ENDIF
  JSR nWq                \ Create a cloud of stardust containing the correct
                         \ number of dust particles (i.e. NOSTM of them)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #12                \ Move the text cursor to column 12 on row 12
 \STA YC
@@ -25173,7 +25173,7 @@ ENDIF
  BNE D2                 \ LASCT reaches zero (which will take 5.1 seconds, as
                         \ explained above)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX #31                \ Set the screen to show all 31 text rows, which shows
 \JSR DET1               \ the dashboard
@@ -27057,7 +27057,7 @@ ENDIF
 
  PHA                    \ Store the new message token we want to print
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA MCH                \ Set A to the token number of the message that is
 \JSR mes9               \ currently on-screen, and call mes9 to print it (which
@@ -27128,7 +27128,7 @@ ENDIF
 
 .MESS
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX #0                 \ Set QQ17 = 0 to switch to ALL CAPS
 \STX QQ17
@@ -27823,7 +27823,7 @@ LOAD_G% = LOAD% + P% - CODE%
  JSR Shpt               \ Call Shpt to draw a horizontal 4-pixel dash for the 
                         \ first row of the dot (i.e. a four-pixel dash)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA K4                 \ Set A = y-coordinate of dot + 1 (so this is the second
 \CLC                    \ row of the two-pixel-high dot)
@@ -27866,7 +27866,7 @@ LOAD_G% = LOAD% + P% - CODE%
  STA X1                 \ Store the x-coordinate of the ship dot in X1, as this
                         \ is where the dash starts
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \CLC                    \ Set A = screen x-coordinate of the ship dot + 3
 \ADC #3
@@ -33155,7 +33155,7 @@ LOAD_H% = LOAD% + P% - CODE%
                         \ view), jump to LO2 to return from the subroutine (as
                         \ LO2 contains an RTS)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #128               \ Set QQ19 to the x-coordinate of the centre of the
 \STA QQ19               \ screen
@@ -33272,7 +33272,7 @@ LOAD_H% = LOAD% + P% - CODE%
  STA de                 \ Clear de, the flag that appends " DESTROYED" to the
                         \ end of the next text token, so that it doesn't
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX #&60               \ Set X to the screen memory page for the top row of the
 \                       \ screen (as screen memory starts at &6000)
@@ -33336,7 +33336,7 @@ LOAD_H% = LOAD% + P% - CODE%
 
 .BOX
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDY #1                 \ Move the text cursor to row 1
 \STY YC
@@ -33373,7 +33373,7 @@ LOAD_H% = LOAD% + P% - CODE%
 
 .tt66
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX #0                 \ Set (X1, Y1) to (0, 0)
 \STX X1
@@ -33509,7 +33509,7 @@ LOAD_H% = LOAD% + P% - CODE%
  LDA #20                \ Move the text cursor to row 20, near the bottom of
  STA YC                 \ the screen
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #&75               \ Set the two-byte value in SC to &7507
 \STA SC+1
@@ -33548,7 +33548,7 @@ LOAD_H% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
 \
-\       Name: LYN
+\       Name: LYN, Removed
 \       Type: Subroutine
 \   Category: Utility routines
 \    Summary: Clear most of a row of pixels
@@ -33572,7 +33572,7 @@ LOAD_H% = LOAD% + P% - CODE%
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \.LYN
 \
@@ -33767,7 +33767,7 @@ LOAD_H% = LOAD% + P% - CODE%
                         \ instruction isn't required as we test both the maximum
                         \ and minimum below, but it might save a few cycles)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \CMP #194               \ If A >= 194, skip the following instruction, as 194 is
 \BCS P%+4               \ the minimum allowed value of A
@@ -33830,7 +33830,7 @@ LOAD_H% = LOAD% + P% - CODE%
                         \
                         \ and we can get on with drawing the dot and stick
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \PHP                    \ Store the flags (specifically the C flag) from the
 \                       \ above subtraction

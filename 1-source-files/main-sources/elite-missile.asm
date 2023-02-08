@@ -40,7 +40,7 @@ GUARD &6000             \ Guard against assembling over screen memory
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \CODE% = &7F00
 

@@ -933,7 +933,7 @@ ENDMACRO
  EQUB 0                 \ Encoded as:   "RO"
 
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \RTOK 14                \ Token 95:     "UNIT  QUANTITY{cr}
 \CHAR ' '               \                 PRODUCT   UNIT PRICE FOR SALE{cr}{lf}

@@ -34,7 +34,7 @@ GUARD &6000             \ Guard against assembling over screen memory
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \SHIP_MISSILE = &7F00   \ The address of the missile ship blueprint
 

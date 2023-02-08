@@ -51,7 +51,7 @@ Q% = _REMOVE_CHECKSUMS  \ Set Q% to TRUE to max out the default commander, FALSE
                         \ for the standard default commander (this is set to
                         \ TRUE if checksums are disabled, just for convenience)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \N% = 67                \ N% is set to the number of bytes in the VDU table, so
 \                       \ we can loop through them below
@@ -67,7 +67,7 @@ VSCAN = 57              \ Defines the split position in the split-screen mode
 
 POW = 15                \ Pulse laser power
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \VEC = &7FFE            \ VEC is where we store the original value of the IRQ1
 \                       \ vector, matching the address in the elite-missile.asm
@@ -244,7 +244,7 @@ ORG CODE%
 
 .B%
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \EQUB 22, 4             \ Switch to screen mode 4
 \
@@ -414,7 +414,7 @@ ENDMACRO
  CPY #N%                \ Loop back for the next byte until we have done them
  BNE loop1              \ all (the number of bytes was set in N% above)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \JSR PLL1               \ Call PLL1 to draw Saturn
 
@@ -490,7 +490,7 @@ ENDMACRO
  JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
                         \ TVT1code to &1100-&11FF
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDA #&00               \ Set the following:
 \STA ZP                 \
@@ -567,7 +567,7 @@ ENDMACRO
  LDA #HI(ASOFT)
  STA P+1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
 \                       \ ASOFT to &6100-&61FF
@@ -587,7 +587,7 @@ ENDMACRO
  LDA #HI(ELITE)
  STA P+1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
 \                       \ ELITE to &6300-&63FF
@@ -607,7 +607,7 @@ ENDMACRO
  LDA #HI(CpASOFT)
  STA P+1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \JSR MVPG               \ Call MVPG to move and decrypt a page of memory from
 \                       \ CpASOFT to &7600-&76FF
@@ -1263,7 +1263,7 @@ ORG CATDcode + P% - CATD
  LDA #&2A
  STA P+1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX #8                 \ Call MVPG with X = 8 to copy 8 pages of memory from
 \JSR MVPG               \ the address in P(1 0) to the address in ZP(1 0)
@@ -1424,7 +1424,7 @@ ORG CATDcode + P% - CATD
 
 .PIX
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \TAY                    \ Copy A into Y, for use later
 \
@@ -1962,7 +1962,7 @@ ORG &1100
 
 .TVT1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \EQUB &D4, &C4          \ This block of palette data is used to create two
 \EQUB &94, &84          \ palettes used in three different places, all of them
@@ -2029,7 +2029,7 @@ ORG &1100
  STA DL                 \ routines like WSCAN can set DL to 0 and then wait for
                         \ it to change to non-zero to catch the vertical sync
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \STA VIA+&44            \ Set 6522 System VIA T1C-L timer 1 low-order counter
 \                       \ (SHEILA &44) to 30
@@ -2104,7 +2104,7 @@ ORG &1100
  BEQ P%+5               \ and it becomes negative, bump it back up again (this
  DEC LASCT              \ controls the pulsing of pulse lasers)
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \PLA                    \ Otherwise restore Y from the stack
 \TAY
@@ -2123,7 +2123,7 @@ ORG &1100
 
 .IRQ1
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \TYA                    \ Store Y on the stack
 \PHA
@@ -2141,7 +2141,7 @@ ORG &1100
                         \ to set up the timers to enable us to switch the
                         \ screen mode between the space view and dashboard
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \BVC jvec               \ Read the 6522 System VIA status byte bit 6, which is
 \                       \ set if timer 1 has timed out. We set the timer in
@@ -2175,7 +2175,7 @@ ORG &1100
 
 .jvec
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \PLA                    \ Restore Y from the stack
 \TAY
@@ -2187,7 +2187,7 @@ ORG &1100
                         \ instruction passes control to the next interrupt
                         \ handler
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \.VNT1
 \
@@ -2536,7 +2536,7 @@ ORG TVT1code + P% - TVT1
 \
 \ ******************************************************************************
 
-                        \ --- Mod: Original Acornsoft code removed: ----------->
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \.ELITE
 \
