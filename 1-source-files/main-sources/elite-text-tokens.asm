@@ -1368,6 +1368,8 @@ ENDMACRO
 \   Category: Maths (Geometry)
 \    Summary: Sine/cosine table
 \  Deep dive: The sine, cosine and arctan tables
+\             Drawing circles
+\             Drawing ellipses
 \
 \ ------------------------------------------------------------------------------
 \
