@@ -20,8 +20,6 @@ This repository contains the full source code for Teletext Elite, which you can 
 
 * [Folder structure](#folder-structure)
 
-* [Flicker-free Elite](#flicker-free-elite)
-
 * [Building Teletext Elite from the source](#building-teletext-elite-from-the-source)
 
   * [Requirements](#requirements)
@@ -39,6 +37,8 @@ The commentary and Teletext conversion code are copyright &copy; Mark Moxon. Any
 The Teletext routines are by Kieran Connell and Simon Morris of the Bitshifters, and were adapted from Bresenham routines by Rich Talbot-Watkins. See the [Bitshifters teletextr](https://github.com/bitshifters/teletextr/tree/master/lib) repository for the original code.
 
 Huge thanks are due to the original authors for not only creating such an important piece of my childhood, but also for releasing the source code for us to play with; to Paul Brink for his annotated disassembly; and to Kieran Connell for his [BeebAsm version](https://github.com/kieranhj/elite-beebasm), which I forked as the original basis for this project. You can find more information about this project in the [accompanying website's project page](https://www.bbcelite.com/about_site/about_this_project.html).
+
+Thanks to the Bitshifters for their help in building the [musical version of BBC Micro Elite](#bbc-micro-elite-with-music), and in particular Kieran Connell, Simon Morris and Negative Charge for the music player and ported music files. Thanks also to Tricky and J.G.Harston for their sideways RAM utilities.
 
 The following archive from Ian Bell's personal website forms the basis for this project:
 
@@ -72,7 +72,7 @@ If you want to browse the source in an IDE, you might find the following useful.
 
 * The annotated source files contain both the original Acornsoft code and all of the modifications made to convert the original into Teletext Elite, so you can look through the source to see exactly what's changed in order to convert it to mode 7. Any code that I've removed from the original version is commented out in the source files, so when they are assembled they produce the Teletext Elite binaries, while still containing details of all the modifications. You can find all the diffs by searching the sources for `Mod:`.
 
-* Teletext Elite incorporates the flicker-free algorithm from BBC Master Elite, which reduces the amount of flicker in the ship-drawing routines (though not in the planet routines). For more information on the flicker-free code, see the deep dives on [flicker-free ship drawing](https://www.bbcelite.com/deep_dives/flicker-free_ship_drawing.html) and [backporting the flicker-free algorithm](https://www.bbcelite.com/deep_dives/backporting_the_flicker-free_algorithm.html).
+* Teletext Elite incorporates the flicker-free algorithm from BBC Master Elite, which reduces the amount of flicker in the ship-drawing routines, and it also includes flicker-free planet-drawing routines. For more information on flicker-free Elite, see the [hacks section of the accompanying website](https://www.bbcelite.com/hacks/flicker-free_elite.html).
 
 * There are loads of routines and variables in Elite - literally hundreds. You can find them in the source files by searching for the following: `Type: Subroutine`, `Type: Variable`, `Type: Workspace` and `Type: Macro`.
 

@@ -3009,8 +3009,7 @@ LOAD_A% = LOAD%
 
 .GOIN
 
-                        \ If we arrive here, either the docking computer has
-                        \ been activated, or we just docked successfully
+                        \ If we arrive here, we just docked successfully
 
  JSR RES2               \ Reset a number of flight variables and workspaces
 
@@ -20768,12 +20767,12 @@ LOAD_E% = LOAD% + P% - CODE%
  BCS PL2                \ seen, so jump to PL2 to remove it from the screen,
                         \ returning from the subroutine using a tail call
 
- ORA INWK+7             \ Set A to z_sign OR z_hi to get the maximum of the two
+ ORA INWK+7             \ Set A to 0 if both z_sign and z_hi are 0
 
- BEQ PL2                \ If the maximum is 0, then the planet/sun is too close
-                        \ to be shown, so jump to PL2 to remove it from the
-                        \ screen, returning from the subroutine using a tail
-                        \ call
+ BEQ PL2                \ If both z_sign and z_hi are 0, then the planet/sun is
+                        \ too close to be shown, so jump to PL2 to remove it
+                        \ from the screen, returning from the subroutine using a
+                        \ tail call
 
  JSR PROJ               \ Project the planet/sun onto the screen, returning the
                         \ centre's coordinates in K3(1 0) and K4(1 0)
@@ -20803,8 +20802,9 @@ LOAD_E% = LOAD% + P% - CODE%
  LDA K+1                \ If the high byte of the reduced radius is zero, jump
  BEQ PL82               \ to PL82, as K contains the radius on its own
 
- LDA #248               \ Otherwise set K = 248, to use as our one-byte radius
- STA K
+ LDA #248               \ Otherwise set K = 248, to round up the radius in
+ STA K                  \ K(1 0) to the nearest integer (if we consider the low
+                        \ byte to be the fractional part)
 
 .PL82
 
@@ -21059,7 +21059,7 @@ LOAD_E% = LOAD% + P% - CODE%
  STA P                  \ Calculate:
  LDA K4                 \
  SEC                    \   K4(1 0) = K4(1 0) - (Y A)
- SBC P                  \           = 222 * roofv_x / z - y-coordinate of planet
+ SBC P                  \           = 222 * roofv_y / z - y-coordinate of planet
  STA K4                 \             centre
                         \
                         \ starting with the low bytes
@@ -25914,7 +25914,7 @@ ENDIF
 \ ------------------------------------------------------------------------------
 \
 \ We do this by dividing each of the three coordinates by the length of the
-\ vector, which we can calculate using Pythagoras. Once normalised, 96 (&E0) is
+\ vector, which we can calculate using Pythagoras. Once normalised, 96 (&60) is
 \ used to represent a value of 1, and 96 with bit 7 set (&E0) is used to
 \ represent -1. This enables us to represent fractional values of less than 1
 \ using integers.
@@ -30799,10 +30799,22 @@ LOAD_G% = LOAD% + P% - CODE%
                         \ visibility distance for this edge, beyond which the
                         \ edge is not shown
 
+                        \ --- Mod: Code removed for flicker-free ships: ------->
+
+\CMP XX4                \ If XX4 > the visibility distance, where XX4 contains
+\BCC LL79-3             \ the ship's z-distance reduced to 0-31 (which we set in
+\                       \ part 2), then this edge is too far away to be visible,
+\                       \ so jump down to LL78 (via LL79-3) to move on to the
+\                       \ next edge
+
+                        \ --- And replaced by: -------------------------------->
+
  CMP XX4                \ If XX4 > the visibility distance, where XX4 contains
  BCC LL78               \ the ship's z-distance reduced to 0-31 (which we set in
                         \ part 2), then this edge is too far away to be visible,
                         \ so jump down to LL78 to move on to the next edge
+
+                        \ --- End of replacement ------------------------------>
 
  INY                    \ Increment Y to point to byte #1
 
@@ -30838,6 +30850,12 @@ LOAD_G% = LOAD% + P% - CODE%
 
  LDA XX2,X              \ If XX2+X is zero then we decided in part 5 that
  BEQ LL78               \ face 2 is hidden, so jump to LL78
+
+                        \ --- Mod: Code removed for flicker-free ships: ------->
+
+\JMP LL78               \ Face 2 is hidden, so jump to LL78
+
+                        \ --- End of removed code ----------------------------->
 
 .LL79
 
@@ -30917,15 +30935,19 @@ LOAD_G% = LOAD% + P% - CODE%
                         \ clipped to fit on-screen, returning the clipped line's
                         \ end-points in (X1, Y1) and (X2, Y2)
 
- BCS LL78               \ If the C flag is set then the line is not visible on
-                        \ screen, so jump to LL78 so we don't store this line
-                        \ in the ship line heap
-
                         \ --- Mod: Code removed for flicker-free ships: ------->
 
+\BCS LL79-3             \ If the C flag is set then the line is not visible on
+\                       \ screen, so jump to LL78 (via LL79-3) so we don't store
+\                       \ this line in the ship line heap
+\
 \JMP LL80               \ Jump down to part 11 to draw this edge
 
                         \ --- And replaced by: -------------------------------->
+
+ BCS LL78               \ If the C flag is set then the line is not visible on
+                        \ screen, so jump to LL78 so we don't store this line
+                        \ in the ship line heap
 
  JSR LLX30              \ Draw this edge using smooth animation, by first
                         \ drawing the ship's new line and then erasing the

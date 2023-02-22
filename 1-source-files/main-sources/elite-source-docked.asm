@@ -22551,7 +22551,7 @@ ENDIF
 \ ------------------------------------------------------------------------------
 \
 \ We do this by dividing each of the three coordinates by the length of the
-\ vector, which we can calculate using Pythagoras. Once normalised, 96 (&E0) is
+\ vector, which we can calculate using Pythagoras. Once normalised, 96 (&60) is
 \ used to represent a value of 1, and 96 with bit 7 set (&E0) is used to
 \ represent -1. This enables us to represent fractional values of less than 1
 \ using integers.
@@ -26828,6 +26828,12 @@ LOAD_G% = LOAD% + P% - CODE%
 
  LDA XX2,X              \ If XX2+X is zero then we decided in part 5 that
  BEQ LL78               \ face 2 is hidden, so jump to LL78
+
+                        \ --- Mod: Code removed for flicker-free ships: ------->
+
+\JMP LL78               \ Face 2 is hidden, so jump to LL78
+
+                        \ --- End of removed code ----------------------------->
 
 .LL79
 
