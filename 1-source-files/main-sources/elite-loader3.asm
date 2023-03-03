@@ -809,7 +809,7 @@ ORG &0B00
                         \ in the docked file we just loaded, in the byte before
                         \ the ship hangar blueprints at XX21
 
-IF _REMOVE_CHECKSUMS OR TRUE \ Omit check as elite-checksum.py doesn't work yet
+IF _REMOVE_CHECKSUMS OR TRUE \ Disable the LOAD checksum for Teletext Elite
 
  NOP                    \ If we have disabled checksums, then ignore the result
  NOP                    \ of the checksum comparison
@@ -1253,20 +1253,25 @@ ORG CATDcode + P% - CATD
 
  BNE PLL3               \ Loop back to PLL3 until CNT3+1 = 0
 
+                        \ The following code is not required, as we copy the
+                        \ title images to their correct places on-screen when
+                        \ we return from the subroutine, overwriting the copy
+                        \ that we do here
+
  LDA #&00               \ Set ZP(1 0) = &6300
  STA ZP
  LDA #&63
  STA ZP+1
 
- LDA #&62               \ Set P(1 0) = &2A62
+ LDA #LO(ELITE)         \ Set P(1 0) = ELITE
  STA P
- LDA #&2A
+ LDA #HI(ELITE)
  STA P+1
 
                         \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \LDX #8                 \ Call MVPG with X = 8 to copy 8 pages of memory from
-\JSR MVPG               \ the address in P(1 0) to the address in ZP(1 0)
+\JSR MVPG               \ ELITE to &6300
 
                         \ --- And replaced by: -------------------------------->
 
@@ -2701,3 +2706,17 @@ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
 PRINT "S.ELITE4 ", ~CODE%, " ", ~P%, " ", ~LOAD%, " ", ~LOAD%
 SAVE "3-assembled-output/ELITE4.unprot.bin", CODE%, P%, LOAD%
 
+PRINT "Addresses for the scramble routines in elite-checksum.py"
+PRINT "Load address = ", ~CODE%
+PRINT "TVT1code = ", ~TVT1code
+PRINT "ELITE = ", ~ELITE
+PRINT "LOADcode = ", ~LOADcode
+PRINT "CATDcode = ", ~CATDcode
+PRINT "DIALS = ", ~DIALS
+PRINT "OSBmod = ", ~OSBmod
+PRINT "ELITE = ", ~ELITE
+PRINT "End of ELITE4 file = ", ~P%
+PRINT "TVT1code = ", ~TVT1code
+PRINT "TVT1 = ", ~TVT1
+PRINT "NA% = ", ~NA%
+PRINT "CHK2 = ", ~CHK2
