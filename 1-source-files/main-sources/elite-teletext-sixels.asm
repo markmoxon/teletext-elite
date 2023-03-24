@@ -29,23 +29,23 @@
 \
 \ ******************************************************************************
 
-MODE7_VRAM = &7C00      \ The start of video RAM for mode 7
+ MODE7_VRAM = &7C00     \ The start of video RAM for mode 7
 
-MODE7_INDENT = 3        \ Width of the left indent in characters to apply to the
+ MODE7_INDENT = 3       \ Width of the left indent in characters to apply to the
                         \ entire space view (so it gets centred)
 
-MODE7_LOW_X = 2         \ The first sixel x-coordinate we can draw sixels in
+ MODE7_LOW_X = 2        \ The first sixel x-coordinate we can draw sixels in
 
-MODE7_HIGH_X = 2*40 - 2 \ The last sixel x-coordinate we can draw sixels in + 1,
+ MODE7_HIGH_X = 2*40-2  \ The last sixel x-coordinate we can draw sixels in + 1,
                         \ less 2 to compensate for the first character on each
                         \ row being a graphics control code
 
-MODE7_LOW_Y = 3         \ The first sixel y-coordinate we can draw sixels in (so
+ MODE7_LOW_Y = 3        \ The first sixel y-coordinate we can draw sixels in (so
                         \ we not draw on the first character row)
 
-MODE7_HIGH_Y = 3*25     \ The last sixel y-coordinate we can draw sixels in + 1
+ MODE7_HIGH_Y = 3*25    \ The last sixel y-coordinate we can draw sixels in + 1
 
-MESSAGE_ROW = 17        \ The character row containing the in-flight message bar
+ MESSAGE_ROW = 17       \ The character row containing the in-flight message bar
 
 \ ******************************************************************************
 \
@@ -59,15 +59,16 @@ MESSAGE_ROW = 17        \ The character row containing the in-flight message bar
 
 .ySixelLo
 
-FOR i, 0, MODE7_HIGH_Y-1
+ FOR i, 0, MODE7_HIGH_Y-1
 
- y = (i DIV 3) * 40 + 1 + MODE7_INDENT  \ Add 1 to skip the graphics character
+  y = (i DIV 3) * 40 + 1 + MODE7_INDENT \ Add 1 to skip the graphics character
                                         \ in column 0, and then add the screen
                                         \ indent
 
- EQUB LO(y-i)           \ Adjust for (ZP),Y style addressing, where Y will be
+  EQUB LO(y-i)          \ Adjust for (ZP),Y style addressing, where Y will be
                         \ the y-coordinate
-NEXT
+
+ NEXT
 
 \ ******************************************************************************
 \
@@ -81,15 +82,16 @@ NEXT
 
 .ySixelHi
 
-FOR i, 0, MODE7_HIGH_Y-1
+ FOR i, 0, MODE7_HIGH_Y-1
 
- y = (i DIV 3) * 40 + 1 + MODE7_INDENT  \ Add 1 to skip the graphics character
+  y = (i DIV 3) * 40 + 1 + MODE7_INDENT \ Add 1 to skip the graphics character
                                         \ in column 0, and then add the screen
                                         \ indent
 
- EQUB HI(y-i)           \ Adjust for (ZP),Y style addressing, where Y will be
+  EQUB HI(y-i)          \ Adjust for (ZP),Y style addressing, where Y will be
                         \ the y-coordinate
-NEXT
+
+ NEXT
 
 \ ******************************************************************************
 \
@@ -103,12 +105,12 @@ NEXT
 
 .xSixel
 
-FOR i, 0, MODE7_HIGH_X-1
+ FOR i, 0, MODE7_HIGH_X-1
 
- y = i>>1
- EQUB LO(y)
+  y = i>>1
+  EQUB LO(y)
 
-NEXT 
+ NEXT 
 
 \ ******************************************************************************
 \
@@ -123,15 +125,15 @@ NEXT
 
 .xSixelChar
 
-FOR n, 0, MODE7_HIGH_X-1
+ FOR n, 0, MODE7_HIGH_X-1
 
- IF (n AND 1) == 0
-  EQUB 32+1+4+16        \ Left column mask (i.e. all three left sixels set)
- ELSE
-  EQUB 32+2+8+64        \ Right column mask (i.e. all three rights sixel set)
- ENDIF
+  IF (n AND 1) == 0
+   EQUB 32+1+4+16       \ Left column mask (i.e. all three left sixels set)
+  ELSE
+   EQUB 32+2+8+64       \ Right column mask (i.e. all three rights sixel set)
+  ENDIF
 
-NEXT
+ NEXT
 
 \ ******************************************************************************
 \
@@ -146,17 +148,17 @@ NEXT
 
 .ySixelChar
 
-FOR n, 0, MODE7_HIGH_Y-1
+ FOR n, 0, MODE7_HIGH_Y-1
 
- IF (n MOD 3) == 0
-  EQUB 32+1+2           \ Top row mask (i.e. both top sixels set)
- ELIF (n MOD 3) == 1
-  EQUB 32+4+8           \ Middle row mask (i.e. both middle sixels set)
- ELSE
-  EQUB 32+16+64         \ Bottom row mask (i.e. both bottom sixels set)
- ENDIF
+  IF (n MOD 3) == 0
+   EQUB 32+1+2          \ Top row mask (i.e. both top sixels set)
+  ELIF (n MOD 3) == 1
+   EQUB 32+4+8          \ Middle row mask (i.e. both middle sixels set)
+  ELSE
+   EQUB 32+16+64        \ Bottom row mask (i.e. both bottom sixels set)
+  ENDIF
 
-NEXT
+ NEXT
 
 \ ******************************************************************************
 \
@@ -170,11 +172,11 @@ NEXT
 
 .charRowAddress
 
-FOR n, 0, 25
+ FOR n, 0, 25
 
- EQUW MODE7_VRAM + MODE7_INDENT + (n*&28)
+  EQUW MODE7_VRAM + MODE7_INDENT + (n*&28)
 
-NEXT
+ NEXT
 
 \ ******************************************************************************
 \

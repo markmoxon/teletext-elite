@@ -35,15 +35,15 @@
 
                         \ --- And replaced by: -------------------------------->
 
-GUARD &7B00             \ Guard against assembling over the missile ship data,
+ GUARD &7B00            \ Guard against assembling over the missile ship data,
                         \ which we have moved to &7B00, into the page before
                         \ mode 7 screen memory
 
-_DOCKED = TRUE          \ Set compilation flag for docked vs flight code
+ _DOCKED = TRUE         \ Set compilation flag for docked vs flight code
 
-_LOADER = FALSE         \ Set compilation flag for loader
+ _LOADER = FALSE        \ Set compilation flag for loader
 
-INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- End of replacement ------------------------------>
 
@@ -60,12 +60,12 @@ INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- And replaced by: -------------------------------->
 
-NOST = 10               \ The number of stardust particles in normal space (this
+ NOST = 10              \ The number of stardust particles in normal space (this
                         \ goes down to 3 in witchspace)
 
                         \ --- End of replacement ------------------------------>
 
-NOSH = 12               \ The maximum number of ships in our local bubble of
+ NOSH = 12              \ The maximum number of ships in our local bubble of
                         \ universe
 
  NTY = 31               \ The number of different ship types
@@ -169,13 +169,13 @@ NOSH = 12               \ The maximum number of ships in our local bubble of
 
                         \ --- And replaced by: -------------------------------->
 
-SHIP_MISSILE = &7B00    \ The address of the missile ship blueprint, as set in
+ SHIP_MISSILE = &7B00   \ The address of the missile ship blueprint, as set in
                         \ elite-loader3.asm, which we have moved to &7B00, into
                         \ the page before mode 7 screen memory
 
                         \ --- End of replacement ------------------------------>
 
-VIA = &FE00             \ Memory-mapped space for accessing internal hardware,
+ VIA = &FE00            \ Memory-mapped space for accessing internal hardware,
                         \ such as the video ULA, 6845 CRTC and 6522 VIAs (also
                         \ known as SHEILA)
 
@@ -33820,13 +33820,13 @@ ENDMACRO
 
                         \ --- And replaced by: -------------------------------->
 
-INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
 
-INCLUDE "1-source-files/main-sources/elite-teletext-lines.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-lines.asm"
 
-INCLUDE "1-source-files/main-sources/elite-teletext-text.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-text.asm"
 
-INCLUDE "1-source-files/main-sources/elite-teletext-docked.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-docked.asm"
 
                         \ --- End of replacement ------------------------------>
 

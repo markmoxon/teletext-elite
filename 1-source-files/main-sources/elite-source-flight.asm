@@ -33,15 +33,15 @@
 
                         \ --- Mod: Code added for flicker-free planets: ------->
 
-GUARD &7B00             \ Guard against assembling over the missile ship data,
+ GUARD &7B00            \ Guard against assembling over the missile ship data,
                         \ which we have moved to &7B00, into the page before
                         \ mode 7 screen memory
 
-_DOCKED = FALSE         \ Set compilation flag for docked vs flight code
+ _DOCKED = FALSE        \ Set compilation flag for docked vs flight code
 
-_LOADER = FALSE         \ Set compilation flag for loader
+ _LOADER = FALSE        \ Set compilation flag for loader
 
-INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- End of added code ------------------------------->
 
@@ -58,12 +58,12 @@ INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- And replaced by: -------------------------------->
 
-NOST = 10               \ The number of stardust particles in normal space (this
+ NOST = 10              \ The number of stardust particles in normal space (this
                         \ goes down to 3 in witchspace)
 
                         \ --- End of replacement ------------------------------>
 
-NOSH = 12               \ The maximum number of ships in our local bubble of
+ NOSH = 12              \ The maximum number of ships in our local bubble of
                         \ universe
 
  NTY = 31               \ The number of different ship types
@@ -35071,17 +35071,17 @@ ENDMACRO
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
-CLEAR &6000, &6000      \ Clear the ship file guard we put in earlier
+ CLEAR &6000, &6000     \ Clear the ship file guard we put in earlier
 
-ORG &6000               \ Insert the teletext routines after the ship file
+ ORG &6000              \ Insert the teletext routines after the ship file
 
-INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
 
-INCLUDE "1-source-files/main-sources/elite-teletext-lines.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-lines.asm"
 
-INCLUDE "1-source-files/main-sources/elite-teletext-text.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-text.asm"
 
-INCLUDE "1-source-files/main-sources/elite-teletext-flight.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-flight.asm"
 
                         \ --- End of added code ------------------------------->
 

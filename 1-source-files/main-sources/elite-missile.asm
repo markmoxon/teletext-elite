@@ -46,11 +46,11 @@
 
                         \ --- And replaced by: -------------------------------->
 
-CODE% = &7B00
+ CODE% = &7B00
 
                         \ --- End of replacement ------------------------------>
 
-LOAD% = &244B
+ LOAD% = &244B
 
  ORG CODE%
 

@@ -40,7 +40,7 @@
 
                         \ --- And replaced by: -------------------------------->
 
-SHIP_MISSILE = &7B00    \ The address of the missile ship blueprint
+ SHIP_MISSILE = &7B00   \ The address of the missile ship blueprint
 
                         \ --- End of replacement ------------------------------>
 

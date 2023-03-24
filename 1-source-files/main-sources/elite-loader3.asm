@@ -33,11 +33,11 @@
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
-_DOCKED = TRUE          \ Set compilation flag for docked vs flight code
+ _DOCKED = TRUE         \ Set compilation flag for docked vs flight code
 
-_LOADER = TRUE          \ Set compilation flag for loader code
+ _LOADER = TRUE         \ Set compilation flag for loader code
 
-INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- End of added code ------------------------------->
 
@@ -75,13 +75,13 @@ INCLUDE "1-source-files/main-sources/elite-teletext-macros.asm"
 
                         \ --- And replaced by: -------------------------------->
 
-VEC = &7BFE             \ VEC is where we store the original value of the IRQ1
+ VEC = &7BFE            \ VEC is where we store the original value of the IRQ1
                         \ vector, matching the address in the elite-missile.asm
                         \ source
 
                         \ --- End of replacement ------------------------------>
 
-BRKV = &0202            \ The break vector that we intercept to enable us to
+ BRKV = &0202           \ The break vector that we intercept to enable us to
                         \ handle and display system errors
 
  IRQ1V = &0204          \ The IRQ1V vector that we intercept to implement the
@@ -1511,7 +1511,7 @@ ENDIF
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
-ORG &1CC7               \ Pad out the routine to its original length so the rest
+ ORG &1CC7              \ Pad out the routine to its original length so the rest
                         \ of the code stays in the same place
 
                         \ --- End of added code ------------------------------->
@@ -2235,7 +2235,7 @@ ORG &1CC7               \ Pad out the routine to its original length so the rest
 
                         \ --- And replaced by: -------------------------------->
 
-ORG &117C               \ Pad the code out to the same length as in the original
+ ORG &117C              \ Pad the code out to the same length as in the original
 
                         \ --- End of replacement ------------------------------>
 
@@ -2598,7 +2598,7 @@ ENDIF
 
 .CpASOFT
 
-INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
+ INCLUDE "1-source-files/main-sources/elite-teletext-sixels.asm"
 
                         \ --- End of replacement ------------------------------>
 
