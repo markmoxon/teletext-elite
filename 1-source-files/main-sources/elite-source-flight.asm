@@ -2020,9 +2020,9 @@
 
 .S%
 
- JMP scramble           \ Decrypt the main flight code and join the main loop
+ JMP DEEOR              \ Decrypt the main flight code and join the main loop
 
- JMP scramble           \ Decrypt the main flight code and start a new game
+ JMP DEEOR              \ Decrypt the main flight code and start a new game
 
  JMP TT26               \ WRCHV is set to point here by elite-loader3.asm
 
@@ -2063,7 +2063,7 @@
 
 \ ******************************************************************************
 \
-\       Name: scramble
+\       Name: DEEOR
 \       Type: Subroutine
 \   Category: Loader
 \    Summary: Decrypt the main flight code between &1300 and &55FF and jump into
@@ -2071,7 +2071,7 @@
 \
 \ ******************************************************************************
 
-.scramble
+.DEEOR
 
  LDY #0                 \ We're going to work our way through a large number of
                         \ encrypted bytes, so we set Y to 0 to be the index of
@@ -2083,7 +2083,7 @@
                         \ byte, so we start the decryption with the first byte
                         \ of page &13
 
-.scrl
+.DEEORL
 
  STX SCH                \ Set the high byte of SC(1 0) to X, so SC(1 0) now
                         \ points to the first byte of page X
@@ -2105,13 +2105,13 @@
 
  DEY                    \ Decrement the index in Y to point to the next byte
 
- BNE scrl               \ Loop back to scrl to decrypt the next byte until we
+ BNE DEEORL             \ Loop back to DEEORL to decrypt the next byte until we
                         \ have done the whole page
 
  INX                    \ Increment X to point to the next page in memory
 
- CPX #&56               \ Loop back to scrl to decrypt the next page until we
- BNE scrl               \ reach the start of page &56
+ CPX #&56               \ Loop back to DEEORL to decrypt the next page until we
+ BNE DEEORL             \ reach the start of page &56
 
  JMP RSHIPS             \ Call RSHIPS to launch from the station, load a new set
                         \ of ship blueprints and jump into the main game loop
@@ -17300,7 +17300,7 @@
                         \ and set up data blocks and slots for the planet and
                         \ sun
 
- JSR LSHIPS             \ Call LSHIPS to load a new ship blueprints file
+ JSR LOMOD              \ Call LOMOD to load a new ship blueprints file
 
  LDA QQ11               \ If the current view in QQ11 is not a space view (0) or
  AND #%00111111         \ one of the charts (64 or 128), return from the
@@ -25752,7 +25752,7 @@ ENDIF
 
 .RSHIPS
 
- JSR LSHIPS             \ Call LSHIPS to load a new ship blueprints file
+ JSR LOMOD              \ Call LOMOD to load a new ship blueprints file
 
  JSR RESET              \ Call RESET to reset most variables
 
@@ -25770,7 +25770,7 @@ ENDIF
 
 \ ******************************************************************************
 \
-\       Name: LSHIPS
+\       Name: LOMOD
 \       Type: Subroutine
 \   Category: Loader
 \    Summary: Load a new ship blueprints file
@@ -25778,7 +25778,7 @@ ENDIF
 \
 \ ******************************************************************************
 
-.LSHIPS
+.LOMOD
 
  JSR THERE              \ Call THERE to see if we are in the Constrictor's
                         \ system in mission 1
