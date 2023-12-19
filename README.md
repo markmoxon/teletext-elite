@@ -1,5 +1,7 @@
 # Fully documented source code for Teletext Elite
 
+[BBC Micro cassette Elite](https://github.com/markmoxon/cassette-elite-beebasm) | [BBC Micro disc Elite](https://github.com/markmoxon/disc-elite-beebasm) | [6502 Second Processor Elite](https://github.com/markmoxon/6502sp-elite-beebasm) | [BBC Master Elite](https://github.com/markmoxon/master-elite-beebasm) | [Acorn Electron Elite](https://github.com/markmoxon/electron-elite-beebasm) | [NES Elite](https://github.com/markmoxon/nes-elite-beebasm) | [Elite-A](https://github.com/markmoxon/elite-a-beebasm) | **Teletext Elite** | [Elite universe Editor](https://github.com/markmoxon/elite-universe-editor) | [Flicker-free C64 Elite](https://github.com/markmoxon/c64-elite-flicker-free)
+
 ![Screenshot of the Teletext Elite title screen](https://www.bbcelite.com/images/teletext_elite/title.png)
 
 This repository contains source code for Teletext Elite on the BBC Micro and BBC Master 128.
