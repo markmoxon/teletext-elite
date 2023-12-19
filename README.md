@@ -25,6 +25,7 @@ This repository contains the full source code for Teletext Elite, which you can 
   * [Requirements](#requirements)
   * [Windows](#windows)
   * [Mac and Linux](#mac-and-linux)
+  * [Build options](#build-options)
 
 ## Acknowledgements
 
@@ -96,6 +97,8 @@ The source files in the first folder are heavily based on the repositories conta
 
 ## Building Teletext Elite from the source
 
+Builds are supported for both Windows and Mac/Linux systems. In all cases the build process is defined in the `Makefile` provided.
+
 ### Requirements
 
 You will need the following to build Elite from the source:
@@ -108,13 +111,13 @@ You will need the following to build Elite from the source:
 
 For details of how the build process works, see the [build documentation on bbcelite.com](https://www.bbcelite.com/about_site/building_elite.html).
 
-Builds are supported for both Windows and Mac/Linux systems. In all cases the build process is defined in the `Makefile` provided. Let's look at how to build Teletext Elite from the source.
+Let's look at how to build Elite from the source.
 
 ### Windows
 
-For Windows users, there is a batch file called `make.bat` that runs the build. Before this will work, you should edit the batch file and change the values of the `BEEBASM` and `PYTHON` variables to point to the locations of your `beebasm.exe` and `python.exe` executables. You also need to change directory to the repository folder (i.e. the same folder as `make.bat`).
+For Windows users, there is a batch file called `make.bat` which you can use to build the game. Before this will work, you should edit the batch file and change the values of the `BEEBASM` and `PYTHON` variables to point to the locations of your `beebasm.exe` and `python.exe` executables. You also need to change directory to the repository folder (i.e. the same folder as `make.bat`).
 
-All being well, doing the following:
+All being well, entering the following into a command window:
 
 ```
 make.bat
@@ -126,13 +129,25 @@ will produce a file called `teletext-elite.ssd` in the project folder that conta
 
 The build process uses a standard GNU `Makefile`, so you just need to install `make` if your system doesn't already have it. If BeebAsm or Python are not on your path, then you can either fix this, or you can edit the `Makefile` and change the `BEEBASM` and `PYTHON` variables in the first two lines to point to their locations. You also need to change directory to the repository folder (i.e. the same folder as `Makefile`).
 
-All being well, doing the following:
+All being well, entering the following into a terminal window:
 
 ```
 make
 ```
 
 will produce a file called `teletext-elite.ssd` in the project folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
+
+### Build options
+
+By default the build process will create a typical Elite game disc with a standard commander. There is one argument you can pass to the build to change how it works. It is:
+
+* `commander=max` - Start with a maxed-out commander (specifically, this is the test commander file from the original source, which is almost but not quite maxed-out)
+
+So, for example:
+
+`make commander=max`
+
+will build Teletext Elite with a maxed-out commander.
 
 ---
 
