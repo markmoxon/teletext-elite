@@ -32555,6 +32555,8 @@ ENDMACRO
 \
 \   * If the existing line we just took from the heap is on-screen, erase it
 \
+\ ------------------------------------------------------------------------------
+\
 \ Arguments:
 \
 \   LSNUM               The offset within the line heap where we add the new
@@ -32574,6 +32576,8 @@ ENDMACRO
 \
 \   XX19(1 0)           XX19(1 0) shares its location with INWK(34 33), which
 \                       contains the ship line heap address pointer
+\
+\ ------------------------------------------------------------------------------
 \
 \ Returns:
 \

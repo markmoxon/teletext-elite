@@ -34,6 +34,8 @@
 \
 \   Y                   Sixel y-coordinate
 \
+\ ------------------------------------------------------------------------------
+\
 \ Returns:
 \
 \   Z flag              Did we plot the sixel?

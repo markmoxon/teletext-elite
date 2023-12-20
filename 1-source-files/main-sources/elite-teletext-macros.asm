@@ -31,6 +31,8 @@
 \
 \   A                   The pixel x-coordinate
 \
+\ ------------------------------------------------------------------------------
+\
 \ Returns:
 \
 \   A                   The sixel x-coordinate
@@ -59,6 +61,8 @@ ENDMACRO
 \ Arguments:
 \
 \   A                   The pixel y-coordinate
+\
+\ ------------------------------------------------------------------------------
 \
 \ Returns:
 \
