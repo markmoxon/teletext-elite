@@ -275,8 +275,17 @@ ENDIF
 
 .MESS1
 
- EQUS "LOAD Elite4"
+                        \ --- Mod: Code removed for Compendium: --------------->
+
+\EQUS "LOAD Elite4"
+\EQUB 13
+
+                        \ --- And replaced by: -------------------------------->
+
+ EQUS "LOAD TElit4"
  EQUB 13
+
+                        \ --- End of replacement ------------------------------>
 
  SKIP 86                \ These bytes appear to be unused
  EQUB &32

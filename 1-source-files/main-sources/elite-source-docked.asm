@@ -16140,8 +16140,17 @@
 
 .RDLI
 
- EQUS "R.D.CODE"        \ This is short for "*RUN D.CODE"
+                        \ --- Mod: Code removed for Compendium: --------------->
+
+\EQUS "R.D.CODE"        \ This is short for "*RUN D.CODE"
+\EQUB 13
+
+                        \ --- And replaced by: -------------------------------->
+
+ EQUS "R.D.TELE"        \ This is short for "*RUN D.TELE"
  EQUB 13
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \

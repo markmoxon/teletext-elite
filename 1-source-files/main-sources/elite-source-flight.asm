@@ -2063,8 +2063,17 @@
 
 .LTLI
 
- EQUS "L.T.CODE"        \ This is short for "*LOAD T.CODE"
+                        \ --- Mod: Code removed for Compendium: --------------->
+
+\EQUS "L.T.CODE"        \ This is short for "*LOAD T.CODE"
+\EQUB 13
+
+                        \ --- And replaced by: -------------------------------->
+
+ EQUS "L.T.TELE"        \ This is short for "*LOAD T.TELE"
  EQUB 13
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \

@@ -311,8 +311,17 @@
 
 .MESS2
 
- EQUS "LOAD Elite3"
+                        \ --- Mod: Code removed for Compendium: --------------->
+
+\EQUS "LOAD Elite3"
+\EQUB 13
+
+                        \ --- And replaced by: -------------------------------->
+
+ EQUS "LOAD TElit3"
  EQUB 13
+
+                        \ --- End of replacement ------------------------------>
 
 \ ******************************************************************************
 \
