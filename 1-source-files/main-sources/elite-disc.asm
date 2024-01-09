@@ -30,12 +30,12 @@
 
  INCLUDE "1-source-files/main-sources/elite-build-options.asm"
 
- PUTFILE "3-assembled-output/ELITE2.bin", "ELITE2", &FF2F00, &FF2F23
- PUTFILE "3-assembled-output/ELITE3.bin", "ELITE3", &FF5700, &FF5700
- PUTFILE "3-assembled-output/ELITE4.bin", "ELITE4", &FF1900, &FF197B
+ PUTFILE "3-assembled-output/ELITE2.bin", "ELITET", &FF2F00, &FF2F23
+ PUTFILE "3-assembled-output/ELITE3.bin", "TELIT3", &FF5700, &FF5700
+ PUTFILE "3-assembled-output/ELITE4.bin", "TELIT4", &FF1900, &FF197B
 
- PUTFILE "3-assembled-output/D.CODE.bin", "D.CODE", &0011E3, &0011E3
- PUTFILE "3-assembled-output/T.CODE.bin", "T.CODE", &0011E3, &0011E3
+ PUTFILE "3-assembled-output/D.CODE.bin", "D.TELE", &0011E3, &0011E3
+ PUTFILE "3-assembled-output/T.CODE.bin", "T.TELE", &0011E3, &0011E3
 
  PUTFILE "3-assembled-output/D.MOA.bin", "D.MOA", &005600, &005600
  PUTFILE "3-assembled-output/D.MOB.bin", "D.MOB", &005600, &005600

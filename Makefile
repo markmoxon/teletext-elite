@@ -59,7 +59,7 @@ all:
 	$(BEEBASM) -i 1-source-files/main-sources/elite-ships-p.asm -v >> 3-assembled-output/compile.txt
 	$(BEEBASM) -i 1-source-files/main-sources/elite-readme.asm -v >> 3-assembled-output/compile.txt
 	$(PYTHON) 2-build-files/elite-checksum.py
-	$(BEEBASM) -i 1-source-files/main-sources/elite-disc.asm -do teletext-elite.ssd -boot ELITE2 -title "E L I T E"
+	$(BEEBASM) -i 1-source-files/main-sources/elite-disc.asm -do teletext-elite.ssd -boot ELITET -title "E L I T E"
 
 .PHONY:b2
 b2:
