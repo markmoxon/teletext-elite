@@ -88,6 +88,10 @@ REM IF N% > 0 THEN FOR X% = ?&90 TO 15 : PRINT;" ";X%?&90; : NEXT
 ?romNumber=?(&90+?&90):REM STORE RAM BANK USED SOMEWHERE IN ZERO PAGE
 PRINT'"Loading music into RAM bank ";?romNumber;"...";
 OSCLI "SRLOAD MUSIC 8000 "+STR$(?romNumber)
+!&70=&1210+1:REM Update play1+1 at &8012 for Compendium
+OSCLI "SRWRITE 0070+2 8012 "+STR$(?romNumber)
+!&70=&121E:REM Update SFX at &8016 for Compendium
+OSCLI "SRWRITE 0070+2 8016 "+STR$(?romNumber)
 PRINT CHR$130;"OK"
 PRINT'"Press any key to play Elite";
 A$=GET$

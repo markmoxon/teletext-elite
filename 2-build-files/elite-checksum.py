@@ -65,7 +65,7 @@ scramble3_eor = 0xA5
 
 # ELITE, ASOFT and CpASOFT blocks, plus padding to the end of the file
 scramble4_from = 0x2A62     # ELITE
-scramble4_to = 0x2E00       # End of ELITE4 file
+scramble4_to = 0x2CF0       # End of ELITE4 file
 scramble4_eor = 0xA5
 
 # Commander file checksum
