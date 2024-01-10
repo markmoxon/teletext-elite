@@ -49,27 +49,27 @@ print("Encryption = ", Encrypt)
 load_address = 0x1900
 
 # TVT1code block
-scramble1_from = 0x2975     # TVT1code
-scramble1_to = 0x2A75       # ELITE
+scramble1_from = 0x2962     # TVT1code
+scramble1_to = 0x2A62       # ELITE
 scramble1_eor = 0xA5
 
 # LOADcode block
-scramble2_from = 0x1B00     # LOADcode
-scramble2_to = 0x1B62       # CATDcode
+scramble2_from = 0x1AED     # LOADcode
+scramble2_to = 0x1B4F       # CATDcode
 scramble2_eor = 0x18
 
 # DIALS, SHIP_MISSILE and WORDS blocks
-scramble3_from = 0x1D5E     # DIALS
-scramble3_to = 0x295E       # OSBmod
+scramble3_from = 0x1D4B     # DIALS
+scramble3_to = 0x294B       # OSBmod
 scramble3_eor = 0xA5
 
 # ELITE, ASOFT and CpASOFT blocks, plus padding to the end of the file
-scramble4_from = 0x2A75     # ELITE
-scramble4_to = 0x2E43       # End of ELITE4 file
+scramble4_from = 0x2A62     # ELITE
+scramble4_to = 0x2E00       # End of ELITE4 file
 scramble4_eor = 0xA5
 
 # Commander file checksum
-tvt1_code = 0x2975          # TVT1code
+tvt1_code = 0x2962          # TVT1code
 tvt1 = 0x1100               # TVT1
 na_per_cent = 0x1181        # NA%
 chk2 = 0x11D3               # CHK2

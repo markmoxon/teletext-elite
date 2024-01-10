@@ -5,15 +5,15 @@ unique = &80
 RomSel = &FE30
 romNumber = &8E : REM Set to address of .musicRomNumber
 
-PRINT"BBC Micro Elite (Compendium version)"
-PRINT"===================================="
+PRINT"Teletext Elite (Compendium version)"
+PRINT"==================================="
 PRINT'"Based on the Acornsoft SNG38 release"
 PRINT"of Elite by Ian Bell and David Braben"
 PRINT"Copyright (c) Acornsoft 1984"
-PRINT'"Flicker-free routines, bug fixes and"
-PRINT"music integration by Mark Moxon"
-PRINT'"Sound routines by Kieran Connell and"
-PRINT"Simon Morris"
+PRINT'"Flicker-free routines, music and"
+PRINT"teletext integration by Mark Moxon"
+PRINT'"Sound and teletext routines by Kieran"
+PRINT"Connell and Simon Morris"
 PRINT'"Original music by Aidan Bell and Julie"
 PRINT"Dunn (c) D. Braben and I. Bell 1985,"
 PRINT"ported from the C64 by Negative Charge"
@@ -92,4 +92,4 @@ PRINT CHR$130;"OK"
 PRINT'"Press any key to play Elite";
 A$=GET$
 *DRIVE 0
-*RUN ELITED
+*RUN ELITET

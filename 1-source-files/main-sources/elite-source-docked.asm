@@ -2182,8 +2182,8 @@ ORG &00D1
 
 .IRQMusic
 
- STA VIA+&45            \ Re-do the instruction we replaced when inserting this
-                        \ routine into the standard IRQ1 interrupt handler
+ LDA #30                \ Re-do the instructions we replaced when inserting this
+ STA DL                 \ routine into the standard IRQ1 interrupt handler
 
  LDA musicStatus        \ If the music status flag is zero, then music is
  BEQ mirq1              \ disabled, so jump to mirq1 to skip playing the
@@ -2193,7 +2193,7 @@ ORG &00D1
 
 .mirq1
 
- JMP LINSCN+12          \ Jump back to the normal interrupt handler
+ JMP LINSCN+4           \ Jump back to the normal interrupt handler
 
                         \ --- End of added code ------------------------------->
 
@@ -21660,11 +21660,11 @@ ENDIF
                         \ handler
 
  LDA #&4C               \ Insert JMP IRQMusic into the LINSCN handler, replacing
- STA LINSCN+9           \ the STA VIA+&45 instruction, so the IRQMusic routine
- LDA #LO(IRQMusic)      \ gets called on each vertical sync
- STA LINSCN+10
+ STA LINSCN             \ the LDA #20 : STA DL instructions, so the IRQMusic
+ LDA #LO(IRQMusic)      \ routine gets called on each vertical sync
+ STA LINSCN+1
  LDA #HI(IRQMusic)
- STA LINSCN+11
+ STA LINSCN+2
 
  CLI                    \ Re-enable interrupts
 

@@ -6,7 +6,7 @@ RomSel = &FE30
 romNumber = &8E : REM Set to address of .musicRomNumber
 
 PRINT"Teletext Elite (Compendium version)"
-PRINT"===================================="
+PRINT"==================================="
 PRINT'"Based on the Acornsoft SNG38 release"
 PRINT"of Elite by Ian Bell and David Braben"
 PRINT"Copyright (c) Acornsoft 1984"
