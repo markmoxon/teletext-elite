@@ -172,7 +172,15 @@
 
                         \ --- End of added code ------------------------------->
 
- ORG &008B
+                        \ --- Mod: Code removed for music: -------------------->
+
+\ORG &008B
+
+                        \ --- And replaced by: -------------------------------->
+
+ ORG &0095
+
+                        \ --- End of replacement ------------------------------>
 
 .DL
 
@@ -508,7 +516,7 @@ ENDMACRO
 
  LDA #&00               \ Set the following:
  STA ZP                 \
- LDA #&7B               \   ZP(1 0) = &7800
+ LDA #&7B               \   ZP(1 0) = &7B00
  STA ZP+1               \   P(1 0) = SHIP_MISSILE
  LDA #LO(SHIP_MISSILE)  \   X = 1
  STA P

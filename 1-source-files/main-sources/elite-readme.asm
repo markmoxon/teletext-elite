@@ -34,10 +34,22 @@
  EQUB 10, 13
  EQUS "---------------------------------------"
  EQUB 10, 13
- EQUS "Teletext Elite"
+ EQUS "Teletext Elite (Compendium version)"
  EQUB 10, 13
  EQUB 10, 13
- EQUS "For the BBC Micro and BBC Master 128"
+ EQUS "For the BBC Micro with 16K sideways RAM"
+ EQUB 10, 13
+ EQUB 10, 13
+ EQUS "Contains the flicker-free ship drawing"
+ EQUB 10, 13
+ EQUS "routines from the BBC Master version,"
+ EQUB 10, 13
+ EQUS "backported by Mark Moxon"
+ EQUB 10, 13
+ EQUB 10, 13
+ EQUS "Contains flicker-free planet drawing"
+ EQUB 10, 13
+ EQUS "routines by Mark Moxon"
  EQUB 10, 13
  EQUB 10, 13
  EQUS "Based on the Acornsoft SNG38 release"
@@ -57,6 +69,27 @@
  EQUS "Bresenham code by Rich Talbot-Watkins"
  EQUB 10, 13
  EQUB 10, 13
+ EQUS "Sound routines by Kieran Connell and"
+ EQUB 10, 13
+ EQUS "Simon Morris"
+ EQUB 10, 13
+ EQUB 10, 13
+ EQUS "Original music by Aidan Bell and Julie"
+ EQUB 10, 13
+ EQUS "Dunn (c) D. Braben and I. Bell 1985,"
+ EQUB 10, 13
+ EQUS "ported from the C64 by Negative Charge"
+ EQUB 10, 13
+ EQUB 10, 13
+ EQUS "Elite integration by Mark Moxon"
+ EQUB 10, 13
+ EQUB 10, 13
+ EQUS "Sideways RAM detection and loading"
+ EQUB 10, 13
+ EQUS "routines by Tricky and J.G.Harston"
+ EQUB 10, 13
+ EQUB 10, 13
+
  EQUS "See www.bbcelite.com for details"
  EQUB 10, 13
  EQUB 10, 13

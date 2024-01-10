@@ -1,18 +1,7 @@
 BEEBASM?=beebasm
 PYTHON?=python
 
-# A make command with no arguments will build Teletext Elite with the standard
-# commander
-#
-# Optional arguments for the make command are:
-#
-#   commander=max       Start with a maxed-out commander
-#
-# So, for example:
-#
-#   make commander=max
-#
-# will build Teletext Elite with a maxed-out commander
+# Music is only supported in the Stairway to Hell variant
 
 ifeq ($(commander), max)
   max-commander=TRUE
@@ -25,7 +14,7 @@ match-original-binaries=FALSE
 
 variant-number=2
 folder=/sth
-suffix=-sth
+suffix=-elite-compendium-sth
 
 .PHONY:all
 all:
@@ -58,10 +47,10 @@ all:
 	$(BEEBASM) -i 1-source-files/main-sources/elite-ships-o.asm -v >> 3-assembled-output/compile.txt
 	$(BEEBASM) -i 1-source-files/main-sources/elite-ships-p.asm -v >> 3-assembled-output/compile.txt
 	$(BEEBASM) -i 1-source-files/main-sources/elite-readme.asm -v >> 3-assembled-output/compile.txt
-	$(PYTHON) 2-build-files/elite-checksum.py
-	$(BEEBASM) -i 1-source-files/main-sources/elite-disc.asm -do teletext-elite.ssd -boot ELITET -title "E L I T E"
+	$(PYTHON) 2-build-files/elite-checksum.py $(unencrypt) -rel$(variant-number)
+	$(BEEBASM) -i 1-source-files/main-sources/elite-disc.asm -do teletext-elite$(suffix).ssd -opt 3 -title "E L I T E"
 
 .PHONY:b2
 b2:
 	curl -G "http://localhost:48075/reset/b2"
-	curl -H "Content-Type:application/binary" --upload-file "teletext-elite.ssd" "http://localhost:48075/run/b2?name=teletext-elite.ssd"
+	curl -H "Content-Type:application/binary" --upload-file "teletext-elite$(suffix).ssd" "http://localhost:48075/run/b2?name=teletext-elite$(suffix).ssd"
