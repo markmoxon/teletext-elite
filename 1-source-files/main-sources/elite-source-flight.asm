@@ -153,9 +153,19 @@
 
                         \ --- End of added code ------------------------------->
 
- IRQ1 = &114B           \ The address of the IRQ1 routine that implements the
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
+
+\IRQ1 = &114B           \ The address of the IRQ1 routine that implements the
+\                       \ split screen interrupt handler, as set in
+\                       \ elite-loader3.asm
+
+                        \ --- And replaced by: -------------------------------->
+
+ IRQ1 = &1154           \ The address of the IRQ1 routine that implements the
                         \ split screen interrupt handler, as set in
                         \ elite-loader3.asm
+
+                        \ --- End of replacement ------------------------------>
 
  BRBR1 = &11D5          \ The address of the main break handler, which BRKV
                         \ points to as set in elite-loader3.asm
@@ -8101,15 +8111,6 @@ ORG &00D1
                         \ --- End of removed code ----------------------------->
 
 .RR4
-
-                        \ --- Mod: Code added for BBC Master disc Elite: ------>
-
- LDA VIA+&30            \ Clear bit 7 of the ROM Select latch at SHEILA &30 to
- AND #%01111111         \ switch the MOS ROM out of &8000-&BFFF, updating the
- STA &F4                \ RAM copy in &F4 at the same time
- STA VIA+&30
-
-                        \ --- End of added code ------------------------------->
 
  LDY YSAV2              \ We're done printing, so restore the values of the
  LDX XSAV2              \ A, X and Y registers that we saved above and clear

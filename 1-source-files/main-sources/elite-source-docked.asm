@@ -156,9 +156,19 @@
 
                         \ --- End of added code ------------------------------->
 
- IRQ1 = &114B           \ The address of the IRQ1 routine that implements the
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
+
+\IRQ1 = &114B           \ The address of the IRQ1 routine that implements the
+\                       \ split screen interrupt handler, as set in
+\                       \ elite-loader3.asm
+
+                        \ --- And replaced by: -------------------------------->
+
+ IRQ1 = &1154           \ The address of the IRQ1 routine that implements the
                         \ split screen interrupt handler, as set in
                         \ elite-loader3.asm
+
+                        \ --- End of replacement ------------------------------>
 
  BRBR1 = &11D5          \ The address of the main break handler, which BRKV
                         \ points to as set in elite-loader3.asm
@@ -7232,27 +7242,13 @@ ORG &00D1
                         \ RR4 to restore the registers and return from the
                         \ subroutine
 
-                        \ --- Mod: Code removed for BBC Master disc Elite: ---->
-
-\CMP #7                 \ If this is a beep character (A = 7), jump to R5,
-\BEQ R5                 \ which will emit the beep, restore the registers and
-\                       \ return from the subroutine
-\
-\CMP #32                \ If this is an ASCII character (A >= 32), jump to RR1
-\BCS RR1                \ below, which will print the character, restore the
-\                       \ registers and return from the subroutine
-
-                        \ --- And replaced by: -------------------------------->
-
- CMP #32                \ If this is an ASCII character (A >= 32), jump to RR1
- BCS RR1                \ below, which will print the character, restore the
-                        \ registers and return from the subroutine
-
  CMP #7                 \ If this is a beep character (A = 7), jump to R5,
  BEQ R5                 \ which will emit the beep, restore the registers and
                         \ return from the subroutine
 
-                        \ --- End of replacement ------------------------------>
+ CMP #32                \ If this is an ASCII character (A >= 32), jump to RR1
+ BCS RR1                \ below, which will print the character, restore the
+                        \ registers and return from the subroutine
 
  CMP #10                \ If this is control code 10 (line feed) then jump to
  BEQ RRX1               \ RRX1, which will move down a line, restore the
@@ -7600,15 +7596,6 @@ ORG &00D1
                         \ --- End of removed code ----------------------------->
 
 .RR4
-
-                        \ --- Mod: Code added for BBC Master disc Elite: ------>
-
- LDA VIA+&30            \ Clear bit 7 of the ROM Select latch at SHEILA &30 to
- AND #%01111111         \ switch the MOS ROM out of &8000-&BFFF, updating the
- STA &F4                \ RAM copy in &F4 at the same time
- STA VIA+&30
-
-                        \ --- End of added code ------------------------------->
 
  LDY YSAV2              \ We're done printing, so restore the values of the
  LDX XSAV2              \ A, X and Y registers that we saved above and clear
