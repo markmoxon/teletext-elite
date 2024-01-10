@@ -153,19 +153,9 @@
 
                         \ --- End of added code ------------------------------->
 
-                        \ --- Mod: Code removed for Teletext Elite: ----------->
-
-\IRQ1 = &114B           \ The address of the IRQ1 routine that implements the
-\                       \ split screen interrupt handler, as set in
-\                       \ elite-loader3.asm
-
-                        \ --- And replaced by: -------------------------------->
-
- IRQ1 = &1154           \ The address of the IRQ1 routine that implements the
+ IRQ1 = &114B           \ The address of the IRQ1 routine that implements the
                         \ split screen interrupt handler, as set in
                         \ elite-loader3.asm
-
-                        \ --- End of replacement ------------------------------>
 
  BRBR1 = &11D5          \ The address of the main break handler, which BRKV
                         \ points to as set in elite-loader3.asm

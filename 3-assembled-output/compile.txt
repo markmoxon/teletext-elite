@@ -6219,7 +6219,7 @@ WP workspace from  &E00  to &FA7
      11E3   4C 56 12   JMP &1256
      11E6   4C 56 12   JMP &1256
      11E9   4C 41 1E   JMP &1E41
-     11EC   54 11
+     11EC   4B 11
      11EE   4C D5 11   JMP &11D5
 .IRQMusic
      11F1   A9 1E      LDA #&1E
@@ -17321,7 +17321,7 @@ WP workspace from  &E00  to &FA3
      11E3   4C 70 12   JMP &1270
      11E6   4C 50 12   JMP &1250
      11E9   4C E1 1B   JMP &1BE1
-     11EC   54 11
+     11EC   4B 11
      11EE   4C D5 11   JMP &11D5
 .IRQMusic
      11F1   A9 1E      LDA #&1E
