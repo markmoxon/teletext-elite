@@ -17055,10 +17055,14 @@ Saving file '3-assembled-output/D.CODE.unprot.bin'
      009B
 .LSNUM2
      009C
-.CNT2
-     009C
-.SWAP
+.RAT
      009D
+.RAT2
+     009E
+.CNT2
+     009F
+.SWAP
+     00A0
 .T
      00D1
 .K3
@@ -17066,20 +17070,16 @@ Saving file '3-assembled-output/D.CODE.unprot.bin'
 .XX2
      00D2
 .K2
-     00D7
-.RAT
-     00DB
-.RAT2
      00DC
 .STP
-     00DD
-.COL
-     00DE
-.FLAG
-     00DF
-.K4
      00E0
-Zero page variables from &0  to &E2 
+.COL
+     00E1
+.FLAG
+     00E2
+.K4
+     00E3
+Zero page variables from &0  to &E5 
 .XX3
      0100
 .KL
@@ -17839,13 +17839,13 @@ WP workspace from  &E00  to &FA3
      155B   20 76 16   JSR &1676
      155E   A5 64      LDA &64
      1560   29 80      AND #&80
-     1562   85 DC      STA &DC
+     1562   85 9E      STA &9E
      1564   A5 64      LDA &64
      1566   29 7F      AND #&7F
      1568   F0 1D      BEQ &1587
      156A   C9 7F      CMP #&7F
      156C   E9 00      SBC #&00
-     156E   05 DC      ORA &DC
+     156E   05 9E      ORA &9E
      1570   85 64      STA &64
      1572   A2 0F      LDX #&0F
      1574   A0 09      LDY #&09
@@ -17859,13 +17859,13 @@ WP workspace from  &E00  to &FA3
 .MV8
      1587   A5 63      LDA &63
      1589   29 80      AND #&80
-     158B   85 DC      STA &DC
+     158B   85 9E      STA &9E
      158D   A5 63      LDA &63
      158F   29 7F      AND #&7F
      1591   F0 1D      BEQ &15B0
      1593   C9 7F      CMP #&7F
      1595   E9 00      SBC #&00
-     1597   05 DC      ORA &DC
+     1597   05 9E      ORA &9E
      1599   85 63      STA &63
      159B   A2 0F      LDX #&0F
      159D   A0 15      LDY #&15
@@ -18063,7 +18063,7 @@ WP workspace from  &E00  to &FA3
      170B   4A         LSR A
      170C   66 1B      ROR &1B
      170E   05 D1      ORA &D1
-     1710   45 DC      EOR &DC
+     1710   45 9E      EOR &9E
      1712   86 81      STX &81
      1714   20 1E 20   JSR &201E
      1717   85 41      STA &41
@@ -18097,7 +18097,7 @@ WP workspace from  &E00  to &FA3
      174C   66 1B      ROR &1B
      174E   05 D1      ORA &D1
      1750   49 80      EOR #&80
-     1752   45 DC      EOR &DC
+     1752   45 9E      EOR &9E
      1754   86 81      STX &81
      1756   20 1E 20   JSR &201E
      1759   99 47 00   STA &0047,Y
@@ -18191,7 +18191,7 @@ S.ELTA &11E3  &17B8  &11E3  &11E3
 .LOIN
      17CC   84 85      STY &85
      17CE   A9 00      LDA #&00
-     17D0   85 9D      STA &9D
+     17D0   85 A0      STA &A0
      17D2   A5 34      LDA &34
 Macro SCALE_SIXEL_X:
      17D4   4A         LSR A
@@ -18338,14 +18338,14 @@ End macro SCALE_SIXEL_X
      1893   60         RTS
 .BLINE
      1894   8A         TXA
-     1895   65 E0      ADC &E0
+     1895   65 E3      ADC &E3
      1897   85 78      STA &78
-     1899   A5 E1      LDA &E1
+     1899   A5 E4      LDA &E4
      189B   65 D1      ADC &D1
      189D   85 79      STA &79
-     189F   A5 DF      LDA &DF
+     189F   A5 E2      LDA &E2
      18A1   F0 12      BEQ &18B5
-     18A3   E6 DF      INC &DF
+     18A3   E6 E2      INC &E2
 .BL5
      18A5   A4 6B      LDY &6B
      18A7   A9 FF      LDA #&FF
@@ -18373,7 +18373,7 @@ End macro SCALE_SIXEL_X
      18D3   85 3B      STA &3B
      18D5   20 4C 44   JSR &444C
      18D8   B0 CB      BCS &18A5
-     18DA   A5 9D      LDA &9D
+     18DA   A5 A0      LDA &A0
      18DC   F0 10      BEQ &18EE
      18DE   A5 34      LDA &34
      18E0   A4 36      LDY &36
@@ -18414,7 +18414,7 @@ End macro SCALE_SIXEL_X
      1924   85 75      STA &75
      1926   A5 9A      LDA &9A
      1928   18         CLC
-     1929   65 DD      ADC &DD
+     1929   65 E0      ADC &E0
      192B   85 9A      STA &9A
      192D   60         RTS
 .FLIP
@@ -18920,7 +18920,7 @@ End macro SCALE_SIXEL_X
 .DL30
      1C8E   A5 40      LDA &40
 .DL31
-     1C90   85 DE      STA &DE
+     1C90   85 E1      STA &E1
      1C92   A0 02      LDY #&02
      1C94   A2 03      LDX #&03
 .DL1
@@ -18931,7 +18931,7 @@ End macro SCALE_SIXEL_X
      1C9E   85 81      STA &81
      1CA0   A5 82      LDA &82
 .DL5
-     1CA2   25 DE      AND &DE
+     1CA2   25 E1      AND &E1
      1CA4   C8         INY
      1CA5   C8         INY
      1CA6   98         TYA
@@ -19091,7 +19091,7 @@ S.ELTB &17B8  &1D55  &11E3  &17B8
      1D8D   65 D1      ADC &D1
      1D8F   AA         TAX
      1D90   A0 03      LDY #&03
-     1D92   84 9C      STY &9C
+     1D92   84 9F      STY &9F
 .HAL8
      1D94   A0 02      LDY #&02
 .HAL9
@@ -19105,7 +19105,7 @@ S.ELTB &17B8  &1D55  &11E3  &17B8
      1DA2   20 2A 1E   JSR &1E2A
      1DA5   68         PLA
      1DA6   AA         TAX
-     1DA7   C6 9C      DEC &9C
+     1DA7   C6 9F      DEC &9F
      1DA9   D0 E9      BNE &1D94
      1DAB   A0 80      LDY #&80
      1DAD   D0 14      BNE &1DC3
@@ -19193,7 +19193,7 @@ End macro SCALE_SIXEL_Y
      1E3D   85 4D      STA &4D
      1E3F   A9 80      LDA #&80
      1E41   85 4B      STA &4B
-     1E43   85 DC      STA &DC
+     1E43   85 9E      STA &9E
      1E45   A9 0B      LDA #&0B
      1E47   85 68      STA &68
      1E49   20 57 35   JSR &3557
@@ -19272,18 +19272,18 @@ End macro SCALE_SIXEL_Y
      1ECD   20 06 3B   JSR &3B06
      1ED0   A9 08      LDA #&08
 .HFS2
-     1ED2   85 DD      STA &DD
+     1ED2   85 E0      STA &E0
      1ED4   20 F7 22   JSR &22F7
      1ED7   20 DA 1E   JSR &1EDA
 .HFS1
      1EDA   A2 80      LDX #&80
      1EDC   86 D2      STX &D2
      1EDE   A2 60      LDX #&60
-     1EE0   86 E0      STX &E0
+     1EE0   86 E3      STX &E3
      1EE2   A2 00      LDX #&00
      1EE4   86 04      STX &04
      1EE6   86 D3      STX &D3
-     1EE8   86 E1      STX &E1
+     1EE8   86 E4      STX &E4
 .HFL5
      1EEA   20 FD 1E   JSR &1EFD
      1EED   E6 04      INC &04
@@ -19976,7 +19976,7 @@ End macro SCALE_SIXEL_Y
      237E   4A         LSR A
      237F   AA         TAX
      2380   BD C8 17   LDA &17C8,X
-     2383   25 DE      AND &DE
+     2383   25 E1      AND &E1
      2385   BD C9 17   LDA &17C9,X
      2388   10 09      BPL &2393
      238A   A5 07      LDA &07
@@ -19984,7 +19984,7 @@ End macro SCALE_SIXEL_Y
      238E   85 07      STA &07
      2390   BD C9 17   LDA &17C9,X
 .CP1
-     2393   25 DE      AND &DE
+     2393   25 E1      AND &E1
      2395   60         RTS
 .WSCAN
      2396   A9 00      LDA #&00
@@ -20396,14 +20396,14 @@ End macro SCALE_SIXEL_X
      269C   A5 73      LDA &73
      269E   85 D2      STA &D2
      26A0   A5 74      LDA &74
-     26A2   85 E0      STA &E0
+     26A2   85 E3      STA &E3
      26A4   A2 00      LDX #&00
-     26A6   86 E1      STX &E1
+     26A6   86 E4      STX &E4
      26A8   86 D3      STX &D3
      26AA   E8         INX
      26AB   86 6B      STX &6B
      26AD   A2 02      LDX #&02
-     26AF   86 DD      STX &DD
+     26AF   86 E0      STX &E0
      26B1   4C 4C 33   JMP &334C
 .TT219
      26B4   A9 02      LDA #&02
@@ -20788,7 +20788,7 @@ End macro SCALE_SIXEL_X
      2998   ED 5A 03   SBC &035A
      299B   0A         ASL A
      299C   69 5A      ADC #&5A
-     299E   85 E0      STA &E0
+     299E   85 E3      STA &E3
      29A0   A0 0A      LDY #&0A
      29A2   84 81      STY &81
      29A4   20 84 20   JSR &2084
@@ -21997,10 +21997,10 @@ S.ELTD &239F  &2F61  &11E3  &239F
      323E   85 99      STA &99
      3240   A9 BF      LDA #&BF
      3242   38         SEC
-     3243   E5 E0      SBC &E0
+     3243   E5 E3      SBC &E3
      3245   AA         TAX
      3246   A9 00      LDA #&00
-     3248   E5 E1      SBC &E1
+     3248   E5 E4      SBC &E4
      324A   30 C0      BMI &320C
      324C   D0 08      BNE &3256
      324E   E8         INX
@@ -22016,9 +22016,9 @@ S.ELTD &239F  &2F61  &11E3  &239F
      325C   85 23      STA &23
      325E   A5 40      LDA &40
      3260   20 46 1F   JSR &1F46
-     3263   85 D8      STA &D8
+     3263   85 DD      STA &DD
      3265   A5 1B      LDA &1B
-     3267   85 D7      STA &D7
+     3267   85 DC      STA &DC
      3269   A0 BF      LDY #&BF
      326B   A5 28      LDA &28
      326D   85 26      STA &26
@@ -22037,11 +22037,11 @@ S.ELTD &239F  &2F61  &11E3  &239F
      3282   A5 22      LDA &22
      3284   20 46 1F   JSR &1F46
      3287   85 D1      STA &D1
-     3289   A5 D7      LDA &D7
+     3289   A5 DC      LDA &DC
      328B   38         SEC
      328C   E5 1B      SBC &1B
      328E   85 81      STA &81
-     3290   A5 D8      LDA &D8
+     3290   A5 DD      LDA &DD
      3292   E5 D1      SBC &D1
      3294   85 82      STA &82
      3296   84 35      STY &35
@@ -22144,10 +22144,10 @@ S.ELTD &239F  &2F61  &11E3  &239F
      3347   90 01      BCC &334A
      3349   4A         LSR A
 .PL89
-     334A   85 DD      STA &DD
+     334A   85 E0      STA &E0
 .CIRCLE2
      334C   A2 FF      LDX #&FF
-     334E   86 DF      STX &DF
+     334E   86 E2      STX &E2
      3350   E8         INX
      3351   86 9A      STX &9A
 .PLL3
@@ -22270,19 +22270,19 @@ S.ELTD &239F  &2F61  &11E3  &239F
      3417   30 02      BMI &341B
      3419   D0 E6      BNE &3401
 .PL31
-     341B   A5 E0      LDA &E0
+     341B   A5 E3      LDA &E3
      341D   18         CLC
      341E   65 40      ADC &40
      3420   85 1C      STA &1C
-     3422   A5 E1      LDA &E1
+     3422   A5 E4      LDA &E4
      3424   69 00      ADC #&00
      3426   30 D9      BMI &3401
      3428   85 1D      STA &1D
-     342A   A5 E0      LDA &E0
+     342A   A5 E3      LDA &E3
      342C   38         SEC
      342D   E5 40      SBC &40
      342F   AA         TAX
-     3430   A5 E1      LDA &E1
+     3430   A5 E4      LDA &E4
      3432   E9 00      SBC #&00
      3434   30 C4      BMI &33FA
      3436   D0 C9      BNE &3401
@@ -24602,7 +24602,7 @@ S.ELTF &34A6  &3DC1  &11E3  &34A6
      4449   4C 72 45   JMP &4572
 .LL145
      444C   A9 00      LDA #&00
-     444E   85 9D      STA &9D
+     444E   85 A0      STA &A0
      4450   A5 39      LDA &39
 .LL147
      4452   A2 BF      LDX #&BF
@@ -24763,7 +24763,7 @@ S.ELTF &34A6  &3DC1  &11E3  &34A6
      4560   86 3B      STX &3B
      4562   85 37      STA &37
      4564   20 D6 45   JSR &45D6
-     4567   C6 9D      DEC &9D
+     4567   C6 A0      DEC &A0
 .LL124
      4569   68         PLA
      456A   A8         TAY
@@ -39103,7 +39103,7 @@ Macro SCALE_SIXEL_X:
      63BC   69 00      ADC #&00
 End macro SCALE_SIXEL_X
      63BE   AA         TAX
-     63BF   A5 E0      LDA &E0
+     63BF   A5 E3      LDA &E3
 Macro SCALE_SIXEL_Y:
      63C1   4A         LSR A
      63C2   4A         LSR A
