@@ -22,6 +22,8 @@ This repository contains the full source code for Teletext Elite, which you can 
 
 * [Folder structure](#folder-structure)
 
+* [Elite Compendium](#elite-compendium)
+
 * [Building Teletext Elite from the source](#building-teletext-elite-from-the-source)
 
   * [Requirements](#requirements)
@@ -96,6 +98,14 @@ There are three main folders in this repository, which reflect the order of the 
 * [3-assembled-output](3-assembled-output) contains the output from the assembly process, when the source files are assembled and the results processed by the build files.
 
 The source files in the first folder are heavily based on the repositories containing the [fully documented source code for the disc version of Elite on the BBC Micro](https://github.com/markmoxon/disc-elite-beebasm).
+
+## Elite Compendium
+
+This repository also includes a version of Teletext Elite for the Elite Compendium, which incorporates all the available hacks in one game. The Compendium version is in a separate branch called `elite-compendium`, which is included in the [Elite Compendium](https://github.com/markmoxon/elite-compendium) repository as a submodule.
+
+The annotated source files in the `elite-compendium` branch contain both the original Acornsoft code and all of the modifications for the Elite Compendium, so you can look through the source to see exactly what's changed. Any code that I've removed from the original version is commented out in the source files, so when they are assembled they produce the Compendium binaries, while still containing details of all the modifications. You can find all the diffs by searching the sources for `Mod:`.
+
+For more information on the Elite Compendium, see the [hacks section of the accompanying website](https://www.bbcelite.com/hacks/elite_compendium.html).
 
 ## Building Teletext Elite from the source
 
