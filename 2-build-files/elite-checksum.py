@@ -27,12 +27,23 @@ import sys
 argv = sys.argv
 argc = len(argv)
 Encrypt = True
+Scramble = True
+release = 1
 
-if argc > 1 and argv[1] == "-u":
-    Encrypt = False
+for arg in argv[1:]:
+    if arg == "-u":
+        Encrypt = False
+    if arg == "-rel1":
+        release = 1
+    if arg == "-rel2":
+        release = 2
+    if arg == "-rel3":
+        Scramble = False
+        release = 3
 
 print("Disc Elite Checksum")
 print("Encryption = ", Encrypt)
+print("Scramble main code = ", Scramble)
 
 # Configuration variables for scrambling code and calculating checksums
 #
@@ -150,8 +161,9 @@ elite_file.close()
 
 # SC routine, which EORs bytes between &1300 and &55FF
 
-# for n in range(scramble_from, scramble_to):
-#     data_block[n - load_address] = data_block[n - load_address] ^ (n % 256) ^ scramble_eor
+#if Scramble:
+#    for n in range(scramble_from, scramble_to):
+#        data_block[n - load_address] = data_block[n - load_address] ^ (n % 256) ^ scramble_eor
 
 # Write output file for D.CODE
 
@@ -178,8 +190,9 @@ elite_file.close()
 
 # SC routine, which EORs bytes between &1300 and &9FFF
 
-for n in range(scramble_from, scramble_to):
-    data_block[n - load_address] = data_block[n - load_address] ^ (n % 256) ^ scramble_eor
+if Scramble:
+    for n in range(scramble_from, scramble_to):
+        data_block[n - load_address] = data_block[n - load_address] ^ (n % 256) ^ scramble_eor
 
 # LOAD routine, which calculates checksum at &55FF in docked code
 # This checksum is not correct - need to fix this at some point

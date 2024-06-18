@@ -11,10 +11,10 @@
 \ in the documentation are entirely my fault
 \
 \ The terminology and notations used in this commentary are explained at
-\ https://www.bbcelite.com/about_site/terminology_used_in_this_commentary.html
+\ https://elite.bbcelite.com/terminology
 \
 \ The deep dive articles referred to in this commentary can be found at
-\ https://www.bbcelite.com/deep_dives
+\ https://elite.bbcelite.com/deep_dives
 \
 \ ------------------------------------------------------------------------------
 \
@@ -31,6 +31,7 @@
 
  _IB_DISC               = (_VARIANT = 1)
  _STH_DISC              = (_VARIANT = 2)
+ _SRAM_DISC             = (_VARIANT = 3)
 
  GUARD &6000            \ Guard against assembling over screen memory
 
@@ -42,15 +43,15 @@
 
                         \ --- Mod: Code removed for Teletext Elite: ----------->
 
-\CODE% = &7F00
+\CODE% = &7F00          \ The address where the code will be run
 
                         \ --- And replaced by: -------------------------------->
 
- CODE% = &7B00
+ CODE% = &7B00          \ The address where the code will be run
 
                         \ --- End of replacement ------------------------------>
 
- LOAD% = &244B
+ LOAD% = &244B          \ The address where the code will be loaded
 
  ORG CODE%
 
@@ -325,8 +326,18 @@ ENDMACRO
  FACE       32,        0,        0,         31    \ Face 4
  FACE        0,      -32,        0,         31    \ Face 5
  FACE      -32,        0,        0,         31    \ Face 6
+
+IF _STH_DISC OR _IB_DISC
+
  FACE        0,      160,      110,         31    \ Face 7
  FACE        0,       64,        4,          0    \ Face 8
+
+ELIF _SRAM_DISC
+
+ FACE        0,       32,        0,         31    \ Face 7
+ FACE        0,        0,     -176,         31    \ Face 8
+
+ENDIF
 
 \ ******************************************************************************
 \
@@ -339,6 +350,8 @@ ENDMACRO
 
 .VEC
 
+IF _STH_DISC OR _IB_DISC
+
  EQUW &0004             \ VEC = &7FFE
                         \
                         \ This gets set to the value of the original IRQ1 vector
@@ -347,6 +360,15 @@ ENDMACRO
                         \ This default value is random workspace noise left over
                         \ from the BBC Micro assembly process; it gets
                         \ overwritten
+
+ELIF _SRAM_DISC
+
+ SKIP 2                 \ VEC = &7FFE
+                        \
+                        \ This gets set to the value of the original IRQ1 vector
+                        \ by the loading process
+
+ENDIF
 
 \ ******************************************************************************
 \

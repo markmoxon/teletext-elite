@@ -1,16 +1,16 @@
 # Fully documented source code for Teletext Elite
 
-[BBC Micro cassette Elite](https://github.com/markmoxon/cassette-elite-beebasm) | [BBC Micro disc Elite](https://github.com/markmoxon/disc-elite-beebasm) | [6502 Second Processor Elite](https://github.com/markmoxon/6502sp-elite-beebasm) | [BBC Master Elite](https://github.com/markmoxon/master-elite-beebasm) | [Acorn Electron Elite](https://github.com/markmoxon/electron-elite-beebasm) | [NES Elite](https://github.com/markmoxon/nes-elite-beebasm) | [Elite-A](https://github.com/markmoxon/elite-a-beebasm) | **Teletext Elite** | [Elite Universe Editor](https://github.com/markmoxon/elite-universe-editor) | [Flicker-free C64 Elite](https://github.com/markmoxon/c64-elite-flicker-free) | [Aviator](https://github.com/markmoxon/aviator-beebasm) | [Revs](https://github.com/markmoxon/revs-beebasm)
+[BBC Micro cassette Elite](https://github.com/markmoxon/cassette-elite-beebasm) | [BBC Micro disc Elite](https://github.com/markmoxon/disc-elite-beebasm) | [6502 Second Processor Elite](https://github.com/markmoxon/6502sp-elite-beebasm) | [BBC Master Elite](https://github.com/markmoxon/master-elite-beebasm) | [Acorn Electron Elite](https://github.com/markmoxon/electron-elite-beebasm) | [NES Elite](https://github.com/markmoxon/nes-elite-beebasm) | [Elite-A](https://github.com/markmoxon/elite-a-beebasm) | **Teletext Elite** | [Elite Universe Editor](https://github.com/markmoxon/elite-universe-editor) | [Elite Compendium](https://github.com/markmoxon/elite-compendium) | [Elite over Econet](https://github.com/markmoxon/elite-over-econet) | [Flicker-free Commodore 64 Elite](https://github.com/markmoxon/c64-elite-flicker-free) | [BBC Micro Aviator](https://github.com/markmoxon/aviator-beebasm) | [BBC Micro Revs](https://github.com/markmoxon/revs-beebasm) | [Archimedes Lander](https://github.com/markmoxon/archimedes-lander)
 
-![Screenshot of the Teletext Elite title screen](https://www.bbcelite.com/images/teletext_elite/title.png)
+![Screenshot of the Teletext Elite title screen](https://elite.bbcelite.com/images/teletext_elite/title.png)
 
 This repository contains source code for Teletext Elite on the BBC Micro and BBC Master 128.
 
-Teletext Elite is the full version of BBC Micro disc Elite, but all graphics have been converted to use the BBC's teletext mode 7. For more information, see the [bbcelite.com website](https://www.bbcelite.com/hacks/teletext_elite.html).
+Teletext Elite is the full version of BBC Micro disc Elite, but all graphics have been converted to use the BBC's teletext mode 7. For more information, see the [elite.bbcelite.com website](https://elite.bbcelite.com/hacks/teletext_elite.html).
 
 This repository contains the full source code for Teletext Elite, which you can build yourself on a modern computer. See below for more details on [browsing the source code](#browsing-the-source-in-an-ide) and [building Teletext Elite from the source](#building-teletext-elite-from-the-source).
 
-![Screenshot of the station in the rear view in Teletext Elite](https://www.bbcelite.com/images/teletext_elite/station_view.png)
+![Screenshot of the station in the rear view in Teletext Elite](https://elite.bbcelite.com/images/teletext_elite/station_view.png)
 
 ## Contents
 
@@ -21,6 +21,8 @@ This repository contains the full source code for Teletext Elite, which you can 
 * [Browsing the source in an IDE](#browsing-the-source-in-an-ide)
 
 * [Folder structure](#folder-structure)
+
+* [Elite Compendium](#elite-compendium)
 
 * [Building Teletext Elite from the source](#building-teletext-elite-from-the-source)
 
@@ -39,7 +41,7 @@ The commentary and Teletext conversion code are copyright &copy; Mark Moxon. Any
 
 The Teletext routines are by Kieran Connell and Simon Morris of the Bitshifters, and were adapted from Bresenham routines by Rich Talbot-Watkins. See the [Bitshifters teletextr](https://github.com/bitshifters/teletextr/tree/master/lib) repository for the original code.
 
-Huge thanks are due to the original authors for not only creating such an important piece of my childhood, but also for releasing the source code for us to play with; to Paul Brink for his annotated disassembly; and to Kieran Connell for his [BeebAsm version](https://github.com/kieranhj/elite-beebasm), which I forked as the original basis for this project. You can find more information about this project in the [accompanying website's project page](https://www.bbcelite.com/about_site/about_this_project.html).
+Huge thanks are due to the original authors for not only creating such an important piece of my childhood, but also for releasing the source code for us to play with; to Paul Brink for his annotated disassembly; and to Kieran Connell for his [BeebAsm version](https://github.com/kieranhj/elite-beebasm), which I forked as the original basis for this project. You can find more information about this project in the [accompanying website's project page](https://elite.bbcelite.com/about_site/about_this_project.html).
 
 Thanks to the Bitshifters for their help in building the [musical version of BBC Micro Elite](#bbc-micro-elite-with-music), and in particular Kieran Connell, Simon Morris and Negative Charge for the music player and ported music files. Thanks also to Tricky and J.G.Harston for their sideways RAM utilities.
 
@@ -71,11 +73,11 @@ If you want to browse the source in an IDE, you might find the following useful.
 
   * The following source files contain Teletext-specific routines and macros, and are included in the main source files as required: [elite-teletext-docked.asm](1-source-files/main-sources/elite-teletext-docked.asm), [elite-teletext-flight.asm](1-source-files/main-sources/elite-teletext-flight.asm), [elite-teletext-lines.asm](1-source-files/main-sources/elite-teletext-lines.asm), [elite-teletext-macros.asm](1-source-files/main-sources/elite-teletext-macros.asm), [elite-teletext-sixels.asm](1-source-files/main-sources/elite-teletext-sixels.asm) and [elite-teletext-text.asm](1-source-files/main-sources/elite-teletext-text.asm)
 
-* It's probably worth skimming through the [notes on terminology and notations](https://www.bbcelite.com/about_site/terminology_used_in_this_commentary.html) on the accompanying website, as this explains a number of terms used in the commentary, without which it might be a bit tricky to follow at times (in particular, you should understand the terminology I use for multi-byte numbers).
+* It's probably worth skimming through the [notes on terminology and notations](https://elite.bbcelite.com/terminology/) on the accompanying website, as this explains a number of terms used in the commentary, without which it might be a bit tricky to follow at times (in particular, you should understand the terminology I use for multi-byte numbers).
 
 * The annotated source files contain both the original Acornsoft code and all of the modifications made to convert the original into Teletext Elite, so you can look through the source to see exactly what's changed in order to convert it to mode 7. Any code that I've removed from the original version is commented out in the source files, so when they are assembled they produce the Teletext Elite binaries, while still containing details of all the modifications. You can find all the diffs by searching the sources for `Mod:`.
 
-* Teletext Elite incorporates the flicker-free algorithm from BBC Master Elite, which reduces the amount of flicker in the ship-drawing routines, and it also includes flicker-free planet-drawing routines. For more information on flicker-free Elite, see the [hacks section of the accompanying website](https://www.bbcelite.com/hacks/flicker-free_elite.html).
+* Teletext Elite incorporates the flicker-free algorithm from BBC Master Elite, which reduces the amount of flicker in the ship-drawing routines, and it also includes flicker-free planet-drawing routines. For more information on flicker-free Elite, see the [hacks section of the accompanying website](https://elite.bbcelite.com/hacks/flicker-free_elite.html).
 
 * There are loads of routines and variables in Elite - literally hundreds. You can find them in the source files by searching for the following: `Type: Subroutine`, `Type: Variable`, `Type: Workspace` and `Type: Macro`.
 
@@ -97,6 +99,14 @@ There are three main folders in this repository, which reflect the order of the 
 
 The source files in the first folder are heavily based on the repositories containing the [fully documented source code for the disc version of Elite on the BBC Micro](https://github.com/markmoxon/disc-elite-beebasm).
 
+## Elite Compendium
+
+This repository also includes a version of Teletext Elite for the Elite Compendium, which incorporates all the available hacks in one game. The Compendium version is in a separate branch called `elite-compendium`, which is included in the [Elite Compendium](https://github.com/markmoxon/elite-compendium) repository as a submodule.
+
+The annotated source files in the `elite-compendium` branch contain both the original Acornsoft code and all of the modifications for the Elite Compendium, so you can look through the source to see exactly what's changed. Any code that I've removed from the original version is commented out in the source files, so when they are assembled they produce the Compendium binaries, while still containing details of all the modifications. You can find all the diffs by searching the sources for `Mod:`.
+
+For more information on the Elite Compendium, see the [hacks section of the accompanying website](https://elite.bbcelite.com/hacks/elite_compendium.html).
+
 ## Building Teletext Elite from the source
 
 Builds are supported for both Windows and Mac/Linux systems. In all cases the build process is defined in the `Makefile` provided.
@@ -107,11 +117,11 @@ You will need the following to build Elite from the source:
 
 * BeebAsm, which can be downloaded from the [BeebAsm repository](https://github.com/stardot/beebasm). Mac and Linux users will have to build their own executable with `make code`, while Windows users can just download the `beebasm.exe` file.
 
-* Python. Both versions 2.7 and 3.x should work.
+* Python. The build process has only been tested on 3.x, but 2.7 should work.
 
 * Mac and Linux users may need to install `make` if it isn't already present (for Windows users, `make.exe` is included in this repository).
 
-For details of how the build process works, see the [build documentation on bbcelite.com](https://www.bbcelite.com/about_site/building_elite.html).
+For details of how the build process works, see the [build documentation on bbcelite.com](https://elite.bbcelite.com/about_site/building_elite.html).
 
 Let's look at how to build Elite from the source.
 

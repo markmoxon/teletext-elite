@@ -11,10 +11,10 @@
 \ in the documentation are entirely my fault
 \
 \ The terminology and notations used in this commentary are explained at
-\ https://www.bbcelite.com/about_site/terminology_used_in_this_commentary.html
+\ https://elite.bbcelite.com/terminology
 \
 \ The deep dive articles referred to in this commentary can be found at
-\ https://www.bbcelite.com/deep_dives
+\ https://elite.bbcelite.com/deep_dives
 \
 \ ------------------------------------------------------------------------------
 \
@@ -34,18 +34,22 @@
 \
 \ ******************************************************************************
 
+ CODE% = &5600          \ The flight code runs this file at address &5600, at
+                        \ label XX21
+
+ LOAD% = &5600          \ The flight code loads this file at address &5600, at
+                        \ label XX21
+
                         \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \SHIP_MISSILE = &7F00   \ The address of the missile ship blueprint
+
 
                         \ --- And replaced by: -------------------------------->
 
  SHIP_MISSILE = &7B00   \ The address of the missile ship blueprint
 
                         \ --- End of replacement ------------------------------>
-
- CODE% = &5600          \ The flight code loads this file at address &5600, at
- LOAD% = &5600          \ label XX21
 
  ORG CODE%
 

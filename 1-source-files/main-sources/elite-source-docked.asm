@@ -11,10 +11,10 @@
 \ in the documentation are entirely my fault
 \
 \ The terminology and notations used in this commentary are explained at
-\ https://www.bbcelite.com/about_site/terminology_used_in_this_commentary.html
+\ https://elite.bbcelite.com/terminology
 \
 \ The deep dive articles referred to in this commentary can be found at
-\ https://www.bbcelite.com/deep_dives
+\ https://elite.bbcelite.com/deep_dives
 \
 \ ------------------------------------------------------------------------------
 \
@@ -28,6 +28,7 @@
 
  _IB_DISC               = (_VARIANT = 1)
  _STH_DISC              = (_VARIANT = 2)
+ _SRAM_DISC             = (_VARIANT = 3)
 
                         \ --- Mod: Code removed for Teletext Elite: ----------->
 
@@ -53,6 +54,10 @@
 \
 \ ******************************************************************************
 
+ CODE% = &11E3          \ The address where the code will be run
+
+ LOAD% = &11E3          \ The address where the code will be loaded
+
                         \ --- Mod: Code removed for Teletext Elite: ----------->
 
 \NOST = 18              \ The number of stardust particles in normal space (this
@@ -71,24 +76,43 @@
  NTY = 31               \ The number of different ship types
 
  MSL = 1                \ Ship type for a missile
+
  SST = 2                \ Ship type for a Coriolis space station
+
  ESC = 3                \ Ship type for an escape pod
+
  PLT = 4                \ Ship type for an alloy plate
+
  OIL = 5                \ Ship type for a cargo canister
+
  AST = 7                \ Ship type for an asteroid
+
  SPL = 8                \ Ship type for a splinter
+
  SHU = 9                \ Ship type for a Shuttle
+
  CYL = 11               \ Ship type for a Cobra Mk III
+
  ANA = 14               \ Ship type for an Anaconda
+
  COPS = 16              \ Ship type for a Viper
+
  SH3 = 17               \ Ship type for a Sidewinder
+
  KRA = 19               \ Ship type for a Krait
+
  ADA = 20               \ Ship type for an Adder
+
  WRM = 23               \ Ship type for a Worm
+
  CYL2 = 24              \ Ship type for a Cobra Mk III (pirate)
+
  ASP = 25               \ Ship type for an Asp Mk II
+
  THG = 29               \ Ship type for a Thargoid
+
  TGL = 30               \ Ship type for a Thargon
+
  CON = 31               \ Ship type for a Constrictor
 
  JL = ESC               \ Junk is defined as starting from the escape pod
@@ -109,17 +133,27 @@
                         \ stored in INWK and K%)
 
  X = 128                \ The centre x-coordinate of the 256 x 192 space view
+
  Y = 96                 \ The centre y-coordinate of the 256 x 192 space view
 
  f0 = &20               \ Internal key number for red key f0 (Launch, Front)
+
  f1 = &71               \ Internal key number for red key f1 (Buy Cargo, Rear)
+
  f2 = &72               \ Internal key number for red key f2 (Sell Cargo, Left)
+
  f3 = &73               \ Internal key number for red key f3 (Equip Ship, Right)
+
  f4 = &14               \ Internal key number for red key f4 (Long-range Chart)
+
  f5 = &74               \ Internal key number for red key f5 (Short-range Chart)
+
  f6 = &75               \ Internal key number for red key f6 (Data on System)
+
  f7 = &16               \ Internal key number for red key f7 (Market Price)
+
  f8 = &76               \ Internal key number for red key f8 (Status Mode)
+
  f9 = &77               \ Internal key number for red key f9 (Inventory)
 
  NRU% = 25              \ The number of planetary systems with extended system
@@ -190,9 +224,13 @@
                         \ known as SHEILA)
 
  OSBYTE = &FFF4         \ The address for the OSBYTE routine
+
  OSWORD = &FFF1         \ The address for the OSWORD routine
+
  OSFILE = &FFDD         \ The address for the OSFILE routine
+
  OSWRCH = &FFEE         \ The address for the OSWRCH routine
+
  OSCLI = &FFF7          \ The address for the OSCLI routine
 
 \ ******************************************************************************
@@ -1982,7 +2020,7 @@ ORG &00D1
 \
 \       Name: K%
 \       Type: Workspace
-\    Address: &0900 to &0D3F
+\    Address: &0900 to &0CFF
 \   Category: Workspaces
 \    Summary: Ship data blocks and ship line heaps
 \  Deep dive: Ship data blocks
@@ -2014,7 +2052,7 @@ ORG &00D1
 \
 \       Name: WP
 \       Type: Workspace
-\    Address: &0E00 to &0E3B
+\    Address: &0E00 to &0FD2
 \   Category: Workspaces
 \    Summary: Variables
 \
@@ -2134,9 +2172,6 @@ ORG &00D1
 \ ELITE A FILE
 \
 \ ******************************************************************************
-
- CODE% = &11E3
- LOAD% = &11E3
 
  ORG CODE%
 
@@ -2299,10 +2334,21 @@ ORG &00D1
 
 .INBAY
 
- LDX #0                 \ This code is never run, and seems to have no effect
- LDY #0
- JSR &8888
- JMP SCRAM
+ LDX #0                 \ This code is never run, but it takes up the same
+ LDY #0                 \ number of bytes as the INBAY routine in the flight
+ JSR &8888              \ code, so if the flight code *LOADs the docked code in
+ JMP SCRAM              \ its own version of the INBAY routine, then execution
+                        \ will fall through into the DOBEGIN routine below once
+                        \ the docked binary has loaded
+                        \
+                        \ This enables the docked code to choose whether to load
+                        \ the docked code and jump to DOBEGIN to restart the
+                        \ game (in which case the flight code simply *LOADs the
+                        \ docked code), or whether to dock with the space
+                        \ station and continue the game (in which case the
+                        \ flight code *RUNs the docked code, which has an
+                        \ execution address of S% at the start of the docked
+                        \ code, which contains a JMP DOENTRY instruction)
 
 \ ******************************************************************************
 \
@@ -2332,6 +2378,8 @@ ORG &00D1
 \ ******************************************************************************
 
 .DEEOR
+
+IF _STH_DISC OR _IB_DISC
 
  LDY #0                 \ We're going to work our way through a large number of
                         \ encrypted bytes, so we set Y to 0 to be the index of
@@ -2375,6 +2423,37 @@ ORG &00D1
 
  JMP BRKBK              \ Call BRKBK to set BRKV to point to the BRBR routine
                         \ and return from the subroutine using a tail call
+
+ELIF _SRAM_DISC
+
+ NOP                    \ The sideways RAM variant is not encrypted, so the
+ NOP                    \ decryption code is disabled and is replaced by NOPs
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+ NOP
+
+ JMP BRKBK              \ Call BRKBK to set BRKV to point to the BRBR routine
+                        \ and return from the subroutine using a tail call
+
+ENDIF
 
 \ ******************************************************************************
 \
@@ -4593,6 +4672,7 @@ ORG &00D1
 \ ******************************************************************************
 
  CODE_B% = P%
+
  LOAD_B% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
@@ -8218,6 +8298,7 @@ ORG &00D1
 \ ******************************************************************************
 
  CODE_C% = P%
+
  LOAD_C% = LOAD% +P% - CODE%
 
 \ ******************************************************************************
@@ -12249,6 +12330,7 @@ ORG &00D1
 \ ******************************************************************************
 
  CODE_D% = P%
+
  LOAD_D% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
@@ -12822,8 +12904,8 @@ ORG &00D1
  JSR spc                \ 67 + A, followed by a space, so:
                         \
                         \   A = 0 prints token 67 ("LARGE") and a space
-                        \   A = 1 prints token 67 ("FIERCE") and a space
-                        \   A = 2 prints token 67 ("SMALL") and a space
+                        \   A = 1 prints token 68 ("FIERCE") and a space
+                        \   A = 2 prints token 69 ("SMALL") and a space
 
 .TT205
 
@@ -12877,14 +12959,14 @@ ORG &00D1
 
  ADC #242               \ A = 0 to 7, so print recursive token 82 + A, so:
  JSR TT27               \
-                        \   A = 0 prints token 76 ("RODENT")
-                        \   A = 1 prints token 76 ("FROG")
-                        \   A = 2 prints token 76 ("LIZARD")
-                        \   A = 3 prints token 76 ("LOBSTER")
-                        \   A = 4 prints token 76 ("BIRD")
-                        \   A = 5 prints token 76 ("HUMANOID")
-                        \   A = 6 prints token 76 ("FELINE")
-                        \   A = 7 prints token 76 ("INSECT")
+                        \   A = 0 prints token 82 ("RODENT")
+                        \   A = 1 prints token 83 ("FROG")
+                        \   A = 2 prints token 84 ("LIZARD")
+                        \   A = 3 prints token 85 ("LOBSTER")
+                        \   A = 4 prints token 86 ("BIRD")
+                        \   A = 5 prints token 87 ("HUMANOID")
+                        \   A = 6 prints token 88 ("FELINE")
+                        \   A = 7 prints token 89 ("INSECT")
 
 .TT76
 
@@ -13838,9 +13920,10 @@ ORG &00D1
  SEC                    \ Subtract ASCII "0" from the key pressed, to leave the
  SBC #'0'               \ numeric value of the key in A (if it was a number key)
 
- BCC OUT                \ If A < 0, jump to OUT to return from the subroutine
-                        \ with a result of 0, as the key pressed was not a
-                        \ number or letter and is less than ASCII "0"
+ BCC OUT                \ If A < 0, jump to OUT to load the current number and
+                        \ return from the subroutine, as the key pressed was
+                        \ RETURN (or some other ncharacter with a value less
+                        \ than ASCII "0")
 
  CMP #10                \ If A >= 10, jump to BAY2 to display the Inventory
  BCS BAY2               \ screen, as the key pressed was a letter or other
@@ -15646,6 +15729,12 @@ ORG &00D1
 \
 \   A                   The text token to be printed
 \
+\ ------------------------------------------------------------------------------
+\
+\ Other entry points:
+\
+\   prq+3               Print a question mark
+\
 \ ******************************************************************************
 
 .prq
@@ -17106,7 +17195,7 @@ ORG &00D1
 \
 \ ******************************************************************************
 
-IF _STH_DISC
+IF _STH_DISC OR _SRAM_DISC
 
  NOP                    \ In the first version of disc Elite, there was a nasty
  NOP                    \ bug where buying a laser that you already owned
@@ -17225,6 +17314,7 @@ ENDIF
 \ ******************************************************************************
 
  CODE_E% = P%
+
  LOAD_E% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
@@ -20402,6 +20492,7 @@ ENDIF
 \ ******************************************************************************
 
  CODE_F% = P%
+
  LOAD_F% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
@@ -21818,7 +21909,7 @@ ENDIF
 
 .tZ
 
-IF _STH_DISC
+IF _STH_DISC OR _SRAM_DISC
 
  ORA #%00100000         \ Set bit 5 of A to denote that this is the disc version
                         \ with the refund bug fixed (in versions before the bug
@@ -25001,6 +25092,7 @@ ENDMACRO
 \ ******************************************************************************
 
  CODE_G% = P%
+
  LOAD_G% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
@@ -29335,6 +29427,7 @@ ENDMACRO
 \ ******************************************************************************
 
  CODE_H% = P%
+
  LOAD_H% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
@@ -33614,7 +33707,7 @@ ENDMACRO
 \
 \ ******************************************************************************
 
-IF _STH_DISC
+IF _STH_DISC OR _SRAM_DISC
 
  EQUB &45, &4E          \ These bytes appear to be unused
  EQUB &44, &2D
@@ -33677,6 +33770,7 @@ ENDIF
 \ ******************************************************************************
 
  CODE_SHIPS% = P%
+
  LOAD_SHIPS% = LOAD% + P% - CODE%
 
 \ ******************************************************************************
