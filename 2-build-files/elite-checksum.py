@@ -27,12 +27,23 @@ import sys
 argv = sys.argv
 argc = len(argv)
 Encrypt = True
+Scramble = True
+release = 1
 
-if argc > 1 and argv[1] == "-u":
-    Encrypt = False
+for arg in argv[1:]:
+    if arg == "-u":
+        Encrypt = False
+    if arg == "-rel1":
+        release = 1
+    if arg == "-rel2":
+        release = 2
+    if arg == "-rel3":
+        Scramble = False
+        release = 3
 
 print("Disc Elite Checksum")
 print("Encryption = ", Encrypt)
+print("Scramble main code = ", Scramble)
 
 # Configuration variables for scrambling code and calculating checksums
 #
@@ -64,9 +75,14 @@ scramble3_to = 0x294B       # OSBmod
 scramble3_eor = 0xA5
 
 # ELITE, ASOFT and CpASOFT blocks, plus padding to the end of the file
-scramble4_from = 0x2A62     # ELITE
-scramble4_to = 0x2E00       # End of ELITE4 file
-scramble4_eor = 0xA5
+if release == 1 or release == 2:
+    scramble4_from = 0x2A62     # ELITE
+    scramble4_to = 0x2E00       # End of ELITE4 file
+    scramble4_eor = 0xA5
+elif release == 3:
+    scramble4_from = 0x2A62     # ELITE
+    scramble4_to = 0x2DF0       # End of ELITE4 file (at PROT4)
+    scramble4_eor = 0xA5
 
 # Commander file checksum
 tvt1_code = 0x2962          # TVT1code
@@ -150,8 +166,9 @@ elite_file.close()
 
 # SC routine, which EORs bytes between &1300 and &55FF
 
-for n in range(scramble_from, scramble_to):
-    data_block[n - load_address] = data_block[n - load_address] ^ (n % 256) ^ scramble_eor
+if Scramble:
+    for n in range(scramble_from, scramble_to):
+        data_block[n - load_address] = data_block[n - load_address] ^ (n % 256) ^ scramble_eor
 
 # Write output file for D.CODE
 
@@ -178,8 +195,9 @@ elite_file.close()
 
 # SC routine, which EORs bytes between &1300 and &9FFF
 
-for n in range(scramble_from, scramble_to):
-    data_block[n - load_address] = data_block[n - load_address] ^ (n % 256) ^ scramble_eor
+if Scramble:
+    for n in range(scramble_from, scramble_to):
+        data_block[n - load_address] = data_block[n - load_address] ^ (n % 256) ^ scramble_eor
 
 # LOAD routine, which calculates checksum at &55FF in docked code
 # This checksum is not correct - need to fix this at some point
