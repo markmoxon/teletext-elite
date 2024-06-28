@@ -14,7 +14,7 @@ match-original-binaries=FALSE
 
 variant-number=2
 folder=/sth
-suffix=-elite-compendium-sth
+suffix=-compendium-sth
 
 .PHONY:all
 all:
