@@ -4,6 +4,7 @@ values = &90
 unique = &80
 RomSel = &FE30
 romNumber = &8E : REM Set to address of .musicRomNumber
+fromAddr = &80  : REM We can reuse unique block by this point
 
 PRINT"Teletext Elite (Compendium version)"
 PRINT"==================================="
@@ -77,6 +78,37 @@ STA &F4
 STA RomSel              \\ Restore original ROM
 CLI
 RTS
+
+.SRLOAD
+LDA &F4
+PHA
+LDA romNumber
+STA &F4
+STA &FE30
+.SR1
+LDY #0
+LDA (fromAddr),Y
+STA toBlock+4
+LDA #6
+LDX #toBlock MOD256
+LDY #toBlock DIV256
+JSR &FFF1
+INC fromAddr
+INC toBlock
+BNE SR1
+INC fromAddr+1
+INC toBlock+1
+LDA toBlock+1
+CMP #&C0
+BNE SR1
+PLA
+STA &F4
+STA &FE30
+RTS
+
+.toBlock
+EQUD &8000
+EQUD 0
 ]
 NEXT
 CALL CODE
@@ -87,11 +119,10 @@ IF N% > 1 THEN PRINT "s";
 REM IF N% > 0 THEN FOR X% = ?&90 TO 15 : PRINT;" ";X%?&90; : NEXT
 ?romNumber=?(&90+?&90):REM STORE RAM BANK USED SOMEWHERE IN ZERO PAGE
 PRINT'"Loading music into RAM bank ";?romNumber;"...";
-OSCLI "SRLOAD MUSIC 8000 "+STR$(?romNumber)
-!&70=&1210+1:REM Update play1+1 at &8012 for Compendium
-OSCLI "SRWRITE 0070+2 8012 "+STR$(?romNumber)
-!&70=&121E:REM Update SFX at &8016 for Compendium
-OSCLI "SRWRITE 0070+2 8016 "+STR$(?romNumber)
+*LOAD MUSIC 4000
+?&4012=&11:?&4013=&12:REM Update play1+1 at &8012 to &1210+1 for Compendium
+?&4016=&1E:?&4017=&12:REM Update SFX at &8016 to &121E Compendium
+!&80=&4000 : CALL SRLOAD : REM Load ROM image into the correct bank
 PRINT CHR$130;"OK"
 PRINT'"Press any key to play Elite";
 A$=GET$
