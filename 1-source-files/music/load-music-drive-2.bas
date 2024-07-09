@@ -121,7 +121,7 @@ REM IF N% > 0 THEN FOR X% = ?&90 TO 15 : PRINT;" ";X%?&90; : NEXT
 PRINT'"Loading music into RAM bank ";?romNumber;"...";
 *LOAD MUSIC 4000
 ?&4012=&11:?&4013=&12:REM Update play1+1 at &8012 to &1210+1 for Compendium
-?&4016=&1E:?&4017=&12:REM Update SFX at &8016 to &121E Compendium
+?&4016=&1E:?&4017=&12:REM Update SFX at &8016 to &121E for Compendium
 !&80=&4000 : CALL SRLOAD : REM Load ROM image into the correct bank
 PRINT CHR$130;"OK"
 PRINT'"Press any key to play Elite";
