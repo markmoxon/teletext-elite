@@ -118,7 +118,7 @@ Builds are supported for both Windows and Mac/Linux systems. In all cases the bu
 
 ### Requirements
 
-You will need the following to build Elite from the source:
+You will need the following to build Teletext Elite from the source:
 
 * BeebAsm, which can be downloaded from the [BeebAsm repository](https://github.com/stardot/beebasm). Mac and Linux users will have to build their own executable with `make code`, while Windows users can just download the `beebasm.exe` file.
 
@@ -128,7 +128,7 @@ You will need the following to build Elite from the source:
 
 For details of how the build process works, see the [build documentation on bbcelite.com](https://elite.bbcelite.com/about_site/building_elite.html).
 
-Let's look at how to build Elite from the source.
+Let's look at how to build Teletext Elite from the source.
 
 ### Windows
 
