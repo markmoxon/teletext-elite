@@ -24,7 +24,7 @@ remove-checksums=FALSE
 match-original-binaries=FALSE
 
 variant-number=2
-folder=/sth
+folder=sth
 suffix=-sth
 
 .PHONY:all
@@ -62,7 +62,7 @@ all:
 	$(PYTHON) 2-build-files/elite-checksum.py
 	$(BEEBASM) -i 1-source-files/main-sources/elite-disc.asm -do teletext-elite.ssd -boot ELITE2 -title "E L I T E"
 ifneq ($(verify), no)
-	@$(PYTHON) 2-build-files/crc32.py 4-reference-binaries$(folder) 3-assembled-output
+	@$(PYTHON) 2-build-files/crc32.py 4-reference-binaries/$(folder) 3-assembled-output
 endif
 
 .PHONY:b2
