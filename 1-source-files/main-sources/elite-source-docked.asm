@@ -1893,7 +1893,24 @@ ORG &00D1
                         \ which is 18 (#NOST) for normal space, and 3 for
                         \ witchspace
 
- SKIP 1                 \ This byte appears to be unused
+                        \ --- Mod: Code removed for Delta 14B: ---------------->
+
+\SKIP 1                 \ This byte appears to be unused
+
+                        \ --- And replaced by: -------------------------------->
+
+.delta14b
+
+ SKIP 1                 \ Delta 14B configuration setting
+                        \
+                        \   * 0 = keyboard or joystick (default)
+                        \
+                        \   * &FF = Delta 14B
+                        \
+                        \ Toggled by pressing "D" when paused, see the DK4
+                        \ routine for details
+
+                        \ --- End of added code ------------------------------->
 
 .COMC
 
@@ -21919,11 +21936,10 @@ ENDIF
 
                         \ --- And replaced by: -------------------------------->
 
- LDX #(CATF-COMC+1)     \ We start by zeroing all the configuration variables
-                        \ between COMC-1 and CATF, to set them to their default
-                        \ values, so set a counter in X for CATF - COMC bytes
-                        \
-                        \ This also zeroes the music option flag at COMC-1
+ LDX #(CATF-delta14b)   \ We start by zeroing all the configuration variables
+                        \ between delta14b and CATF, to set them to their
+                        \ default values, so set a counter in X for
+                        \ CATF - delta14b bytes
 
                         \ --- End of replacement ------------------------------>
 
@@ -21937,7 +21953,7 @@ ENDIF
 
                         \ --- And replaced by: -------------------------------->
 
- STA COMC-1,X           \ Zero the X-th configuration variable
+ STA delta14b,X         \ Zero the X-th configuration variable
 
                         \ --- End of replacement ------------------------------>
 
@@ -22442,6 +22458,15 @@ ENDIF
  JSR LL9                \ Call LL9 to display the ship
 
  DEC MCNT               \ Decrement the main loop counter
+
+                        \ --- Mod: Code added for Delta 14B: ------------------>
+
+ LDA #&51               \ Set 6522 User VIA output register ORB (SHEILA &60) to
+ STA VIA+&60            \ the Delta 14B joystick button in the middle column
+                        \ (high nibble &5) and top row (low nibble &1), which
+                        \ corresponds to the fire button
+
+                        \ --- End of added code ------------------------------->
 
  LDA VIA+&40            \ Read 6522 System VIA input register IRB (SHEILA &40)
 
@@ -24442,6 +24467,19 @@ ENDIF
 \
 \ ******************************************************************************
 
+                        \ --- Mod: Code moved for Delta 14B: ------------------>
+
+.DK9
+
+ STA BSTK               \ DK9 is called from DOKEY using a BEQ, so we know A is
+                        \ 0, so this disables the Bitstik and switched to
+                        \ keyboard or joystick
+
+ BEQ DK4                \ Jump back to DK4 in DOKEY (this BEQ is effectively a
+                        \ JMP as A is always zero)
+
+                        \ --- End of moved code ------------------------------->
+
 .DOKEY
 
  LDA JSTK               \ If JSTK is zero, then we are configured to use the
@@ -24557,14 +24595,30 @@ ENDIF
  LDA #12                \ Process the "Q" and music-related options
  JSR PlayMusic
 
- BCC DK7                \ If no music-related options were changed, then the C
-                        \ flag will be clear, so jump to DK7 to skip the
-                        \ following
+ BCC skipMusicToggles   \ If no music-related options were changed, then the C
+                        \ flag will be clear, so jump to skipMusicToggles to
+                        \ skip the following
 
  JSR BELL               \ Make a beep sound so we know something has happened
 
  JSR DELAY              \ Wait for Y vertical syncs (Y is between 64 and 70, so
                         \ this is always a bit longer than a second)
+
+.skipMusicToggles
+
+ CPX #&56               \ If "L" is not being pressed, skip to delt1
+ BNE delt1
+
+ LDA delta14b           \ Toggle the value of delta14b between 0 and &FF
+ EOR #&FF
+ STA delta14b
+
+ STA JSTK               \ Configure JSTK to the same value, so when the Delta
+                        \ 14B is enabled, so is the joystick
+
+ JMP delt2              \ Jump to delt2 to make a beep, if appropriate
+
+.delt1
 
                         \ --- End of replacement ------------------------------>
 
@@ -24589,6 +24643,30 @@ ENDIF
  STA JSTE               \ Configure JSTE to the same value, so when the Bitstik
                         \ is enabled, the joystick is configured with reversed
                         \ channels
+
+                        \ --- Mod: Code added for Delta 14B: ------------------>
+
+.delt2
+
+ BPL P%+5               \ If we just toggled the Bitstik off (i.e. to 0, which
+                        \ is positive), then skip the first of these two
+                        \ instructions, so we get two beeps for on and one beep
+                        \ for off
+
+ JSR BELL               \ We just enabled the Bitstik, so give two standard
+                        \ system beeps (this being the first)
+
+ JSR BELL               \ Make another system beep
+
+ JSR DELAY              \ Wait for Y vertical syncs (Y is between 64 and 70, so
+                        \ this is always a bit longer than a second)
+
+ LDX #&51               \ Set X to &51, which is the internal key for "S" on the
+                        \ BBC Micro. This is set to ensure that X has the same
+                        \ value at this point as the BBC Micro version of this
+                        \ routine would
+
+                        \ --- End of added code ------------------------------->
 
 .nobit
 
@@ -24636,14 +24714,18 @@ ENDIF
 
  RTS                    \ Return from the subroutine
 
-.DK9
+                        \ --- Mod: Code moved for Delta 14B: ------------------>
 
- STA BSTK               \ DK9 is called from DOKEY using a BEQ, so we know A is
-                        \ 0, so this disables the Bitstik and switched to
-                        \ keyboard or joystick
+\.DK9
+\
+\STA BSTK               \ DK9 is called from DOKEY using a BEQ, so we know A is
+\                       \ 0, so this disables the Bitstik and switched to
+\                       \ keyboard or joystick
+\
+\BEQ DK4                \ Jump back to DK4 in DOKEY (this BEQ is effectively a
+\                       \ JMP as A is always zero)
 
- BEQ DK4                \ Jump back to DK4 in DOKEY (this BEQ is effectively a
-                        \ JMP as A is always zero)
+                        \ --- End of moved code ------------------------------->
 
 \ ******************************************************************************
 \
