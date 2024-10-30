@@ -14,7 +14,7 @@ match-original-binaries=FALSE
 
 variant-number=2
 folder=/sth
-suffix=-compendium-sth
+suffix=-compendium-bbc-master
 
 .PHONY:all
 all:
