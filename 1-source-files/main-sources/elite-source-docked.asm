@@ -24606,6 +24606,10 @@ ENDIF
 
 .skipMusicToggles
 
+                        \ --- End of replacement ------------------------------>
+
+                        \ --- Mod: Code added for Delta 14B: ------------------>
+
  CPX #&56               \ If "L" is not being pressed, skip to delt1
  BNE delt1
 
@@ -24620,7 +24624,7 @@ ENDIF
 
 .delt1
 
-                        \ --- End of replacement ------------------------------>
+                        \ --- End of added code ------------------------------->
 
 .DK7
 
