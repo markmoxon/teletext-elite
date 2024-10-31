@@ -21928,7 +21928,7 @@ ENDIF
 
                         \ --- End of added code ------------------------------->
 
-                        \ --- Mod: Code removed for music: -------------------->
+                        \ --- Mod: Code removed for Delta 14B: ---------------->
 
 \LDX #(CATF-COMC)       \ We start by zeroing all the configuration variables
 \                       \ between COMC and CATF, to set them to their default
@@ -21947,7 +21947,7 @@ ENDIF
 
 .BEL1
 
-                        \ --- Mod: Code removed for music: -------------------->
+                        \ --- Mod: Code removed for Delta 14B: ---------------->
 
 \STA COMC,X             \ Zero the X-th configuration variable
 

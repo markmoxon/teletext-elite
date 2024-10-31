@@ -28549,7 +28549,7 @@ ENDIF
 
 .DKS1
 
-                        \ --- Mod: Code added for Elite-A: -------------------->
+                        \ --- Mod: Code added for Delta 14B: ------------------>
 
  LDA delta14b           \ If BSTK is delta14b, then the Delta 14B joystick is
  BMI b_14               \ configured, so jump to b_14 to check the Delta 14B
@@ -29325,7 +29325,7 @@ ENDIF
                         \ to KL+16. So set a decreasing counter in Y for the
                         \ index, starting at 16, so we can loop through them
 
-                        \ --- Mod: Code removed for Elite-A: ------------------>
+                        \ --- Mod: Code removed for Delta 14B: ---------------->
 
 \LDA #&FF               \ Set A to &FF so we can store this in the keyboard
 \                       \ logger for keys that are being pressed
