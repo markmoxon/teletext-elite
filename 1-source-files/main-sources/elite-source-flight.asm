@@ -28476,7 +28476,6 @@ ENDIF
 
  RTS                    \ Return from the subroutine
 
-
 .b_pressed
 
  CPY #8                 \ If this is the front view button, jump to b_front to
@@ -28512,13 +28511,6 @@ ENDIF
 
  STX KL                 \ Set the key "pressed" to the internal key in X
 
- CLD                    \ Clear the D flag to return to binary mode (for cases
-                        \ where this routine is called in BCD mode)
-
- PLA                    \ Remove the return address from the top of the stack,
- PLA                    \ so the RTS returns to the caller of FILLKL (i.e. back
-                        \ to RDKEY)
-
  RTS                    \ Return from the subroutine
 
                         \ --- End of added code ------------------------------->
@@ -28551,9 +28543,17 @@ ENDIF
 
                         \ --- Mod: Code added for Delta 14B: ------------------>
 
- LDA delta14b           \ If BSTK is delta14b, then the Delta 14B joystick is
- BMI b_14               \ configured, so jump to b_14 to check the Delta 14B
-                        \ joystick buttons
+ LDA delta14b           \ If delta14b is zero, then the Delta 14B joystick
+ BEQ fill1              \ is not configured, so jump to fill1 to skip the
+                        \ following
+
+ LDA #%10000000         \ Set A to 128, as that's what the b_14 routine expects
+                        \ as a parameter
+
+ JSR b_14               \ Call b_14 to check the Delta 14B joystick buttons and
+                        \ populate the key logger
+
+.fill1
 
                         \ --- End of added code ------------------------------->
 
