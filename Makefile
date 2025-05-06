@@ -49,12 +49,12 @@ all:
 	$(BEEBASM) -i 1-source-files/main-sources/elite-ships-p.asm -v >> 3-assembled-output/compile.txt
 	$(BEEBASM) -i 1-source-files/main-sources/elite-readme.asm -v >> 3-assembled-output/compile.txt
 	$(PYTHON) 2-build-files/elite-checksum.py $(unencrypt) -rel$(variant-number)
-	$(BEEBASM) -i 1-source-files/main-sources/elite-disc.asm -do teletext-elite$(suffix).ssd -opt 3 -title "E L I T E"
+	$(BEEBASM) -i 1-source-files/main-sources/elite-disc.asm -do 5-compiled-game-discs/teletext-elite$(suffix).ssd -opt 3 -title "E L I T E"
 ifneq ($(verify), no)
-	@$(PYTHON) 2-build-files/crc32.py 4-reference-binaries$(folder) 3-assembled-output
+	@$(PYTHON) 2-build-files/crc32.py 4-reference-binaries/$(folder) 3-assembled-output
 endif
 
 .PHONY:b2
 b2:
 	curl -G "http://localhost:48075/reset/b2"
-	curl -H "Content-Type:application/binary" --upload-file "teletext-elite$(suffix).ssd" "http://localhost:48075/run/b2?name=teletext-elite$(suffix).ssd"
+	curl -H "Content-Type:application/binary" --upload-file "5-compiled-game-discs/teletext-elite$(suffix).ssd" "http://localhost:48075/run/b2?name=teletext-elite$(suffix).ssd"

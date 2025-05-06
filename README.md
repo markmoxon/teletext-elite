@@ -1,6 +1,6 @@
 # Fully documented source code for Teletext Elite
 
-[BBC Micro cassette Elite](https://github.com/markmoxon/elite-source-code-bbc-micro-cassette) | [BBC Micro disc Elite](https://github.com/markmoxon/elite-source-code-bbc-micro-disc) | [6502 Second Processor Elite](https://github.com/markmoxon/elite-source-code-6502-second-processor) | [BBC Master Elite](https://github.com/markmoxon/elite-source-code-bbc-master) | [Acorn Electron Elite](https://github.com/markmoxon/elite-source-code-acorn-electron) | [NES Elite](https://github.com/markmoxon/elite-source-code-nes) | [Elite-A](https://github.com/markmoxon/elite-a-source-code-bbc-micro) | **Teletext Elite** | [Elite Universe Editor](https://github.com/markmoxon/elite-universe-editor) | [Elite Compendium (BBC Master)](https://github.com/markmoxon/elite-compendium-bbc-master) | [Elite Compendium (BBC Micro)](https://github.com/markmoxon/elite-compendium-bbc-micro) | [Elite over Econet](https://github.com/markmoxon/elite-over-econet) | [Flicker-free Commodore 64 Elite](https://github.com/markmoxon/c64-elite-flicker-free) | [BBC Micro Aviator](https://github.com/markmoxon/aviator-source-code-bbc-micro) | [BBC Micro Revs](https://github.com/markmoxon/revs-source-code-bbc-micro) | [Archimedes Lander](https://github.com/markmoxon/lander-source-code-acorn-archimedes)
+[BBC Micro cassette Elite](https://github.com/markmoxon/elite-source-code-bbc-micro-cassette) | [BBC Micro disc Elite](https://github.com/markmoxon/elite-source-code-bbc-micro-disc) | [Acorn Electron Elite](https://github.com/markmoxon/elite-source-code-acorn-electron) | [6502 Second Processor Elite](https://github.com/markmoxon/elite-source-code-6502-second-processor) | [Commodore 64 Elite](https://github.com/markmoxon/elite-source-code-commodore-64) | [Apple II Elite](https://github.com/markmoxon/elite-source-code-apple-ii) | [BBC Master Elite](https://github.com/markmoxon/elite-source-code-bbc-master) | [NES Elite](https://github.com/markmoxon/elite-source-code-nes) | [Elite-A](https://github.com/markmoxon/elite-a-source-code-bbc-micro) | **Teletext Elite** | [Elite Universe Editor](https://github.com/markmoxon/elite-universe-editor) | [Elite Compendium (BBC Master)](https://github.com/markmoxon/elite-compendium-bbc-master) | [Elite Compendium (BBC Micro)](https://github.com/markmoxon/elite-compendium-bbc-micro) | [Elite over Econet](https://github.com/markmoxon/elite-over-econet) | [!EliteNet](https://github.com/markmoxon/elite-over-econet-acorn-archimedes) | [Flicker-free Commodore 64 Elite](https://github.com/markmoxon/c64-elite-flicker-free) | [BBC Micro Aviator](https://github.com/markmoxon/aviator-source-code-bbc-micro) | [BBC Micro Revs](https://github.com/markmoxon/revs-source-code-bbc-micro) | [Archimedes Lander](https://github.com/markmoxon/lander-source-code-acorn-archimedes)
 
 ![Screenshot of the Teletext Elite title screen](https://elite.bbcelite.com/images/teletext_elite/title.png)
 
@@ -102,6 +102,8 @@ There are three main folders in this repository, which reflect the order of the 
 
 * [4-reference-binaries](4-reference-binaries) contains the correct binaries for the game, so we can verify that our assembled output matches the reference.
 
+* [5-compiled-game-discs](5-compiled-game-discs) contains the final output of the build process: an SSD disc image that contains the compiled game and which can be run on real hardware or in an emulator.
+
 The source files in the first folder are heavily based on the repositories containing the [fully documented source code for the disc version of Elite on the BBC Micro](https://github.com/markmoxon/elite-source-code-bbc-micro-disc).
 
 ## Elite Compendium
@@ -118,17 +120,17 @@ Builds are supported for both Windows and Mac/Linux systems. In all cases the bu
 
 ### Requirements
 
-You will need the following to build Elite from the source:
+You will need the following to build Teletext Elite from the source:
 
 * BeebAsm, which can be downloaded from the [BeebAsm repository](https://github.com/stardot/beebasm). Mac and Linux users will have to build their own executable with `make code`, while Windows users can just download the `beebasm.exe` file.
 
-* Python. The build process has only been tested on 3.x, but 2.7 should work.
+* Python. The build process has only been tested on 3.x, but 2.7 might work.
 
 * Mac and Linux users may need to install `make` if it isn't already present (for Windows users, `make.exe` is included in this repository).
 
 For details of how the build process works, see the [build documentation on bbcelite.com](https://elite.bbcelite.com/about_site/building_elite.html).
 
-Let's look at how to build Elite from the source.
+Let's look at how to build Teletext Elite from the source.
 
 ### Windows
 
@@ -140,7 +142,7 @@ All being well, entering the following into a command window:
 make.bat
 ```
 
-will produce a file called `teletext-elite.ssd` in the project folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
+will produce a file called `teletext-elite.ssd` in the `5-compiled-game-discs` folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
 
 ### Mac and Linux
 
@@ -152,7 +154,7 @@ All being well, entering the following into a terminal window:
 make
 ```
 
-will produce a file called `teletext-elite.ssd` in the project folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
+will produce a file called `teletext-elite.ssd` in the `5-compiled-game-discs` folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
 
 ### Build options
 
