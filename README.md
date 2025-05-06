@@ -102,6 +102,8 @@ There are three main folders in this repository, which reflect the order of the 
 
 * [4-reference-binaries](4-reference-binaries) contains the correct binaries for the game, so we can verify that our assembled output matches the reference.
 
+* [5-compiled-game-discs](5-compiled-game-discs) contains the final output of the build process: an SSD disc image that contains the compiled game and which can be run on real hardware or in an emulator.
+
 The source files in the first folder are heavily based on the repositories containing the [fully documented source code for the disc version of Elite on the BBC Micro](https://github.com/markmoxon/elite-source-code-bbc-micro-disc).
 
 ## Elite Compendium
@@ -140,7 +142,7 @@ All being well, entering the following into a command window:
 make.bat
 ```
 
-will produce a file called `teletext-elite.ssd` in the project folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
+will produce a file called `teletext-elite.ssd` in the `5-compiled-game-discs` folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
 
 ### Mac and Linux
 
@@ -152,7 +154,7 @@ All being well, entering the following into a terminal window:
 make
 ```
 
-will produce a file called `teletext-elite.ssd` in the project folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
+will produce a file called `teletext-elite.ssd` in the `5-compiled-game-discs` folder that contains Teletext Elite, which you can then load into an emulator, or into a real BBC Micro using a device like a Gotek.
 
 ### Build options
 
