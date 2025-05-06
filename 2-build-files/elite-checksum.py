@@ -26,13 +26,13 @@ import sys
 
 argv = sys.argv
 argc = len(argv)
-Encrypt = True
+encrypt = True
 Scramble = True
 release = 1
 
 for arg in argv[1:]:
     if arg == "-u":
-        Encrypt = False
+        encrypt = False
     if arg == "-rel1":
         release = 1
     if arg == "-rel2":
@@ -42,7 +42,7 @@ for arg in argv[1:]:
         release = 3
 
 print("Disc Elite Checksum")
-print("Encryption = ", Encrypt)
+print("Encryption = ", encrypt)
 print("Scramble main code = ", Scramble)
 
 # Configuration variables for scrambling code and calculating checksums
@@ -96,6 +96,7 @@ elite_file.close()
 # Commander data checksum
 
 na_per_cent_offset = na_per_cent - tvt1 + tvt1_code - load_address
+checksum_offset = chk2 - tvt1 + tvt1_code - load_address
 CH = 0x4B - 2
 CY = 0
 for i in range(CH, 0, -1):
@@ -106,12 +107,8 @@ for i in range(CH, 0, -1):
 
 print("Commander checksum = ", hex(CH))
 
-# Must have Commander checksum otherwise game will lock:
-
-if Encrypt:
-    checksum_offset = chk2 - tvt1 + tvt1_code - load_address
-    data_block[checksum_offset] = CH ^ 0xA9
-    data_block[checksum_offset + 1] = CH
+data_block[checksum_offset] = CH ^ 0xA9
+data_block[checksum_offset + 1] = CH
 
 # Extract unscrambled &1100-&11E3 for use in &55FF checksum below
 
@@ -216,7 +213,7 @@ for x in range(0x11, 0x54):
 d_checksum = d_checksum % 256
 
 # Disable LOAD checksum for Teletext Elite as location &55FF is no longer valid
-# if Encrypt:
+# if encrypt:
 #     data_block[checksum_address - load_address] = d_checksum
 
 print("&55FF docked code checksum = ", hex(d_checksum))
