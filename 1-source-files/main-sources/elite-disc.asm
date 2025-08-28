@@ -63,4 +63,4 @@
 
  PUTFILE "1-source-files/boot-files/$.!BOOT.bin", "!BOOT", &FFFFFF, &FFFFFF
  PUTBASIC "1-source-files/music/load-music.bas", "ELITETT"
- PUTFILE "1-source-files/music/elite-music.rom", "MUSIC", &008000, &008000
+ PUTFILE "elite-music/elite-music.rom", "MUSIC", &008000, &008000
