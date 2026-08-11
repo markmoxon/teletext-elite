@@ -22,7 +22,7 @@ See [my profile](https://github.com/markmoxon) for more repositories to explore.
 
 This repository contains source code for Teletext Elite on the BBC Micro and BBC Master 128.
 
-Teletext Elite is the full version of BBC Micro disc Elite, but all graphics have been converted to use the BBC's teletext mode 7. For more information, see the [elite.bbcelite.com website](https://elite.bbcelite.com/hacks/teletext_elite.html).
+Teletext Elite is the full version of BBC Micro disc Elite, but all graphics have been converted to use the BBC's teletext mode 7. For more information, see the [elite.bbcelite.com website](https://elite.bbcelite.com/hacks/teletext_elite/).
 
 This repository contains the full source code for Teletext Elite, which you can build yourself on a modern computer. See below for more details on [browsing the source code](#browsing-the-source-in-an-ide) and [building Teletext Elite from the source](#building-teletext-elite-from-the-source).
 
@@ -96,7 +96,7 @@ If you want to browse the source in an IDE, you might find the following useful.
 
 * The annotated source files contain both the original Acornsoft code and all of the modifications made to convert the original into Teletext Elite, so you can look through the source to see exactly what's changed in order to convert it to mode 7. Any code that I've removed from the original version is commented out in the source files, so when they are assembled they produce the Teletext Elite binaries, while still containing details of all the modifications. You can find all the diffs by searching the sources for `Mod:`.
 
-* Teletext Elite incorporates the flicker-free algorithm from BBC Master Elite, which reduces the amount of flicker in the ship-drawing routines, and it also includes flicker-free planet-drawing routines. For more information on flicker-free Elite, see the [hacks section of the accompanying website](https://elite.bbcelite.com/hacks/flicker-free_elite.html).
+* Teletext Elite incorporates the flicker-free algorithm from BBC Master Elite, which reduces the amount of flicker in the ship-drawing routines, and it also includes flicker-free planet-drawing routines. For more information on flicker-free Elite, see the [hacks section of the accompanying website](https://elite.bbcelite.com/hacks/flicker-free_elite/).
 
 * There are loads of routines and variables in Elite - literally hundreds. You can find them in the source files by searching for the following: `Type: Subroutine`, `Type: Variable`, `Type: Workspace` and `Type: Macro`.
 
@@ -128,7 +128,7 @@ This repository also includes a version of Teletext Elite for the Elite Compendi
 
 The annotated source files in the `elite-compendium` branch contain both the original Acornsoft code and all of the modifications for the Elite Compendium, so you can look through the source to see exactly what's changed. Any code that I've removed from the original version is commented out in the source files, so when they are assembled they produce the Compendium binaries, while still containing details of all the modifications. You can find all the diffs by searching the sources for `Mod:`.
 
-For more information on the Elite Compendium, see the [hacks section of the accompanying website](https://elite.bbcelite.com/hacks/elite_compendium.html).
+For more information on the Elite Compendium, see the [hacks section of the accompanying website](https://elite.bbcelite.com/hacks/elite_compendium/).
 
 ## Building Teletext Elite from the source
 
