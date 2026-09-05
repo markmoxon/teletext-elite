@@ -1015,14 +1015,47 @@ ENDIF
                         \ address is modified by the code above that adds PROT1
                         \ to the address)
 
+                        \ --- Mod: Code removed for Teletext Elite: ----------->
+
+\EQUB 28                \ Define a text window as follows:
+\EQUB 13, 13, 25, 10    \
+\                       \   * Left = 13
+\                       \   * Right = 25
+\                       \   * Top = 10
+\                       \   * Bottom = 13
+\                       \
+\                       \ i.e. 3 rows high, 12 columns wide at (13, 10)
+\
+\EQUB 12                \ Clear the text area
+\
+\EQUB 10                \ Move the cursor down one row
+\
+\EQUB 135               \ Teletext control code 135 (Select white text)
+\
+\EQUB 141               \ Teletext control code 141 (Double height)
+\
+\EQUS "E L I T E"       \ The top half of the game's name
+\
+\EQUB 140               \ Teletext control code 140 (Turn off double height)
+\
+\EQUB 146               \ Teletext control code 146 (Select green graphics)
+\
+\EQUB 135               \ Teletext control code 135 (Select white text)
+\
+\EQUB 141               \ Teletext control code 141 (Double height)
+\
+\EQUS "E L I T E"       \ The bottom half of the game's name
+
+                        \ --- And replaced by: -------------------------------->
+
  EQUB 28                \ Define a text window as follows:
- EQUB 13, 13, 25, 10    \
-                        \   * Left = 13
-                        \   * Right = 25
+ EQUB 10, 13, 29, 10    \
+                        \   * Left = 10
+                        \   * Right = 29
                         \   * Top = 10
                         \   * Bottom = 13
                         \
-                        \ i.e. 3 rows high, 12 columns wide at (13, 10)
+                        \ i.e. 3 rows high, 19 columns wide at (13, 10)
 
  EQUB 12                \ Clear the text area
 
@@ -1032,7 +1065,11 @@ ENDIF
 
  EQUB 141               \ Teletext control code 141 (Double height)
 
- EQUS "E L I T E"       \ The top half of the game's name
+ EQUS " "               \ Padding
+
+ EQUS "Teletext ELITE"  \ The top half of the game's name
+
+ EQUS " "               \ Padding
 
  EQUB 140               \ Teletext control code 140 (Turn off double height)
 
@@ -1042,9 +1079,32 @@ ENDIF
 
  EQUB 141               \ Teletext control code 141 (Double height)
 
- EQUS "E L I T E"       \ The top half of the game's name
+ EQUS " "               \ Padding
+
+ EQUS "Teletext ELITE"  \ The bottom half of the game's name
+
+ EQUS " "               \ Padding
+
+                        \ --- End of replacement ------------------------------>
 
  NOP                    \ Marks the end of the VDU block
+
+                        \ --- Mod: Code added for Teletext Elite: ------------->
+
+ LDA #15                \ Call OSBYTE with A = 129 and Y = 0 to flush the input
+ LDY #0                 \ buffer
+ JSR OSBYTE
+
+ LDA #129               \ Call OSBYTE with A = 129, X = &2C and Y = 1 to scan
+ LDY #1                 \ the keyboard for &12C centiseconds (3 seconds)
+ LDX #&2C
+ JSR OSBYTE
+
+ LDA #15                \ Call OSBYTE with A = 129 and Y = 0 to flush the input
+ LDY #0                 \ buffer
+ JSR OSBYTE
+
+                        \ --- End of added code ------------------------------->
 
  RTS                    \ Return from the PROT1 subroutine
 
