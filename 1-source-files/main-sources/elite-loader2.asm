@@ -1082,6 +1082,10 @@ ENDIF
 
                         \ --- Mod: Code added for Teletext Elite: ------------->
 
+ LDA #15                \ Call OSBYTE with A = 129 and Y = 0 to flush the input
+ LDY #0                 \ buffer
+ JSR OSBYTE
+
  LDA #129               \ Call OSBYTE with A = 129, X = &2C and Y = 1 to scan
  LDY #1                 \ the keyboard for &12C centiseconds (3 seconds)
  LDX #&2C

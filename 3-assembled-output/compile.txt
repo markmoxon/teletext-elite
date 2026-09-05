@@ -4177,9 +4177,9 @@ Saving file '3-assembled-output/ELITE2.bin'
      5E43   D0 00
      5E45   E2 00
      5E47   E9 00
-     5E49   55 01
-     5E4B   82 01
-     5E4D   8B 01
+     5E49   5C 01
+     5E4B   89 01
+     5E4D   92 01
      5E4F
 .LOADSCR
      5E5D   A5 71      LDA &71
@@ -4228,7 +4228,7 @@ Saving file '3-assembled-output/ELITE2.bin'
      5EAA   A9 07      LDA #&07
      5EAC   20 EE FF   JSR &FFEE
 .jsr1
-     5EAF   20 D5 01   JSR &01D5
+     5EAF   20 DC 01   JSR &01DC
      5EB2   17
      5EB3   00
      5EB4   0A
@@ -4243,11 +4243,11 @@ Saving file '3-assembled-output/ELITE2.bin'
      5EBD   A9 91      LDA #&91
      5EBF   85 76      STA &76
 .jsr2
-     5EC1   20 81 01   JSR &0181
+     5EC1   20 88 01   JSR &0188
      5EC4   24 70      BIT &70
-     5EC6   30 6C      BMI &5F34
+     5EC6   30 73      BMI &5F3B
 .jsr3
-     5EC8   20 D5 01   JSR &01D5
+     5EC8   20 DC 01   JSR &01DC
      5ECB   1C
      5ECC   0A
      5ECD   0D
@@ -4268,261 +4268,264 @@ Saving file '3-assembled-output/ELITE2.bin'
      5EE9   54 65 6C ...
      5EF7   20 
      5EF8   EA         NOP
-     5EF9   A9 81      LDA #&81
-     5EFB   A0 01      LDY #&01
-     5EFD   A2 2C      LDX #&2C
-     5EFF   20 F4 FF   JSR &FFF4
-     5F02   A9 0F      LDA #&0F
-     5F04   A0 00      LDY #&00
+     5EF9   A9 0F      LDA #&0F
+     5EFB   A0 00      LDY #&00
+     5EFD   20 F4 FF   JSR &FFF4
+     5F00   A9 81      LDA #&81
+     5F02   A0 01      LDY #&01
+     5F04   A2 2C      LDX #&2C
      5F06   20 F4 FF   JSR &FFF4
-     5F09   60         RTS
-     5F0A   20 20 20 ...
-     5F10   8C
-     5F11   92
-     5F12   87
-     5F13   8D
-     5F14   20 20 20 ...
-     5F1A   20 20 20 ...
-     5F20   20 20 20 ...
-     5F26   20 20 20 ...
-     5F2C   20 20 20 ...
-     5F32   EA         NOP
-     5F33   60         RTS
+     5F09   A9 0F      LDA #&0F
+     5F0B   A0 00      LDY #&00
+     5F0D   20 F4 FF   JSR &FFF4
+     5F10   60         RTS
+     5F11   20 20 20 ...
+     5F17   8C
+     5F18   92
+     5F19   87
+     5F1A   8D
+     5F1B   20 20 20 ...
+     5F21   20 20 20 ...
+     5F27   20 20 20 ...
+     5F2D   20 20 20 ...
+     5F33   20 20 20 ...
+     5F39   EA         NOP
+     5F3A   60         RTS
 .jsr4
-     5F34   20 D5 01   JSR &01D5
-     5F37   1C
-     5F38   0D
-     5F39   0C
-     5F3A   19
-     5F3B   0A
-     5F3C   0C
-     5F3D   1A
-     5F3E   1F
-     5F3F   0F
-     5F40   0B
-     5F41   45 20 4C ...
-     5F4A   EA         NOP
-     5F4B   60         RTS
-     5F4C   20 20 20 ...
-     5F55   20 20 20 ...
-     5F5F   EA         NOP
-     5F60   60         RTS
+     5F3B   20 DC 01   JSR &01DC
+     5F3E   1C
+     5F3F   0D
+     5F40   0C
+     5F41   19
+     5F42   0A
+     5F43   0C
+     5F44   1A
+     5F45   1F
+     5F46   0F
+     5F47   0B
+     5F48   45 20 4C ...
+     5F51   EA         NOP
+     5F52   60         RTS
+     5F53   20 20 20 ...
+     5F5C   20 20 20 ...
+     5F66   EA         NOP
+     5F67   60         RTS
 .jsr5
-     5F61   20 8A 01   JSR &018A
-     5F64   20 E7 FF   JSR &FFE7
-     5F67   20 E7 FF   JSR &FFE7
+     5F68   20 91 01   JSR &0191
+     5F6B   20 E7 FF   JSR &FFE7
+     5F6E   20 E7 FF   JSR &FFE7
 .jsr6
-     5F6A   20 90 01   JSR &0190
-     5F6D   20 E7 FF   JSR &FFE7
+     5F71   20 97 01   JSR &0197
+     5F74   20 E7 FF   JSR &FFE7
 .LOGOS
-     5F70   A0 1C      LDY #&1C
+     5F77   A0 1C      LDY #&1C
 .aloop
-     5F72   A2 26      LDX #&26
-     5F74   24 70      BIT &70
-     5F76   30 0D      BMI &5F85
-     5F78   A5 76      LDA &76
-     5F7A   20 EE FF   JSR &FFEE
-     5F7D   A9 9A      LDA #&9A
-     5F7F   20 EE FF   JSR &FFEE
-     5F82   18         CLC
-     5F83   90 05      BCC &5F8A
+     5F79   A2 26      LDX #&26
+     5F7B   24 70      BIT &70
+     5F7D   30 0D      BMI &5F8C
+     5F7F   A5 76      LDA &76
+     5F81   20 EE FF   JSR &FFEE
+     5F84   A9 9A      LDA #&9A
+     5F86   20 EE FF   JSR &FFEE
+     5F89   18         CLC
+     5F8A   90 05      BCC &5F91
 .eskip1
-     5F85   A9 20      LDA #&20
-     5F87   20 EE FF   JSR &FFEE
+     5F8C   A9 20      LDA #&20
+     5F8E   20 EE FF   JSR &FFEE
 .cloop
-     5F8A   B1 71      LDA (&71),Y
-     5F8C   24 70      BIT &70
-     5F8E   30 09      BMI &5F99
-     5F90   84 73      STY &73
-     5F92   A8         TAY
-     5F93   B1 71      LDA (&71),Y
-     5F95   A4 73      LDY &73
-     5F97   D0 02      BNE &5F9B
+     5F91   B1 71      LDA (&71),Y
+     5F93   24 70      BIT &70
+     5F95   30 09      BMI &5FA0
+     5F97   84 73      STY &73
+     5F99   A8         TAY
+     5F9A   B1 71      LDA (&71),Y
+     5F9C   A4 73      LDY &73
+     5F9E   D0 02      BNE &5FA2
 .eskip2
-     5F99   09 E0      ORA #&E0
-     5F9B   20 EE FF   JSR &FFEE
-     5F9E   C8         INY
-     5F9F   C0 FF      CPY #&FF
-     5FA1   F0 0F      BEQ &5FB2
-     5FA3   CA         DEX
-     5FA4   D0 E4      BNE &5F8A
-     5FA6   24 70      BIT &70
-     5FA8   10 05      BPL &5FAF
-     5FAA   A9 20      LDA #&20
-     5FAC   20 EE FF   JSR &FFEE
-     5FAF   18         CLC
-     5FB0   90 C0      BCC &5F72
+     5FA0   09 E0      ORA #&E0
+     5FA2   20 EE FF   JSR &FFEE
+     5FA5   C8         INY
+     5FA6   C0 FF      CPY #&FF
+     5FA8   F0 0F      BEQ &5FB9
+     5FAA   CA         DEX
+     5FAB   D0 E4      BNE &5F91
+     5FAD   24 70      BIT &70
+     5FAF   10 05      BPL &5FB6
+     5FB1   A9 20      LDA #&20
+     5FB3   20 EE FF   JSR &FFEE
+     5FB6   18         CLC
+     5FB7   90 C0      BCC &5F79
 .adone
-     5FB2   E6 76      INC &76
-     5FB4   60         RTS
+     5FB9   E6 76      INC &76
+     5FBB   60         RTS
 .prstr
-     5FB5   68         PLA
-     5FB6   85 74      STA &74
-     5FB8   68         PLA
-     5FB9   85 75      STA &75
+     5FBC   68         PLA
+     5FBD   85 74      STA &74
+     5FBF   68         PLA
+     5FC0   85 75      STA &75
 .p1
-     5FBB   E6 74      INC &74
-     5FBD   D0 02      BNE &5FC1
-     5FBF   E6 75      INC &75
-     5FC1   A0 00      LDY #&00
-     5FC3   B1 74      LDA (&74),Y
-     5FC5   C9 EA      CMP #&EA
-     5FC7   F0 06      BEQ &5FCF
-     5FC9   20 EE FF   JSR &FFEE
-     5FCC   18         CLC
-     5FCD   90 EC      BCC &5FBB
+     5FC2   E6 74      INC &74
+     5FC4   D0 02      BNE &5FC8
+     5FC6   E6 75      INC &75
+     5FC8   A0 00      LDY #&00
+     5FCA   B1 74      LDA (&74),Y
+     5FCC   C9 EA      CMP #&EA
+     5FCE   F0 06      BEQ &5FD6
+     5FD0   20 EE FF   JSR &FFEE
+     5FD3   18         CLC
+     5FD4   90 EC      BCC &5FC2
 .p2
-     5FCF   6C 74 00   JMP (&0074)
-     5FD2
-     601E   FF
-     601F
-     611E   D0 04      BNE &6124
-     6120   A5 50      LDA &50
-     6122   C5 4E      CMP &4E
+     5FD6   6C 74 00   JMP (&0074)
+     5FD9
+     6025   FF
+     6026
+     6125   D0 04      BNE &612B
+     6127   A5 50      LDA &50
+     6129   C5 4E      CMP &4E
 .LABEL1
-     6124   D0 0B      BNE &6131
-     6126   A9 00      LDA #&00
-     6128   85 4E      STA &4E
-     612A   A9 00      LDA #&00
-     612C   85 4F      STA &4F
-     612E   4C 53 49   JMP &4953
+     612B   D0 0B      BNE &6138
+     612D   A9 00      LDA #&00
+     612F   85 4E      STA &4E
+     6131   A9 00      LDA #&00
+     6133   85 4F      STA &4F
+     6135   4C 53 49   JMP &4953
 .LABEL2
-     6131   2C 5C 49   BIT &495C
-     6134   10 01      BPL &6137
-     6136   60         RTS
+     6138   2C 5C 49   BIT &495C
+     613B   10 01      BPL &613E
+     613D   60         RTS
 .LABEL3
-     6137   A5 4F      LDA &4F
-     6139   D0 03      BNE &613E
-     613B   20 BA 4B   JSR &4BBA
+     613E   A5 4F      LDA &4F
+     6140   D0 03      BNE &6145
+     6142   20 BA 4B   JSR &4BBA
 .LABEL4
-     613E   A5 4D      LDA &4D
-     6140   D0 0E      BNE &6150
-     6142   20 C3 4B   JSR &4BC3
-     6145   A9 00      LDA #&00
-     6147   85 4E      STA &4E
-     6149   A9 00      LDA #&00
-     614B   85 4F      STA &4F
-     614D   4C 53 49   JMP &4953
+     6145   A5 4D      LDA &4D
+     6147   D0 0E      BNE &6157
+     6149   20 C3 4B   JSR &4BC3
+     614C   A9 00      LDA #&00
+     614E   85 4E      STA &4E
+     6150   A9 00      LDA #&00
+     6152   85 4F      STA &4F
+     6154   4C 53 49   JMP &4953
 .LABEL5
-     6150   A5 4D      LDA &4D
-     6152   C5 4F      CMP &4F
-     6154   90 06      BCC &615C
-     6156   D0 04      BNE &615C
-     6158   A5 4C      LDA &4C
-     615A   C5 4E      CMP &4E
+     6157   A5 4D      LDA &4D
+     6159   C5 4F      CMP &4F
+     615B   90 06      BCC &6163
+     615D   D0 04      BNE &6163
+     615F   A5 4C      LDA &4C
+     6161   C5 4E      CMP &4E
 .LABEL6
-     615C   90 13      BCC &6171
-     615E   A5 4C      LDA &4C
-     6160   85 12      STA &12
-     6162   A5 4D      LDA &4D
-     6164   85 13      STA &13
-     6166   20 C3 4B   JSR &4BC3
-     6169   A5 12      LDA &12
-     616B   85 4E      STA &4E
-     616D   A5 13      LDA &13
-     616F   85 4F      STA &4F
+     6163   90 13      BCC &6178
+     6165   A5 4C      LDA &4C
+     6167   85 12      STA &12
+     6169   A5 4D      LDA &4D
+     616B   85 13      STA &13
+     616D   20 C3 4B   JSR &4BC3
+     6170   A5 12      LDA &12
+     6172   85 4E      STA &4E
+     6174   A5 13      LDA &13
+     6176   85 4F      STA &4F
 .LABEL7
-     6171   2C 5C 49   BIT &495C
-     6174   30 03      BMI &6179
-     6176   20 3D 37   JSR &373D
+     6178   2C 5C 49   BIT &495C
+     617B   30 03      BMI &6180
+     617D   20 3D 37   JSR &373D
 .LABEL8
-     6179   60         RTS
-     617A
+     6180   60         RTS
+     6181
 .LABEL9
-     617B   A5 4F      LDA &4F
-     617D   F0 11      BEQ &6190
-     617F   A5 4F      LDA &4F
-     6181   C5 51      CMP &51
-     6183   90 06      BCC &618B
-     6185   D0 04      BNE &618B
-     6187   A5 4E      LDA &4E
-     6189   C5 50      CMP &50
+     6182   A5 4F      LDA &4F
+     6184   F0 11      BEQ &6197
+     6186   A5 4F      LDA &4F
+     6188   C5 51      CMP &51
+     618A   90 06      BCC &6192
+     618C   D0 04      BNE &6192
+     618E   A5 4E      LDA &4E
+     6190   C5 50      CMP &50
 .LABEL10
-     618B   B0 03      BCS &6190
-     618D   4C D6 49   JMP &49D6
+     6192   B0 03      BCS &6197
+     6194   4C D6 49   JMP &49D6
 .LABEL11
-     6190   A5 4D      LDA &4D
-     6192   F0 11      BEQ &61A5
-     6194   A5 4D      LDA &4D
-     6196   C5 51      CMP &51
-     6198   90 06      BCC &61A0
-     619A   D0 04      BNE &61A0
-     619C   A5 4C      LDA &4C
-     619E   C5 50      CMP &50
+     6197   A5 4D      LDA &4D
+     6199   F0 11      BEQ &61AC
+     619B   A5 4D      LDA &4D
+     619D   C5 51      CMP &51
+     619F   90 06      BCC &61A7
+     61A1   D0 04      BNE &61A7
+     61A3   A5 4C      LDA &4C
+     61A5   C5 50      CMP &50
 .LABEL12
-     61A0   B0 03      BCS &61A5
-     61A2   4C 9C 49   JMP &499C
+     61A7   B0 03      BCS &61AC
+     61A9   4C 9C 49   JMP &499C
 .LABEL13
-     61A5   60         RTS
-     61A6   A5 4D      LDA &4D
-     61A8   F0 36      BEQ &61E0
-     61AA   A5 4D      LDA &4D
-     61AC   C5 51      CMP &51
-     61AE   90 06      BCC &61B6
-     61B0   D0 04      BNE &61B6
-     61B2   A5 4C      LDA &4C
-     61B4   C5 50      CMP &50
+     61AC   60         RTS
+     61AD   A5 4D      LDA &4D
+     61AF   F0 36      BEQ &61E7
+     61B1   A5 4D      LDA &4D
+     61B3   C5 51      CMP &51
+     61B5   90 06      BCC &61BD
+     61B7   D0 04      BNE &61BD
+     61B9   A5 4C      LDA &4C
+     61BB   C5 50      CMP &50
 .LABEL14
-     61B6   F0 28      BEQ &61E0
-     61B8   90 26      BCC &61E0
-     61BA   2C C1 0A   BIT &0AC1
-     61BD   F0 1A      BEQ &61D9
-     61BF   A5 4F      LDA &4F
-     61C1   C5 51      CMP &51
-     61C3   90 06      BCC &61CB
-     61C5   D0 04      BNE &61CB
-     61C7   A5 4E      LDA &4E
-     61C9   C5 50      CMP &50
+     61BD   F0 28      BEQ &61E7
+     61BF   90 26      BCC &61E7
+     61C1   2C C1 0A   BIT &0AC1
+     61C4   F0 1A      BEQ &61E0
+     61C6   A5 4F      LDA &4F
+     61C8   C5 51      CMP &51
+     61CA   90 06      BCC &61D2
+     61CC   D0 04      BNE &61D2
+     61CE   A5 4E      LDA &4E
+     61D0   C5 50      CMP &50
 .LABEL15
-     61CB   F0 0B      BEQ &61D8
-     61CD   A5 50      LDA &50
-     61CF   85 4C      STA &4C
-     61D1   A5 51      LDA &51
-     61D3   85 4D      STA &4D
-     61D5   20 3D 37   JSR &373D
-.LABEL16
-     61D8   60         RTS
-.LABEL17
-     61D9   20 CC 4B   JSR &4BCC
+     61D2   F0 0B      BEQ &61DF
+     61D4   A5 50      LDA &50
+     61D6   85 4C      STA &4C
+     61D8   A5 51      LDA &51
+     61DA   85 4D      STA &4D
      61DC   20 3D 37   JSR &373D
+.LABEL16
      61DF   60         RTS
+.LABEL17
+     61E0   20 CC 4B   JSR &4BCC
+     61E3   20 3D 37   JSR &373D
+     61E6   60         RTS
 .LABEL18
-     61E0   A5 4F      LDA &4F
-     61E2   F0 35      BEQ &6219
-     61E4   A5 4F      LDA &4F
-     61E6   C5 51      CMP &51
-     61E8   90 06      BCC &61F0
-     61EA   D0 04      BNE &61F0
-     61EC   A5 4E      LDA &4E
-     61EE   C5 50      CMP &50
+     61E7   A5 4F      LDA &4F
+     61E9   F0 35      BEQ &6220
+     61EB   A5 4F      LDA &4F
+     61ED   C5 51      CMP &51
+     61EF   90 06      BCC &61F7
+     61F1   D0 04      BNE &61F7
+     61F3   A5 4E      LDA &4E
+     61F5   C5 50      CMP &50
 .LABEL19
-     61F0   F0 27      BEQ &6219
-     61F2   90 25      BCC &6219
-     61F4   2C C1 0A   BIT &0AC1
-     61F7   F0 15      BEQ &620E
-     61F9   A5 4D      LDA &4D
-     61FB   C5 51      CMP &51
-     61FD   90 06      BCC &6205
-     61FF   D0 04      BNE &6205
-     6201   A5 4C      LDA &4C
-     6203   C5 50      CMP &50
+     61F7   F0 27      BEQ &6220
+     61F9   90 25      BCC &6220
+     61FB   2C C1 0A   BIT &0AC1
+     61FE   F0 15      BEQ &6215
+     6200   A5 4D      LDA &4D
+     6202   C5 51      CMP &51
+     6204   90 06      BCC &620C
+     6206   D0 04      BNE &620C
+     6208   A5 4C      LDA &4C
+     620A   C5 50      CMP &50
 .LABEL20
-     6205   F0 06      BEQ &620D
-     6207   20 BA 4B   JSR &4BBA
-     620A   20 3D 37   JSR &373D
+     620C   F0 06      BEQ &6214
+     620E   20 BA 4B   JSR &4BBA
+     6211   20 3D 37   JSR &373D
 .LABEL21
-     620D   60         RTS
+     6214   60         RTS
 .LABEL22
-     620E   A5 4E      LDA &4E
-     6210   85 50      STA &50
-     6212   A5 4F      LDA &4F
-     6214   85 51      STA &51
-     6216   20 3D 37   JSR &373D
+     6215   A5 4E      LDA &4E
+     6217   85 50      STA &50
+     6219   A5 4F      LDA &4F
+     621B   85 51      STA &51
+     621D   20 3D 37   JSR &373D
 .LABEL23
-     6219   60         RTS
-     621A   A5 44      LDA &44
-     621C   85 4C      STA &4C
-S.ELITE3 &5700  &621E  &5700  &5700 
+     6220   60         RTS
+     6221   A5 44      LDA &44
+     6223   85 4C      STA &4C
+S.ELITE3 &5700  &6225  &5700  &5700 
 Saving file '3-assembled-output/ELITE3.bin'
 .ZP
      0070
